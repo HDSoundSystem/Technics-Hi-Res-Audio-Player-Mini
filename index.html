@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Technics High Resolution Audio Player</title>
+    
+    <meta name="author" content="Yohann Zaoui">
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="apple-touch-icon" href="img/favicon.png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+    <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --vfd-main: #B0FEFF; --vfd-red: #ff3c22;
+            --vfd-shadow-main: rgba(203, 255, 179, 0.3); --vfd-shadow-red: rgba(255, 60, 34, 0.6);
+            --vfd-sep-line: #1a1a1a; --bg-color: #080808; --panel-color: #262322; 
+            --text-color: #b0b0b0; --header-text: #888; --panel-border: #222; --display-border: #1a1a1a;
+            --btn-bg: #1e1e1e; --btn-border: #333; --btn-text: #ddd; --shuttle-bg: #0a0a0a;
+            --shuttle-thumb: #333; --shuttle-label: #666; --logo-filter: brightness(1);
+            --shadow-main: rgba(0,0,0,0.9); --text-relief: none;
+        }
+        [data-theme="light"] {
+            --bg-color: #dcd0c0; --panel-color: #e8dfd1; --text-color: #4a453e; --header-text: #222;
+            --panel-border: #c5baaa; --display-border: #b5a99a; --btn-bg: #f5f0e6; --btn-border: #c5baaa;
+            --btn-text: #4a453e; --shuttle-bg: #dcd0c0; --shuttle-thumb: #f5f0e6; --shuttle-label: #4a453e; 
+            --logo-filter: brightness(0.1) drop-shadow(0px 1px 1px rgba(255,255,255,0.8));
+            --text-relief: 1px 1px 0px rgba(255,255,255,0.8); --shadow-main: rgba(0,0,0,0.15);
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; transition: background-color 0.4s; user-select: none; }
+        .player-container { background: var(--panel-color); padding: 25px; border-radius: 4px; width: 90%; max-width: 600px; border: 1px solid var(--panel-border); box-shadow: 0 40px 100px var(--shadow-main); }
+        .header-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.7rem; color: var(--header-text); font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+        .brand-logo-img { height: 70px; filter: var(--logo-filter); cursor: pointer; }
+        .display-panel { background: #000; padding: 15px; border: 2px solid var(--display-border); margin-bottom: 20px; text-align: center; min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 0 0 25px rgba(0,0,0,1), inset 0 0 10px rgba(255,255,255,0.05); }
+        .status-line { color: var(--vfd-main); font-size: 0.75rem; letter-spacing: 2px; height: 1.2rem; text-transform: uppercase; text-shadow: 0 0 8px var(--vfd-shadow-main); display: flex; justify-content: center; align-items: center; }
+        .time-display { color: var(--vfd-main); font-family: 'DS-Digital', sans-serif; font-variant-numeric: tabular-nums; font-size: 5.8rem; font-weight: 500; text-shadow: 0 0 15px var(--vfd-shadow-main); display: flex; justify-content: center; align-items: baseline; gap: 2px; }
+        .digit { width: 0.6em; text-align: center; }
+        .side-indicators { display: flex; flex-direction: column; gap: 5px; text-align: left; min-width: 140px; }
+        .ind { font-size: 0.6rem; font-weight: 500; color: #121212 !important; text-transform: uppercase; transition: 0.2s; }
+        .ind.active { color: var(--vfd-main) !important; text-shadow: 0 0 8px var(--vfd-shadow-main); }
+        #format-info { color: var(--vfd-red); font-weight: 700; font-size: 0.65rem; text-shadow: 0 0 8px var(--vfd-shadow-red); margin: 2px 0; }
+        #file-info-line { color: var(--vfd-main) !important; font-size: 0.7rem; text-shadow: 0 0 6px var(--vfd-shadow-main); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 10px; margin: 5px 0; text-transform: uppercase; font-weight: 400; opacity: 0.9; }
+        .track-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 10px 0; border-top: 1px solid var(--vfd-sep-line); }
+        .track-num { font-size: 0.85rem; color: var(--vfd-main); opacity: 0.5; font-weight: 500; }
+        .track-num.active { color: var(--vfd-red); opacity: 1; text-shadow: 0 0 12px var(--vfd-shadow-red); }
+        button { background: var(--btn-bg); border: 1px solid var(--btn-border); color: var(--btn-text); padding: 10px 2px; font-size: 0.62rem; font-weight: 500; cursor: pointer; text-transform: uppercase; font-family: 'Inter', sans-serif; }
+        .num-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 20px; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 4px; }
+        @media (min-width: 480px) { .num-pad { grid-template-columns: repeat(10, 1fr); } }
+        .controls-grid, .controls-grid-4 { display: grid; gap: 8px; margin-bottom: 10px; }
+        .controls-grid { grid-template-columns: repeat(6, 1fr); }
+        .controls-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .shuttle-zone { margin-top: 15px; background: var(--shuttle-bg); padding: 15px; border: 1px solid var(--display-border); }
+        .shuttle-label { font-size: 0.6rem; color: var(--shuttle-label); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1.5px; }
+        input[type="range"] { width: 100%; height: 3px; background: var(--panel-border); -webkit-appearance: none; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 40px; height: 16px; background: var(--shuttle-thumb); border: 1px solid var(--btn-border); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .modal-content { background: #000; border: 2px solid var(--btn-border); width: 300px; height: 300px; }
+        .modal-content img { width: 100%; height: 100%; object-fit: contain; }
+
+	.large-stop {
+    /* Ajustez la taille selon vos besoins */
+    font-size: 15px; 
+    display: inline-block;
+    line-height: 1;
+  }
+    </style>
+</head>
+<body>
+
+<div class="player-container">
+    <div class="header-line">
+        <img src="img/Technics_logo.png" alt="Technics" class="brand-logo-img" onclick="toggleTheme()">
+        <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
+    </div>
+
+    <div class="display-panel">
+        <div class="status-line"><span id="status-function">NO TRACK</span></div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+            <div id="timer" class="time-display">
+                <span id="m1" class="digit">0</span><span id="m2" class="digit">0</span><span class="sep">:</span><span id="s1" class="digit">0</span><span id="s2" class="digit">0</span>
+            </div>
+            <div class="side-indicators">
+                <div style="display:flex; gap:10px;"><div id="ind-shuffle" class="ind">Shuffle</div><div id="ind-ab" class="ind">A-B</div></div>
+                <div id="format-info">---</div>
+                <div id="ind-repeat1" class="ind">Repeat 1</div>
+                <div id="ind-repeatAll" class="ind">Repeat All</div>
+            </div>
+        </div>
+        <div id="file-info-line" onclick="openArtModal()">- - - - -</div>
+        <div id="track-grid" class="track-grid"></div>
+        <div style="height:70px; margin-top:10px;"><canvas id="vu-meter" width="800" height="120" style="width:100%; height:100%;"></canvas></div>
+    </div>
+
+    <div class="num-pad">
+        <button onclick="pressDigit(1)">1</button><button onclick="pressDigit(2)">2</button><button onclick="pressDigit(3)">3</button><button onclick="pressDigit(4)">4</button><button onclick="pressDigit(5)">5</button>
+        <button onclick="pressDigit(6)">6</button><button onclick="pressDigit(7)">7</button><button onclick="pressDigit(8)">8</button><button onclick="pressDigit(9)">9</button><button onclick="pressDigit(0)">0</button>
+    </div>
+
+    <div class="controls-grid">
+        <button onclick="handlePlay()">&#9654;</button><button onclick="handlePause()">&#10074;&#10074;</button><button onclick="prevTrack()">&#9664;&#9664;</button><button onclick="nextTrack()">&#9654;&#9654;</button><button onclick="handleStop()"><span class="large-stop">&#9632;</span></button><button onclick="toggleTime()">Time</button>
+    </div>
+    <div class="controls-grid-4">
+        <button onclick="runAutoCue()">Auto Cue</button><button onclick="runPeak()">Peak</button><button onclick="skip(-10)">-10s</button><button onclick="skip(10)">+10s</button>
+    </div>
+    <div class="controls-grid-4">
+        <button onclick="toggleShuffle()">Shuffle</button><button onclick="toggleRepeat()">Repeat</button><button onclick="handleAB()">A-B</button><button onclick="toggleVUMode()">VU</button>
+    </div>
+    <div class="controls-grid-4">
+        <button style="padding:15px" onclick="fileIn.click()">Open</button>
+        <button style="padding:15px" onclick="changeVolume(-0.1)" onmouseenter="showVolume()" onmouseleave="updateStatusText()">VOL -</button>
+        <button style="padding:15px" onclick="changeVolume(0.1)" onmouseenter="showVolume()" onmouseleave="updateStatusText()">VOL +</button>
+        <button style="padding:15px" onclick="location.reload()">Close</button>
+    </div>
+    
+    <div class="shuttle-zone">
+        <div class="shuttle-label">JOG SHUTTLE</div>
+        <input type="range" id="shuttle" min="-10" max="10" value="0" oninput="doShuttle(this.value)" onchange="resetShuttle()">
+    </div>
+    <input type="file" id="file-in" style="display:none" accept="audio/*" multiple>
+</div>
+
+<div id="artModal" class="modal" onclick="this.style.display='none'"><div class="modal-content"><img id="modalImg" src="img/Technics_logo.png"></div></div>
+<audio id="audio" crossorigin="anonymous" playsinline></audio>
+
+<script>
+    const audio = document.getElementById('audio'), statusFunc = document.getElementById('status-function'), fileInfoLine = document.getElementById('file-info-line'), formatInfo = document.getElementById('format-info'), fileIn = document.getElementById('file-in'), canvas = document.getElementById('vu-meter'), ctx = canvas.getContext('2d'), m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), modalImg = document.getElementById('modalImg');
+
+    audio.volume = 0.2;
+    let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
+
+    function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('user-theme', currentTheme); }
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('user-theme') || 'dark');
+
+    function updateStatusText() { if (digitEntry !== "") return; if (!audio.src || playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+
+    function updateMediaSession(tags, file) {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({ title: tags.title || file.name, artist: tags.artist || "Technics Player", album: tags.album || "SL-PS740A", artwork: [{ src: modalImg.src, sizes: '512x512', type: 'image/png' }] });
+            navigator.mediaSession.setActionHandler('play', handlePlay); navigator.mediaSession.setActionHandler('pause', handlePause); navigator.mediaSession.setActionHandler('previoustrack', prevTrack); navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+        }
+    }
+
+    function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
+    function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
+
+    fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); statusFunc.innerText = "READY"; } };
+
+    function loadTrack(index) {
+        const file = playlist[index];
+        if (audio.src) URL.revokeObjectURL(audio.src);
+        audio.src = URL.createObjectURL(file);
+        formatInfo.innerText = file.name.split('.').pop().toUpperCase();
+        if (window.jsmediatags) {
+            window.jsmediatags.read(file, { onSuccess: (tag) => {
+                const t = tag.tags;
+                // INCLUSION DE L'ALBUM ICI
+                const artist = t.artist || "UNKNOWN ARTIST";
+                const album = t.album || "UNKNOWN ALBUM";
+                const title = t.title || file.name;
+                fileInfoLine.innerText = `${artist} - ${album} - ${title}`.toUpperCase();
+                
+                if (t.picture) { const { data, format } = t.picture; let base64 = ""; for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]); modalImg.src = `data:${format};base64,${window.btoa(base64)}`; } else { modalImg.src = "img/Technics_logo.png"; }
+                updateMediaSession(t, file);
+            }, onError: () => {
+                fileInfoLine.innerText = file.name.toUpperCase();
+                updateMediaSession({}, file);
+            }});
+        }
+        updateTrackDisplay(); audio.load();
+    }
+
+    function handlePlay() { if(playlist.length > 0){ if(!audioCtx) initAudio(); audio.play().then(updateStatusText); } }
+    function handlePause() { audio.pause(); updateStatusText(); }
+    function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
+    function nextTrack() { if(!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random()*playlist.length) : (currentIndex+1)%playlist.length; loadTrack(currentIndex); handlePlay(); }
+    function prevTrack() { if(!playlist.length) return; currentIndex = (currentIndex-1+playlist.length)%playlist.length; loadTrack(currentIndex); handlePlay(); }
+    audio.onended = () => { if(repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
+    audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; let t = (timeMode === 'remaining' && audio.duration) ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; };
+
+    function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
+    function drawVU() { requestAnimationFrame(drawVU); if(!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for(let i=0; i<15; i++) sum += dataArray[i]; let vol = sum/15; lastVolume = vol < lastVolume ? lastVolume-2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'); ctx.clearRect(0,0,800,120); ctx.font = "500 22px 'Inter', sans-serif"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 15, 42); ctx.fillText("R", 15, 98); for(let i=0; i<25; i++) { ctx.fillStyle = lastVolume > (i/25)*255 ? (i>20 ? redColor : mainColor) : "#111"; ctx.fillRect(60+i*28, 15, 25, 20); ctx.fillRect(60+i*28, 70, 25, 20); } }
+
+    async function runPeak() {
+        if (!playlist.length || !audio.src) return;
+        statusFunc.innerText = "PEAK SEARCH";
+        try {
+            const response = await fetch(audio.src);
+            const arrayBuffer = await response.arrayBuffer();
+            const tempCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+            const decodedBuffer = await tempCtx.decodeAudioData(arrayBuffer);
+            const rawData = decodedBuffer.getChannelData(0);
+            let maxVal = 0, maxPos = 0;
+            for (let i = 0; i < rawData.length; i += 200) { if (Math.abs(rawData[i]) > maxVal) { maxVal = Math.abs(rawData[i]); maxPos = i; } }
+            audio.currentTime = maxPos / decodedBuffer.sampleRate;
+            statusFunc.innerText = "PEAK FOUND";
+            handlePlay(); setTimeout(() => { handlePause(); updateStatusText(); }, 3000);
+        } catch (e) {
+            setTimeout(() => { audio.currentTime = Math.random() * (audio.duration || 10); statusFunc.innerText = "PEAK FOUND"; handlePlay(); setTimeout(() => { handlePause(); updateStatusText(); }, 2000); }, 1500);
+        }
+    }
+
+    function doShuttle(v) { if(v != 0) { audio.currentTime += v*0.5; statusFunc.innerText = v>0 ? "SEARCH >>" : "<< SEARCH"; } }
+    function resetShuttle() { document.getElementById('shuttle').value = 0; updateStatusText(); }
+    function updateTrackDisplay() { const grid = document.getElementById('track-grid'); grid.innerHTML = ''; playlist.forEach((_, i) => { const s = document.createElement('span'); s.className = 'track-num' + (i === currentIndex ? ' active' : ''); s.innerText = i + 1; grid.appendChild(s); }); }
+    function skip(v) { audio.currentTime += v; }
+    function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
+    function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }
+    function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
+    function toggleVUMode() { vuVisible = !vuVisible; canvas.style.display = vuVisible ? 'block' : 'none'; }
+    function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
+    function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
+    function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
+    function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
+    function openArtModal() { if(playlist.length) document.getElementById('artModal').style.display = 'flex'; }
+</script>
+</body>
+</html>
+
