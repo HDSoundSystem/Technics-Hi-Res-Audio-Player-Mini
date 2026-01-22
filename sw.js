@@ -1,4 +1,4 @@
-const CACHE_NAME = 'technics-v1';
+const CACHE_NAME = 'Technics-Mini';
 const ASSETS = [
   './',
   './index.html',
