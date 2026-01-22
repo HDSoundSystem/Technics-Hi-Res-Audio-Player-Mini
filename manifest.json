@@ -1,7 +1,7 @@
 {
-  "name": "Technics Hi-Res Player",
+  "name": "Technics Hi-Res Player Mini",
   "short_name": "Technics Hi-Res Player",
-  "description": "Technics High Resolution Audio Player",
+  "description": "Technics High Resolution Audio Player Mini",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#080808",
