@@ -2,6 +2,8 @@ const CACHE_NAME = 'Technics Mini';
 const ASSETS = [
   './',
   './index.html',
+  './style.css',
+  './script.js',
   './img/Technics_logo.png',
   './img/favicon.png'
 ];
