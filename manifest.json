@@ -1,6 +1,6 @@
 {
   "name": "Technics Hi-Res Player Mini",
-  "short_name": "Technics Hi-Res Player",
+  "short_name": "Technics Hi-Res Player Mini",
   "description": "Technics High Resolution Audio Player Mini",
   "start_url": ".",
   "display": "standalone",
@@ -15,5 +15,6 @@
     }
   ]
 }
+
 
 
