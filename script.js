@@ -58,27 +58,7 @@ function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText()
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 function prevTrack() { if (!playlist.length) return; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
-audio.ontimeupdate = () => {
-    if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA;
-    
-    let t = audio.currentTime;
-    const signEl = document.getElementById('time-sign');
-
-    if (timeMode === 'remaining' && audio.duration) {
-        t = audio.duration - audio.currentTime;
-        signEl.style.visibility = 'visible'; // Affiche le -
-    } else {
-        signEl.style.visibility = 'hidden';  // Cache le - mais garde l'espace
-    }
-
-    const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0');
-    const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0');
-    
-    m1.innerText = mm[0];
-    m2.innerText = mm[1];
-    s1.innerText = ss[0];
-    s2.innerText = ss[1];
-};
+audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; let t = (timeMode === 'remaining' && audio.duration) ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; };
 
 function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
 function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'); ctx.clearRect(0, 0, 800, 120); ctx.font = "500 22px 'Inter', sans-serif"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 15, 42); ctx.fillText("R", 15, 98); for (let i = 0; i < 25; i++) { ctx.fillStyle = lastVolume > (i / 25) * 255 ? (i > 20 ? redColor : mainColor) : "#111"; ctx.fillRect(60 + i * 28, 15, 25, 20); ctx.fillRect(60 + i * 28, 70, 25, 20); } }
