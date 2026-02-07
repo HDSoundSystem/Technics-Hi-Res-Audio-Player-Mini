@@ -54,12 +54,14 @@ body {
 
 .player-container {
     background: var(--panel-color);
-    padding: 25px;
+    /* padding: HAUT DROITE BAS GAUCHE */
+    padding: 3px 25px 25px 25px; 
     border-radius: 4px;
     width: 95%;
     max-width: 1600px;
     border: 1px solid var(--panel-border);
     box-shadow: 0 40px 100px var(--shadow-main);
+    margin: 0 auto;
 }
 
 .header-line {
@@ -87,12 +89,19 @@ body {
     margin-bottom: 20px;
     text-align: center;
     min-height: 280px;
-    width: 800px;
+    width: 800px; /* Taille fixe demandée */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-shadow: inset 0 0 25px rgba(0, 0, 0, 1), inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+/* Aligne le bloc temps + indicateurs à gauche */
+.display-panel > div:nth-child(2) {
+    justify-content: flex-start !important;
+    padding-left: 10px;
+    gap: 20px !important;
 }
 
 .status-line {
@@ -115,13 +124,18 @@ body {
     font-weight: 500;
     text-shadow: 0 0 15px var(--vfd-shadow-main);
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: baseline;
-    gap: 2px;
+    gap: 0px;
 }
 
 .digit {
     width: 0.6em;
+    text-align: center;
+}
+
+.sep {
+    width: 0.3em;
     text-align: center;
 }
 
@@ -172,6 +186,7 @@ body {
 .track-grid {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
     gap: 12px;
     padding: 10px 0;
@@ -192,6 +207,22 @@ body {
     text-shadow: 0 0 12px var(--vfd-shadow-red);
 }
 
+/* Indicateur flèche rouge VFD */
+.track-more {
+    color: var(--vfd-red);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    text-shadow: 0 0 10px var(--vfd-shadow-red);
+    animation: vfd-blink 2s infinite;
+}
+
+@keyframes vfd-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
 button {
     background: var(--btn-bg);
     border: 1px solid var(--btn-border);
@@ -209,6 +240,7 @@ button {
     outline: none;
 }
 
+/* Effet au clic (mécanique et lueur) */
 button:active {
     transform: scale(0.96);
     box-shadow: inset 0 0 10px var(--vfd-shadow-main), 0 0 15px var(--vfd-shadow-main);
@@ -220,6 +252,13 @@ button i {
     font-size: 1rem;
 }
 
+/* Largeur alignée sur le VFD (800px) */
+.num-pad, .controls-grid, .controls-grid-4, .shuttle-zone {
+    width: 800px;
+    box-sizing: border-box;
+    margin-left: 0;
+}
+
 .num-pad {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -228,32 +267,16 @@ button i {
     padding: 10px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-    width: 800px;
-    box-sizing: border-box;
-    margin-left: 0;
 }
 
-@media (min-width: 480px) {
-    .num-pad {
-        grid-template-columns: repeat(10, 1fr);
-    }
-}
-
-.controls-grid, .controls-grid-4, .shuttle-zone {
+.controls-grid, .controls-grid-4 {
     display: grid;
     gap: 8px;
     margin-bottom: 10px;
-    width: 800px;
-    box-sizing: border-box;
 }
 
-.controls-grid {
-    grid-template-columns: repeat(6, 1fr);
-}
-
-.controls-grid-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
+.controls-grid { grid-template-columns: repeat(6, 1fr); }
+.controls-grid-4 { grid-template-columns: repeat(4, 1fr); }
 
 .shuttle-zone {
     margin-top: 15px;
@@ -287,6 +310,7 @@ input[type="range"]::-webkit-slider-thumb {
     border: 1px solid var(--btn-border);
 }
 
+/* MODALES */
 .modal {
     display: none;
     position: fixed;
@@ -357,32 +381,4 @@ input[type="range"]::-webkit-slider-thumb {
     font-family: 'DS-Digital';
     font-size: 1.1rem;
     min-width: 25px;
-}
-
-/* Indicateur flèche rouge VFD */
-.track-more {
-    color: var(--vfd-red);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    margin-left: 5px;
-    text-shadow: 0 0 10px var(--vfd-shadow-red);
-    animation: vfd-blink 2s infinite; /* Optionnel: petit clignotement lent */
-}
-
-@keyframes vfd-blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-/* On s'assure que la grid ne casse pas le design avec la flèche */
-.track-grid {
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Aligne la flèche avec les chiffres */
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 10px 0;
-    border-top: 1px solid var(--vfd-sep-line);
-    cursor: pointer;
 }
