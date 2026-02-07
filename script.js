@@ -84,7 +84,29 @@ async function runPeak() {
 
 function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; statusFunc.innerText = v > 0 ? "SEARCH >>" : "<< SEARCH"; } }
 function resetShuttle() { document.getElementById('shuttle').value = 0; updateStatusText(); }
-function updateTrackDisplay() { const grid = document.getElementById('track-grid'); grid.innerHTML = ''; playlist.forEach((_, i) => { const s = document.createElement('span'); s.className = 'track-num' + (i === currentIndex ? ' active' : ''); s.innerText = i + 1; grid.appendChild(s); }); }
+function updateTrackDisplay() {
+    const grid = document.getElementById('track-grid');
+    grid.innerHTML = '';
+    
+    // On limite l'affichage aux 20 premiers éléments
+    const displayLimit = 20;
+    const tracksToShow = playlist.slice(0, displayLimit);
+    
+    tracksToShow.forEach((_, i) => {
+        const s = document.createElement('span');
+        s.className = 'track-num' + (i === currentIndex ? ' active' : '');
+        s.innerText = i + 1;
+        grid.appendChild(s);
+    });
+
+    // Si la playlist dépasse 20, on ajoute l'indicateur "OVER"
+    if (playlist.length > displayLimit) {
+        const more = document.createElement('span');
+        more.className = 'track-more';
+        more.innerHTML = '<i class="fa-solid fa-caret-right"></i>';
+        grid.appendChild(more);
+    }
+}
 function skip(v) { audio.currentTime += v; }
 function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
 function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }

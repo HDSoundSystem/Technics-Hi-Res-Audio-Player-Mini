@@ -4,8 +4,8 @@
     --vfd-shadow-main: rgba(203, 255, 179, 0.3);
     --vfd-shadow-red: rgba(255, 60, 34, 0.6);
     --vfd-sep-line: #1a1a1a;
-    --bg-color: #080808;
-    --panel-color: #262322;
+    --bg-color: #353535;
+    --panel-color: #222222;
     --text-color: #b0b0b0;
     --header-text: #888;
     --panel-border: #222;
@@ -56,8 +56,8 @@ body {
     background: var(--panel-color);
     padding: 25px;
     border-radius: 4px;
-    width: 90%;
-    max-width: 600px;
+    width: 95%;
+    max-width: 1600px;
     border: 1px solid var(--panel-border);
     box-shadow: 0 40px 100px var(--shadow-main);
 }
@@ -87,6 +87,8 @@ body {
     margin-bottom: 20px;
     text-align: center;
     min-height: 280px;
+    width: 800px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -203,6 +205,15 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.1s ease;
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.96);
+    box-shadow: inset 0 0 10px var(--vfd-shadow-main), 0 0 15px var(--vfd-shadow-main);
+    color: var(--vfd-main);
+    border-color: var(--vfd-main);
 }
 
 button i {
@@ -211,12 +222,15 @@ button i {
 
 .num-pad {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     gap: 5px;
     margin-bottom: 20px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
+    width: 800px;
+    box-sizing: border-box;
+    margin-left: 0;
 }
 
 @media (min-width: 480px) {
@@ -225,10 +239,12 @@ button i {
     }
 }
 
-.controls-grid, .controls-grid-4 {
+.controls-grid, .controls-grid-4, .shuttle-zone {
     display: grid;
     gap: 8px;
     margin-bottom: 10px;
+    width: 800px;
+    box-sizing: border-box;
 }
 
 .controls-grid {
@@ -271,7 +287,6 @@ input[type="range"]::-webkit-slider-thumb {
     border: 1px solid var(--btn-border);
 }
 
-/* MODALES */
 .modal {
     display: none;
     position: fixed;
@@ -342,4 +357,32 @@ input[type="range"]::-webkit-slider-thumb {
     font-family: 'DS-Digital';
     font-size: 1.1rem;
     min-width: 25px;
+}
+
+/* Indicateur flèche rouge VFD */
+.track-more {
+    color: var(--vfd-red);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    text-shadow: 0 0 10px var(--vfd-shadow-red);
+    animation: vfd-blink 2s infinite; /* Optionnel: petit clignotement lent */
+}
+
+@keyframes vfd-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* On s'assure que la grid ne casse pas le design avec la flèche */
+.track-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Aligne la flèche avec les chiffres */
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--vfd-sep-line);
+    cursor: pointer;
 }
