@@ -2,7 +2,7 @@
   "name": "Technics Hi-Res Player Mini",
   "short_name": "Technics Hi-Res Player Mini",
   "description": "Technics High Resolution Audio Player Mini",
-  "start_url": ".",
+  "start_url": "https://hdsoundsystem.github.io/Technics-Hi-Res-Audio-Player-Mini/",
   "display": "standalone",
   "background_color": "#080808",
   "theme_color": "#080808",
