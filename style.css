@@ -21,7 +21,6 @@
     --shuttle-label: #555;
     --shadow-main: rgba(0,0,0,0.95);
     --accent-line: #c8a84b;
-    --ctrl-separator: #2e2e2e;
 }
 
 * { box-sizing: border-box; }
@@ -279,7 +278,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-left: 1px solid var(--ctrl-separator);
     padding-left: 18px;
 }
 
@@ -289,7 +287,6 @@ body {
     flex-direction: column;
     gap: 5px;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--ctrl-separator);
 }
 
 .ctrl-group:last-child {
