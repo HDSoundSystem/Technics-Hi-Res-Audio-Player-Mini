@@ -321,7 +321,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 7px;
 }
 
 /* ── TRANSPORT BAR ── */
@@ -386,7 +386,7 @@ body {
 button {
     background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
     border: 1px solid var(--btn-border);
-    border-bottom: 2px solid #101010;
+    border-bottom: 4px solid #101010;
     color: var(--btn-text);
     padding: 9px 4px;
     font-size: 0.6rem;
@@ -399,7 +399,7 @@ button {
     justify-content: center;
     transition: all 0.08s ease;
     outline: none;
-    border-radius: 2px;
+    border-radius: 3px;
     letter-spacing: 0.5px;
 }
 
