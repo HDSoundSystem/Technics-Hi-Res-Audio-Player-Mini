@@ -304,17 +304,18 @@ body {
 .transport-bar {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 35px;
+    align-items: end;
 }
 
-.transport-bar button {
-    grid-column: span 1;
-}
-
-/* Center 6 buttons over 10 columns: 2 empty cols each side */
-.transport-bar button:first-child {
+/* Center 6 wrappers over 10 columns: 2 empty cols each side */
+.transport-bar .btn-labeled:first-child {
     grid-column: 3;
+}
+
+.transport-bar .btn-labeled button {
+    width: 100%;
 }
 
 /* ── RIGHT SECTION ── */
@@ -396,9 +397,28 @@ button i {
 
 /* Transport buttons same size as other buttons */
 .btn-transport {
-    padding: 9px 4px;
-    font-size: 0.7rem;
-    margin-top: 43px;
+    width: 70px;
+    height: 50px;
+    
+    /* Indispensable pour que le padding ne déforme pas la taille */
+    box-sizing: border-box; 
+    
+    /* On centre parfaitement l'icône à l'intérieur */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* On ajuste le reste */
+    padding: 0; /* Le flex gère l'alignement, plus besoin de padding précis */
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-labeled {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
 }
 
 /* Open button accent */
