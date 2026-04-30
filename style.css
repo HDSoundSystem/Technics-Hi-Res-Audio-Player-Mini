@@ -354,8 +354,22 @@ button i { font-size: 0.9rem; }
 
 /* Open button accent */
 .btn-open {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
+    border: 2px solid #3a3a3a;
+    border-bottom: 3px solid #090909;
     color: #ffffff;
-    border-color: #5a4a1a;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+    outline: none;
+    padding: 0;
+    margin-top: 10px;
+    
 }
 
 /* ── SHUTTLE ── */
