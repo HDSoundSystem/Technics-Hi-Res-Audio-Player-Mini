@@ -94,7 +94,7 @@ body {
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #e0e0e0;            /* À adapter selon ton design */
+    color: #ccc;            /* À adapter selon ton design */
     padding-bottom: 3px;
 }
 
@@ -454,7 +454,7 @@ button i {
     background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
     border: 2px solid #3a3a3a;
     border-bottom: 3px solid #090909;
-    color: #ffffff;
+    color: var(--btn-text);
     font-size: 1rem;
     cursor: pointer;
     display: flex;
@@ -636,7 +636,7 @@ input[type="range"]::-webkit-slider-thumb {
     background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
     border: 2px solid #3a3a3a;
     border-bottom: 3px solid #090909;
-    color: #ffffff;
+    color: var(--btn-text);
     font-size: 1rem;
     cursor: pointer;
     display: flex;
