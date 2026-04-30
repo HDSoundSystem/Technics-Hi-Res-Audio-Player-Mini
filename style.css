@@ -22,7 +22,7 @@
 }
 
 [data-theme="light"] {
-    --bg-color: #dcd0c0;
+    --bg-color: #353535;
     --panel-color: #e8dfd1;
     --text-color: #4a453e;
     --header-text: #222;
@@ -36,7 +36,7 @@
     --shuttle-label: #4a453e;
     --logo-filter: brightness(0.1) drop-shadow(0px 1px 1px rgba(255, 255, 255, 0.8));
     --text-relief: 1px 1px 0px rgba(255, 255, 255, 0.8);
-    --shadow-main: rgba(0, 0, 0, 0.15);
+    --shadow-main: rgba(0, 0, 0, 0.9);
 }
 
 body {
@@ -75,7 +75,8 @@ body {
 }
 
 .brand-logo-img {
-    height: 70px;
+    height:18px;
+    width: 90px;
     filter: var(--logo-filter);
     cursor: pointer;
 }
