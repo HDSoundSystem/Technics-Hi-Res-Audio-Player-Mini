@@ -2,24 +2,31 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>Technics High Resolution Audio Player|Mini</title>
-        <meta name="keywords" content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
+        <meta name="keywords"
+            content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
         <meta name="author" content="Yohann Zaoui">
         <link rel="manifest" href="manifest.json">
         <link rel="stylesheet" href="style.css">
         <link rel="icon" type="image/png" href="img/favicon.png">
         <link rel="apple-touch-icon" href="img/favicon.png">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
         <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
     <body>
         <div class="player-container">
 
             <div class="header-line">
-                <img src="img/Technics_logo.png" alt="Technics" class="brand-logo-img" onclick="toggleTheme()">
+                <img src="img/Technics_logo.png" alt="Technics"
+                    class="brand-logo-img" onclick="toggleTheme()">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
                 <img src="img/classAA.png" alt="Class AA" class="classaa-logo">
             </div>
@@ -29,11 +36,18 @@
                 <!-- LEFT : VFD + numpad -->
                 <div class="left-section">
                     <div class="display-panel">
-                        <div class="status-line"><span id="status-function">NO DISC</span></div>
+                        <div class="status-line"><span id="status-function">NO
+                                DISC</span></div>
                         <div class="timer-row">
                             <div class="timer-group">
                                 <div id="timer" class="time-display">
-                                    <span id="time-sign" class="time-sign">&nbsp;</span><span id="m1" class="digit">0</span><span id="m2" class="digit">0</span><span class="sep">:</span><span id="s1" class="digit">0</span><span id="s2" class="digit">0</span>
+                                    <span id="time-sign"
+                                        class="time-sign">&nbsp;</span><span
+                                        id="m1" class="digit">0</span><span
+                                        id="m2" class="digit">0</span><span
+                                        class="sep">:</span><span id="s1"
+                                        class="digit">0</span><span id="s2"
+                                        class="digit">0</span>
                                 </div>
                                 <div id="format-info">---</div>
                             </div>
@@ -41,12 +55,17 @@
                                 <div id="ind-ab" class="ind">A-B</div>
                                 <div id="ind-shuffle" class="ind">RANDOM</div>
                                 <div id="ind-repeat1" class="ind">Repeat 1</div>
-                                <div id="ind-repeatAll" class="ind">Repeat All</div>
+                                <div id="ind-repeatAll" class="ind">Repeat
+                                    All</div>
                             </div>
                         </div>
-                        <div id="file-info-line" onclick="openArtModal()">- - - - -</div>
-                        <div id="track-grid" class="track-grid" onclick="openPlaylist()"></div>
-                        <div class="vu-wrap"><canvas id="vu-meter" width="800" height="70" style="width:100%; height:100%;"></canvas></div>
+                        <div id="file-info-line" onclick="openArtModal()">- - -
+                            - -</div>
+                        <div id="track-grid" class="track-grid"
+                            onclick="openPlaylist()"></div>
+                        <div class="vu-wrap"><canvas id="vu-meter" width="800"
+                                height="70"
+                                style="width:100%; height:100%;"></canvas></div>
                     </div>
 
                     <div class="num-pad">
@@ -61,22 +80,36 @@
                         <button onclick="pressDigit(9)">9</button>
                         <button onclick="pressDigit(0)">0</button>
                     </div>
+
+                    <div class="transport-bar">
+                        <button class="btn-transport" onclick="prevTrack()"><i
+                                class="fa-solid fa-backward-step"></i></button>
+                        <button class="btn-transport btn-play"
+                            onclick="handlePlay()"><i
+                                class="fa-solid fa-play"></i></button>
+                        <button class="btn-transport btn-pause"
+                            onclick="handlePause()"><i
+                                class="fa-solid fa-pause"></i></button>
+                        <button class="btn-transport btn-stop"
+                            onclick="handleStop()"><i
+                                class="fa-solid fa-stop"></i></button>
+                        <button class="btn-transport" onclick="nextTrack()"><i
+                                class="fa-solid fa-forward-step"></i></button>
+                        <button class="btn-transport"
+                            onclick="toggleTime()">Time</button>
+                    </div>
                 </div>
 
                 <!-- RIGHT : all controls -->
                 <div class="right-section">
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Transport</div>
-                        <div class="ctrl-row">
-                            <button class="btn-transport btn-play" onclick="handlePlay()"><i class="fa-solid fa-play"></i></button>
-                            <button class="btn-transport btn-pause" onclick="handlePause()"><i class="fa-solid fa-pause"></i></button>
-                            <button class="btn-transport btn-stop" onclick="handleStop()"><i class="fa-solid fa-stop"></i></button>
-                        </div>
-                        <div class="ctrl-row">
-                            <button class="btn-transport" onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
-                            <button class="btn-transport" onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
-                            <button class="btn-transport" onclick="toggleTime()">Time</button>
+                        <div class="ctrl-group-label">File</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button class="btn-open" onclick="fileIn.click()"><i
+                                    class="fa-solid fa-folder-open"></i>&nbsp;Open</button>
+                            <button onclick="location.reload()"><i
+                                    class="fa-solid fa-power-off"></i>&nbsp;Close</button>
                         </div>
                     </div>
 
@@ -107,30 +140,29 @@
                     <div class="ctrl-group">
                         <div class="ctrl-group-label">Volume</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeVolume(-0.1)" onmouseenter="showVolume()" onmouseleave="updateStatusText()">VOL −</button>
-                            <button onclick="changeVolume(0.1)" onmouseenter="showVolume()" onmouseleave="updateStatusText()">VOL +</button>
-                        </div>
-                    </div>
-
-                    <div class="ctrl-group">
-                        <div class="ctrl-group-label">File</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button class="btn-open" onclick="fileIn.click()"><i class="fa-solid fa-folder-open"></i>&nbsp;Open</button>
-                            <button onclick="location.reload()"><i class="fa-solid fa-power-off"></i>&nbsp;Close</button>
+                            <button onclick="changeVolume(-0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="updateStatusText()">VOL −</button>
+                            <button onclick="changeVolume(0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="updateStatusText()">VOL +</button>
                         </div>
                     </div>
 
                     <div class="shuttle-zone">
                         <div class="shuttle-label">Jog Shuttle</div>
-                        <input type="range" id="shuttle" min="-10" max="10" value="0"
-                            oninput="doShuttle(this.value)" onchange="resetShuttle()">
+                        <input type="range" id="shuttle" min="-10" max="10"
+                            value="0"
+                            oninput="doShuttle(this.value)"
+                            onchange="resetShuttle()">
                     </div>
 
                 </div>
             </div>
         </div>
 
-        <input type="file" id="file-in" style="display:none" accept="audio/*" multiple>
+        <input type="file" id="file-in" style="display:none" accept="audio/*"
+            multiple>
 
         <div id="playlistModal" class="modal" onclick="closePlaylist()">
             <div class="modal-content" onclick="event.stopPropagation()">
@@ -140,7 +172,8 @@
         </div>
 
         <div id="artModal" class="modal" onclick="this.style.display='none'">
-            <div class="modal-content"><img id="modalImg" src="img/Technics_logo.png"></div>
+            <div class="modal-content"><img id="modalImg"
+                    src="img/Technics_logo.png"></div>
         </div>
 
         <audio id="audio" crossorigin="anonymous" playsinline></audio>

@@ -280,6 +280,23 @@ body {
     gap: 5px;
 }
 
+/* ── TRANSPORT BAR ── */
+.transport-bar {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.transport-bar button {
+    grid-column: span 1;
+}
+
+/* Center 6 buttons over 10 columns: 2 empty cols each side */
+.transport-bar button:first-child {
+    grid-column: 3;
+}
+
 /* ── RIGHT SECTION ── */
 .right-section {
     width: 240px;
@@ -357,10 +374,10 @@ button:active {
 
 button i { font-size: 0.9rem; }
 
-/* Transport buttons slightly taller */
+/* Transport buttons same size as other buttons */
 .btn-transport {
-    padding: 11px 4px;
-    font-size: 0.85rem;
+    padding: 9px 4px;
+    font-size: 0.9rem;
 }
 
 /* Open button accent */
