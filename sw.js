@@ -5,6 +5,7 @@ const ASSETS = [
   './style.css',
   './script.js',
   './img/Technics_logo.png',
+  './img/classAA.png',
   './img/favicon.png'
 ];
 

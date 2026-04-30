@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Technics High Resolution Audio Player|Mini</title>
+        <title>Technics High Resolution Vintage Audio Player</title>
         <meta name="keywords"
             content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
         <meta name="author" content="Yohann Zaoui">
@@ -25,7 +25,7 @@
         <div class="player-container">
 
             <div class="header-line">
-                <img src="img/Technics_logo.png" alt="Technics"
+                <img src="img/technics_logo.png" alt="Technics"
                     class="brand-logo-img">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
                 <img src="img/classAA.png" alt="Class AA" class="classaa-logo">
@@ -63,15 +63,20 @@
                                 </div>
                                 <div class="format-group">
                                     <div id="format-info">---</div>
-                                    <div id="ind-loudness" class="ind-inline">LOUDNESS</div>
-                                    <div id="ind-mono" class="ind-inline">MONO</div>
+                                    <div id="ind-loudness"
+                                        class="ind-inline">LOUDNESS</div>
+                                    <div id="ind-bypass"
+                                        class="ind-inline">BYPASS</div>
+                                        <div id="ind-mono"
+                                        class="ind-inline">MONO</div>
                                 </div>
                             </div>
                             <div class="side-indicators">
                                 <div id="ind-ab" class="ind">A-B</div>
                                 <div id="ind-shuffle" class="ind">RANDOM</div>
                                 <div id="ind-repeat1" class="ind">Repeat 1</div>
-                                <div id="ind-repeatAll" class="ind">Repeat All</div>
+                                <div id="ind-repeatAll" class="ind">Repeat
+                                    All</div>
                             </div>
                         </div>
                         <div id="file-info-line" onclick="openArtModal()">- - -
@@ -97,14 +102,42 @@
                     </div>
 
                     <div class="transport-bar">
-                        <div class="btn-labeled"><span class="btn-label-power">Play</span><button class="btn-transport btn-play" onclick="handlePlay()"><i class="fa-solid fa-play"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">Pause</span><button class="btn-transport btn-pause" onclick="handlePause()"><i class="fa-solid fa-pause"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">Stop</span><button class="btn-transport btn-stop" onclick="handleStop()"><i class="fa-solid fa-stop"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">Prev</span><button class="btn-transport" onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">Next</span><button class="btn-transport" onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">MUTE</span><button class="btn-transport" onclick="toggleMute()"><i class="fa-solid fa-volume-xmark"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">BYPASS</span><button class="btn-transport" onclick="toggleBypass()"><i class="fa-solid fa-sliders"></i></button></div>
-                        <div class="btn-labeled"><span class="btn-label-power">Time Mode</span><button class="btn-transport" onclick="toggleTime()"><i class="fa-solid fa-clock"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Play</span><button
+                                class="btn-transport btn-play"
+                                onclick="handlePlay()"><i
+                                    class="fa-solid fa-play"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Pause</span><button
+                                class="btn-transport btn-pause"
+                                onclick="handlePause()"><i
+                                    class="fa-solid fa-pause"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Stop</span><button
+                                class="btn-transport btn-stop"
+                                onclick="handleStop()"><i
+                                    class="fa-solid fa-stop"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Prev</span><button
+                                class="btn-transport" onclick="prevTrack()"><i
+                                    class="fa-solid fa-backward-step"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Next</span><button
+                                class="btn-transport" onclick="nextTrack()"><i
+                                    class="fa-solid fa-forward-step"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">MUTE</span><button
+                                class="btn-transport" onclick="toggleMute()"><i
+                                    class="fa-solid fa-volume-xmark"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">BYPASS</span><button
+                                class="btn-transport"
+                                onclick="toggleBypass()"><i
+                                    class="fa-solid fa-sliders"></i></button></div>
+                        <div class="btn-labeled"><span
+                                class="btn-label-power">Time Mode</span><button
+                                class="btn-transport" onclick="toggleTime()"><i
+                                    class="fa-solid fa-clock"></i></button></div>
                     </div>
                 </div>
 
@@ -137,20 +170,38 @@
                     <div class="ctrl-group">
                         <div class="ctrl-group-label">Volume</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeVolume(-0.1)" onmouseenter="showVolume()" onmouseleave="delayedStatusReset()">VOL −</button>
-                            <button onclick="changeVolume(0.1)" onmouseenter="showVolume()" onmouseleave="delayedStatusReset()">VOL +</button>
+                            <button onclick="changeVolume(-0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="delayedStatusReset()">VOL
+                                −</button>
+                            <button onclick="changeVolume(0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="delayedStatusReset()">VOL
+                                +</button>
                         </div>
                     </div>
 
                     <div class="ctrl-group">
                         <div class="ctrl-group-label">Tone</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeBass(-2)" onmouseenter="showBass()" onmouseleave="delayedStatusReset()">BASS −</button>
-                            <button onclick="changeBass(2)" onmouseenter="showBass()" onmouseleave="delayedStatusReset()">BASS +</button>
+                            <button onclick="changeBass(-2)"
+                                onmouseenter="showBass()"
+                                onmouseleave="delayedStatusReset()">BASS
+                                −</button>
+                            <button onclick="changeBass(2)"
+                                onmouseenter="showBass()"
+                                onmouseleave="delayedStatusReset()">BASS
+                                +</button>
                         </div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeTreble(-2)" onmouseenter="showTreble()" onmouseleave="delayedStatusReset()">TREB −</button>
-                            <button onclick="changeTreble(2)" onmouseenter="showTreble()" onmouseleave="delayedStatusReset()">TREB +</button>
+                            <button onclick="changeTreble(-2)"
+                                onmouseenter="showTreble()"
+                                onmouseleave="delayedStatusReset()">TREB
+                                −</button>
+                            <button onclick="changeTreble(2)"
+                                onmouseenter="showTreble()"
+                                onmouseleave="delayedStatusReset()">TREB
+                                +</button>
                         </div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="toggleLoudness()">Loudness</button>
@@ -200,8 +251,8 @@
         <div id="artModal" class="modal" onclick="this.style.display='none'">
             <div class="art-modal-content" onclick="event.stopPropagation()">
                 <div id="art-track-info" class="art-track-info">- - -</div>
-                <img id="modalImg" src="img/Technics_logo.png">
-                <img src="img/Technics_logo.png" class="art-technics-logo">
+                <img id="modalImg" src="img/technics_logo_cover.png">
+                <img src="img/Technics_logo_cover.png" class="art-technics-logo">
             </div>
         </div>
 

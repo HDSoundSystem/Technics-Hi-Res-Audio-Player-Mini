@@ -80,7 +80,7 @@ body {
 }
 
 .brand-logo-img {
-    height: 20px;
+    height: 25px;
     width: auto;
 }
 
@@ -132,11 +132,14 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow:
-        inset 0 0 30px rgba(0, 0, 0, 1),
-        inset 0 0 8px rgba(255, 255, 255, 0.03),
-        0 2px 8px rgba(0, 0, 0, 0.8);
     border-radius: 2px;
+    
+    /* Box shadow mis à jour */
+    box-shadow:
+        inset 0 0 30px rgba(0, 0, 0, 1),           /* Profondeur interne */
+        inset 0 0 8px rgba(255, 255, 255, 0.03),   /* Reflet vitre interne */
+        0 2px 8px rgba(0, 0, 0, 0.8),              /* Ombre portée classique */
+        0 0 12px rgba(0, 255, 255, 0.2);           /* LÉGÈRE LUEUR EXTÉRIEURE (Cyan) */
 }
 
 .status-line {
@@ -159,7 +162,7 @@ body {
 
 .timer-group {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 8px;
 }
 
@@ -326,7 +329,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 10px;
-    margin-top: 40px;
+    margin-top: 60px;
     align-items: end;
 }
 

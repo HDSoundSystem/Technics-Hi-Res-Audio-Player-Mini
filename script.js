@@ -76,6 +76,42 @@ let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loud
 let lastVolL = 0, lastVolR = 0;
 let peakL = 0, peakR = 0, peakTimerL = 0, peakTimerR = 0;
 let bassLevel = 0, trebleLevel = 0, loudnessOn = false, monoOn = false;
+let isBypass = false, bypassSnapshot = null;
+
+function toggleBypass() {
+    if (!audioCtx) return;
+    isBypass = !isBypass;
+
+    if (isBypass) {
+        document.getElementById('ind-bypass').classList.add('active');
+        // Sauvegarder l'état actuel
+        bypassSnapshot = { bass: bassLevel, treble: trebleLevel, loudness: loudnessOn };
+        // Couper bass
+        bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+        // Couper treble
+        trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+        // Couper loudness
+        loudnessGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.05);
+        document.getElementById('ind-loudness').classList.remove('active');
+    } else {
+        // Restaurer depuis snapshot
+        if (bypassSnapshot) {
+            bassFilter.gain.setTargetAtTime(bypassSnapshot.bass, audioCtx.currentTime, 0.05);
+            trebleFilter.gain.setTargetAtTime(bypassSnapshot.treble, audioCtx.currentTime, 0.05);
+            if (bypassSnapshot.loudness) {
+                loudnessGain.gain.setTargetAtTime(1.5, audioCtx.currentTime, 0.05);
+                document.getElementById('ind-loudness').classList.add('active');
+            }
+            bassLevel = bypassSnapshot.bass;
+            trebleLevel = bypassSnapshot.treble;
+            loudnessOn = bypassSnapshot.loudness;
+        }
+        document.getElementById('ind-bypass').classList.remove('active');
+    }
+    const btn = document.querySelector('[onclick="toggleBypass()"]');
+    if (btn) btn.style.color = isBypass ? 'var(--vfd-main)' : '';
+    setTimeout(updateStatusText, 1500);
+}
 
 function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -185,8 +221,8 @@ function drawVU() {
 
 function applyMono() {
     if (!channelMerger || !splitter) return;
-    try { splitter.disconnect(channelMerger, 0, 1); } catch(e) {}
-    try { splitter.disconnect(channelMerger, 1, 1); } catch(e) {}
+    try { splitter.disconnect(channelMerger, 0, 1); } catch (e) { }
+    try { splitter.disconnect(channelMerger, 1, 1); } catch (e) { }
     if (monoOn) {
         splitter.connect(channelMerger, 0, 1); // L → R output (mono)
     } else {
@@ -198,12 +234,11 @@ let statusResetTimer = null;
 function delayedStatusReset() { clearTimeout(statusResetTimer); statusResetTimer = setTimeout(updateStatusText, 2000); }
 
 function toggleLoudness() {
-    if (!audioCtx) return;
+    if (!audioCtx || isBypass) return;
     loudnessOn = !loudnessOn;
     loudnessGain.gain.setTargetAtTime(loudnessOn ? 1.5 : 1, audioCtx.currentTime, 0.05);
     const el = document.getElementById('ind-loudness');
     el.classList.toggle('active', loudnessOn);
-    statusFunc.innerText = loudnessOn ? "LOUDNESS ON" : "LOUDNESS OFF";
     setTimeout(updateStatusText, 1200);
 }
 
@@ -213,12 +248,11 @@ function toggleMono() {
     applyMono();
     const el = document.getElementById('ind-mono');
     el.classList.toggle('active', monoOn);
-    statusFunc.innerText = monoOn ? "MONO" : "STEREO";
     setTimeout(updateStatusText, 1200);
 }
 
 function changeBass(d) {
-    if (!bassFilter) return;
+    if (!bassFilter || isBypass) return;
     bassLevel = Math.min(12, Math.max(-12, bassLevel + d));
     bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
     showBass();
@@ -226,7 +260,7 @@ function changeBass(d) {
 function showBass() { statusFunc.innerText = `BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`; }
 
 function changeTreble(d) {
-    if (!trebleFilter) return;
+    if (!trebleFilter || isBypass) return;
     trebleLevel = Math.min(12, Math.max(-12, trebleLevel + d));
     trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
     showTreble();
