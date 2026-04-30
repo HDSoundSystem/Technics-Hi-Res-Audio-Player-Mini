@@ -19,31 +19,9 @@
     --shuttle-bg: #0a0a0a;
     --shuttle-thumb: #444;
     --shuttle-label: #555;
-    --logo-filter: brightness(1);
     --shadow-main: rgba(0,0,0,0.95);
     --accent-line: #c8a84b;
     --ctrl-separator: #2e2e2e;
-}
-
-[data-theme="light"] {
-    --bg-color: #c0bdb8;
-    --panel-color: #e0dbd2;
-    --panel-top: #ebe6dc;
-    --panel-bottom: #ccc6bc;
-    --text-color: #4a453e;
-    --header-text: #333;
-    --panel-border: #b0a898;
-    --display-border: #8a8078;
-    --btn-bg: #d8d2c8;
-    --btn-border: #b8b0a4;
-    --btn-text: #3a3530;
-    --shuttle-bg: #c0bab0;
-    --shuttle-thumb: #e0dbd2;
-    --shuttle-label: #5a5248;
-    --logo-filter: brightness(0.1) drop-shadow(0px 1px 1px rgba(255,255,255,0.6));
-    --shadow-main: rgba(0,0,0,0.5);
-    --accent-line: #a07830;
-    --ctrl-separator: #c8c2b8;
 }
 
 * { box-sizing: border-box; }
@@ -88,14 +66,11 @@ body {
 .brand-logo-img {
     height: 20px;
     width: auto;
-    cursor: pointer;
-    opacity: 0.9;
 }
 
 .classaa-logo {
     height: 34px;
     width: auto;
-    opacity: 0.6;
 }
 
 .model-text {

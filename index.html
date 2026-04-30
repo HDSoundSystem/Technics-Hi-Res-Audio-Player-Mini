@@ -26,7 +26,7 @@
 
             <div class="header-line">
                 <img src="img/Technics_logo.png" alt="Technics"
-                    class="brand-logo-img" onclick="toggleTheme()">
+                    class="brand-logo-img">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
                 <img src="img/classAA.png" alt="Class AA" class="classaa-logo">
             </div>
@@ -82,8 +82,6 @@
                     </div>
 
                     <div class="transport-bar">
-                        <button class="btn-transport" onclick="prevTrack()"><i
-                                class="fa-solid fa-backward-step"></i></button>
                         <button class="btn-transport btn-play"
                             onclick="handlePlay()"><i
                                 class="fa-solid fa-play"></i></button>
@@ -93,7 +91,9 @@
                         <button class="btn-transport btn-stop"
                             onclick="handleStop()"><i
                                 class="fa-solid fa-stop"></i></button>
-                        <button class="btn-transport" onclick="nextTrack()"><i
+                        <button class="btn-transport" onclick="prevTrack()"><i
+                                class="fa-solid fa-backward-step"></i></button>
+                                <button class="btn-transport" onclick="nextTrack()"><i
                                 class="fa-solid fa-forward-step"></i></button>
                         <button class="btn-transport"
                             onclick="toggleTime()">Time</button>

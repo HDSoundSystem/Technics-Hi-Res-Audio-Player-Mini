@@ -4,8 +4,6 @@ audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
 
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('user-theme', currentTheme); }
-document.documentElement.setAttribute('data-theme', localStorage.getItem('user-theme') || 'dark');
 
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 
@@ -91,11 +89,11 @@ function resetShuttle() { document.getElementById('shuttle').value = 0; updateSt
 function updateTrackDisplay() {
     const grid = document.getElementById('track-grid');
     grid.innerHTML = '';
-    
+
     // On limite l'affichage aux 20 premiers éléments
     const displayLimit = 20;
     const tracksToShow = playlist.slice(0, displayLimit);
-    
+
     tracksToShow.forEach((_, i) => {
         const s = document.createElement('span');
         s.className = 'track-num' + (i === currentIndex ? ' active' : '');
