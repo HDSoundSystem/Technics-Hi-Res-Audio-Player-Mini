@@ -28,7 +28,7 @@
                 <img src="img/technics_logo.png" alt="Technics"
                     class="brand-logo-img">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
-                <img src="img/classAA.png" alt="Class AA" class="classaa-logo">
+                <img src="img/classAA2.png" alt="Class AA" class="classaa-logo">
             </div>
 
             <div class="main-body">
@@ -67,7 +67,7 @@
                                         class="ind-inline">LOUDNESS</div>
                                     <div id="ind-bypass"
                                         class="ind-inline">BYPASS</div>
-                                        <div id="ind-mono"
+                                    <div id="ind-mono"
                                         class="ind-inline">MONO</div>
                                 </div>
                             </div>
@@ -149,10 +149,15 @@
                             <button onclick="skip(-10)">-10s</button>
                             <button onclick="skip(10)">+10s</button>
                         </div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="runAutoCue()">Auto Cue</button>
-                            <button onclick="runPeak()">Peak</button>
+
+                        <div class="shuttle-zone">
+                            <div class="shuttle-label">Jog Shuttle</div>
+                            <input type="range" id="shuttle" min="-10" max="10"
+                                value="0"
+                                oninput="doShuttle(this.value)"
+                                onchange="resetShuttle()">
                         </div>
+
                     </div>
 
                     <div class="ctrl-group">
@@ -208,15 +213,6 @@
                             <button onclick="toggleMono()">Mono</button>
                         </div>
                     </div>
-
-                    <div class="shuttle-zone">
-                        <div class="shuttle-label">Jog Shuttle</div>
-                        <input type="range" id="shuttle" min="-10" max="10"
-                            value="0"
-                            oninput="doShuttle(this.value)"
-                            onchange="resetShuttle()">
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -252,7 +248,8 @@
             <div class="art-modal-content" onclick="event.stopPropagation()">
                 <div id="art-track-info" class="art-track-info">- - -</div>
                 <img id="modalImg" src="img/technics_logo_cover.png">
-                <img src="img/Technics_logo_cover.png" class="art-technics-logo">
+                <img src="img/Technics_logo_cover.png"
+                    class="art-technics-logo">
             </div>
         </div>
 
