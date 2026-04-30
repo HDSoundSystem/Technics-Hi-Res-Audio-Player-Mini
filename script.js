@@ -267,24 +267,7 @@ function changeTreble(d) {
 }
 function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
 
-async function runPeak() {
-    if (!playlist.length || !audio.src) return;
-    statusFunc.innerText = "PEAK SEARCH";
-    try {
-        const response = await fetch(audio.src);
-        const arrayBuffer = await response.arrayBuffer();
-        const tempCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
-        const decodedBuffer = await tempCtx.decodeAudioData(arrayBuffer);
-        const rawData = decodedBuffer.getChannelData(0);
-        let maxVal = 0, maxPos = 0;
-        for (let i = 0; i < rawData.length; i += 200) { if (Math.abs(rawData[i]) > maxVal) { maxVal = Math.abs(rawData[i]); maxPos = i; } }
-        audio.currentTime = maxPos / decodedBuffer.sampleRate;
-        statusFunc.innerText = "PEAK FOUND";
-        handlePlay(); setTimeout(() => { handlePause(); updateStatusText(); }, 3000);
-    } catch (e) {
-        setTimeout(() => { audio.currentTime = Math.random() * (audio.duration || 10); statusFunc.innerText = "PEAK FOUND"; handlePlay(); setTimeout(() => { handlePause(); updateStatusText(); }, 2000); }, 1500);
-    }
-}
+
 
 function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; statusFunc.innerText = v > 0 ? "SEARCH >>" : "<< SEARCH"; } }
 function resetShuttle() { document.getElementById('shuttle').value = 0; updateStatusText(); }
@@ -319,7 +302,6 @@ function toggleVUMode() { vuVisible = !vuVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
-function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
 function openArtModal() {
     if (!playlist.length) return;
     // Populate info from file-info-line
