@@ -119,3 +119,4 @@ function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA 
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
 function openArtModal() { if (playlist.length) document.getElementById('artModal').style.display = 'flex'; }
+function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }
