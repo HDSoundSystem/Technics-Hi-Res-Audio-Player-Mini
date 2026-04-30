@@ -349,7 +349,7 @@ button i { font-size: 0.9rem; }
 /* Transport buttons same size as other buttons */
 .btn-transport {
     padding: 9px 4px;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
 
 /* Open button accent */
