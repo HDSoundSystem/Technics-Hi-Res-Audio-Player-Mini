@@ -4,8 +4,6 @@ audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
 
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('user-theme', currentTheme); }
-document.documentElement.setAttribute('data-theme', localStorage.getItem('user-theme') || 'dark');
 
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 
@@ -65,7 +63,7 @@ audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.pla
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
 function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
-function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800'; ctx.clearRect(0, 0, 800, 120); ctx.font = "500 16px 'Inter', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 25); ctx.fillText("R", 18, 80); for (let i = 0; i < 25; i++) { let color; if (lastVolume > (i / 25) * 255) { if (i > 21) color = redColor; else if (i > 15) color = orangeColor; else color = mainColor; } else { color = "#111"; } ctx.fillStyle = color; ctx.fillRect(60 + i * 28, 15, 25, 20); ctx.fillRect(60 + i * 28, 70, 25, 20); } }
+function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800'; ctx.clearRect(0, 0, 800, 70); ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52); for (let i = 0; i < 25; i++) { let color; if (lastVolume > (i / 25) * 255) { if (i > 21) color = redColor; else if (i > 15) color = orangeColor; else color = mainColor; } else { color = "#111"; } ctx.fillStyle = color; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); } }
 
 async function runPeak() {
     if (!playlist.length || !audio.src) return;
@@ -91,11 +89,11 @@ function resetShuttle() { document.getElementById('shuttle').value = 0; updateSt
 function updateTrackDisplay() {
     const grid = document.getElementById('track-grid');
     grid.innerHTML = '';
-    
+
     // On limite l'affichage aux 20 premiers éléments
     const displayLimit = 20;
     const tracksToShow = playlist.slice(0, displayLimit);
-    
+
     tracksToShow.forEach((_, i) => {
         const s = document.createElement('span');
         s.className = 'track-num' + (i === currentIndex ? ' active' : '');
@@ -121,3 +119,4 @@ function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA 
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
 function openArtModal() { if (playlist.length) document.getElementById('artModal').style.display = 'flex'; }
+function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }

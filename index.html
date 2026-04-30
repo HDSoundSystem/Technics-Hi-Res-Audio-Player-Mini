@@ -20,105 +20,170 @@
             rel="stylesheet">
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     </head>
     <body>
-
         <div class="player-container">
+
             <div class="header-line">
                 <img src="img/Technics_logo.png" alt="Technics"
-                    class="brand-logo-img" onclick="toggleTheme()">
+                    class="brand-logo-img">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
+                <img src="img/classAA.png" alt="Class AA" class="classaa-logo">
             </div>
 
-            <div class="display-panel">
-                <div class="status-line"><span id="status-function">NO
-                        TRACK</span></div>
-                <div
-                    style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                    <div id="timer" class="time-display">
-                        <span id="time-sign" class="time-sign">&nbsp;</span><span id="m1" class="digit">0</span><span id="m2"
-                            class="digit">0</span><span
-                            class="sep">:</span><span id="s1"
-                            class="digit">0</span><span id="s2"
-                            class="digit">0</span>
+            <div class="main-body">
+
+                <!-- POWER button left of VFD -->
+                <div class="power-col">
+                    <span class="btn-label-power">Power</span>
+                    <button class="btn-power" onclick="confirmRestart()">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                    <span class="btn-label-power">Eject</span>
+                    <button class="btn-open" onclick="fileIn.click()">
+                        <i class="fa-solid fa-eject"></i>
+                    </button>
+                </div>
+
+                <!-- LEFT : VFD + numpad -->
+                <div class="left-section">
+                    <div class="display-panel">
+                        <div class="status-line"><span id="status-function">NO
+                                TRACK</span></div>
+                        <div class="timer-row">
+                            <div class="timer-group">
+                                <div id="timer" class="time-display">
+                                    <span id="time-sign"
+                                        class="time-sign">&nbsp;</span><span
+                                        id="m1" class="digit">0</span><span
+                                        id="m2" class="digit">0</span><span
+                                        class="sep">:</span><span id="s1"
+                                        class="digit">0</span><span id="s2"
+                                        class="digit">0</span>
+                                </div>
+                                <div id="format-info">---</div>
+                            </div>
+                            <div class="side-indicators">
+                                <div id="ind-ab" class="ind">A-B</div>
+                                <div id="ind-shuffle" class="ind">RANDOM</div>
+                                <div id="ind-repeat1" class="ind">Repeat 1</div>
+                                <div id="ind-repeatAll" class="ind">Repeat
+                                    All</div>
+                            </div>
+                        </div>
+                        <div id="file-info-line" onclick="openArtModal()">- - -
+                            - -</div>
+                        <div id="track-grid" class="track-grid"
+                            onclick="openPlaylist()"></div>
+                        <div class="vu-wrap"><canvas id="vu-meter" width="800"
+                                height="70"
+                                style="width:100%; height:100%;"></canvas></div>
                     </div>
-                    <div class="side-indicators">
-                        <div style="display:flex; gap:10px;"><div
-                                id="ind-shuffle" class="ind">RANDOM</div><div
-                                id="ind-ab" class="ind">A-B</div></div>
-                        <div id="format-info">---</div>
-                        <div id="ind-repeat1" class="ind">Repeat 1</div>
-                        <div id="ind-repeatAll" class="ind">Repeat All</div>
+
+                    <div class="num-pad">
+                        <button onclick="pressDigit(1)">1</button>
+                        <button onclick="pressDigit(2)">2</button>
+                        <button onclick="pressDigit(3)">3</button>
+                        <button onclick="pressDigit(4)">4</button>
+                        <button onclick="pressDigit(5)">5</button>
+                        <button onclick="pressDigit(6)">6</button>
+                        <button onclick="pressDigit(7)">7</button>
+                        <button onclick="pressDigit(8)">8</button>
+                        <button onclick="pressDigit(9)">9</button>
+                        <button onclick="pressDigit(0)">0</button>
+                    </div>
+
+                    <div class="transport-bar">
+                        <button class="btn-transport btn-play"
+                            onclick="handlePlay()"><i
+                                class="fa-solid fa-play"></i></button>
+                        <button class="btn-transport btn-pause"
+                            onclick="handlePause()"><i
+                                class="fa-solid fa-pause"></i></button>
+                        <button class="btn-transport btn-stop"
+                            onclick="handleStop()"><i
+                                class="fa-solid fa-stop"></i></button>
+                        <button class="btn-transport" onclick="prevTrack()"><i
+                                class="fa-solid fa-backward-step"></i></button>
+                        <button class="btn-transport" onclick="nextTrack()"><i
+                                class="fa-solid fa-forward-step"></i></button>
+                        <button class="btn-transport"
+                            onclick="toggleTime()">Time Mode</button>
                     </div>
                 </div>
-                <div id="file-info-line" onclick="openArtModal()">- - - -
-                    -</div>
-                <div id="track-grid" class="track-grid"
-                    onclick="openPlaylist()"></div>
-                <div style="height:70px; margin-top:10px;"><canvas id="vu-meter"
-                        width="800" height="120"
-                        style="width:100%; height:100%;"></canvas></div>
-            </div>
 
-            <div class="num-pad">
-                <button onclick="pressDigit(1)">1</button><button
-                    onclick="pressDigit(2)">2</button><button
-                    onclick="pressDigit(3)">3</button><button
-                    onclick="pressDigit(4)">4</button><button
-                    onclick="pressDigit(5)">5</button>
-                <button onclick="pressDigit(6)">6</button><button
-                    onclick="pressDigit(7)">7</button><button
-                    onclick="pressDigit(8)">8</button><button
-                    onclick="pressDigit(9)">9</button><button
-                    onclick="pressDigit(0)">0</button>
-            </div>
+                <!-- RIGHT : all controls -->
+                <div class="right-section">
+                    <div class="ctrl-group">
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="skip(-10)">-10s</button>
+                            <button onclick="skip(10)">+10s</button>
+                        </div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="runAutoCue()">Auto Cue</button>
+                            <button onclick="runPeak()">Peak</button>
+                        </div>
+                    </div>
 
-            <div class="controls-grid">
-                <button onclick="handlePlay()"><i
-                        class="fa-solid fa-play"></i></button>
-                <button onclick="handlePause()"><i
-                        class="fa-solid fa-pause"></i></button>
-                <button onclick="prevTrack()"><i
-                        class="fa-solid fa-backward-step"></i></button>
-                <button onclick="nextTrack()"><i
-                        class="fa-solid fa-forward-step"></i></button>
-                <button onclick="handleStop()"><i
-                        class="fa-solid fa-stop"></i></button>
-                <button onclick="toggleTime()">Time</button>
-            </div>
-            <div class="controls-grid-4">
-                <button onclick="runAutoCue()">Auto Cue</button><button
-                    onclick="runPeak()">Peak</button><button
-                    onclick="skip(-10)">-10s</button><button
-                    onclick="skip(10)">+10s</button>
-            </div>
-            <div class="controls-grid-4">
-                <button onclick="toggleShuffle()">RANDOM</button><button
-                    onclick="toggleRepeat()">Repeat</button><button
-                    onclick="handleAB()">A-B</button><button
-                    onclick="toggleVUMode()">VU</button>
-            </div>
-            <div class="controls-grid-4">
-                <button style="padding:15px"
-                    onclick="fileIn.click()">Open</button>
-                <button style="padding:15px" onclick="changeVolume(-0.1)"
-                    onmouseenter="showVolume()"
-                    onmouseleave="updateStatusText()">VOL -</button>
-                <button style="padding:15px" onclick="changeVolume(0.1)"
-                    onmouseenter="showVolume()"
-                    onmouseleave="updateStatusText()">VOL +</button>
-                <button style="padding:15px"
-                    onclick="location.reload()">Close</button>
-            </div>
+                    <div class="ctrl-group">
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="toggleShuffle()">Random</button>
+                            <button onclick="toggleRepeat()">Repeat</button>
+                        </div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="handleAB()">A-B</button>
+                            <button onclick="toggleVUMode()">VU</button>
+                        </div>
+                    </div>
 
-            <div class="shuttle-zone">
-                <div class="shuttle-label">JOG SHUTTLE</div>
-                <input type="range" id="shuttle" min="-10" max="10" value="0"
-                    oninput="doShuttle(this.value)" onchange="resetShuttle()">
+                    <div class="ctrl-group">
+
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="changeVolume(-0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="updateStatusText()">VOL −</button>
+                            <button onclick="changeVolume(0.1)"
+                                onmouseenter="showVolume()"
+                                onmouseleave="updateStatusText()">VOL +</button>
+                            <button>LOUDNESS</button>
+                            <button>MONO</button>
+                            <button>BASS -</button>
+                            <button>BASS +</button>
+                            <button>TREB -</button>
+                            <button>TREB +</button>
+                        </div>
+                    </div>
+
+                    <div class="shuttle-zone">
+                        <div class="shuttle-label">Jog Shuttle</div>
+                        <input type="range" id="shuttle" min="-10" max="10"
+                            value="0"
+                            oninput="doShuttle(this.value)"
+                            onchange="resetShuttle()">
+                    </div>
+
+                </div>
             </div>
-            <input type="file" id="file-in" style="display:none"
-                accept="audio/*" multiple>
+        </div>
+
+        <input type="file" id="file-in" style="display:none" accept="audio/*"
+            multiple>
+
+        <!-- Restart confirmation modal -->
+        <div id="restartModal" class="modal">
+            <div class="modal-confirm" onclick="event.stopPropagation()">
+                <div class="confirm-icon"><i
+                        class="fa-solid fa-power-off"></i></div>
+                <div class="confirm-title">Restart the application ?</div>
+                <div class="confirm-sub">The current playback will be
+                    interrupted.</div>
+                <div class="confirm-buttons">
+                    <button class="btn-confirm-cancel"
+                        onclick="document.getElementById('restartModal').style.display='none'">Cancel</button>
+                    <button class="btn-confirm-ok"
+                        onclick="location.reload()">Restart</button>
+                </div>
+            </div>
         </div>
 
         <div id="playlistModal" class="modal" onclick="closePlaylist()">
@@ -128,12 +193,12 @@
             </div>
         </div>
 
-        <div id="artModal" class="modal"
-            onclick="this.style.display='none'"><div class="modal-content"><img
-                    id="modalImg" src="img/Technics_logo.png"></div></div>
+        <div id="artModal" class="modal" onclick="this.style.display='none'">
+            <div class="modal-content"><img id="modalImg"
+                    src="img/Technics_logo.png"></div>
+        </div>
+
         <audio id="audio" crossorigin="anonymous" playsinline></audio>
-
         <script src="script.js"></script>
-
     </body>
 </html>
