@@ -62,8 +62,138 @@ function prevTrack() { if (!playlist.length) return; currentIndex = (currentInde
 audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
-function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
-function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800'; ctx.clearRect(0, 0, 800, 70); ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52); for (let i = 0; i < 25; i++) { let color; if (lastVolume > (i / 25) * 255) { if (i > 21) color = redColor; else if (i > 15) color = orangeColor; else color = mainColor; } else { color = "#111"; } ctx.fillStyle = color; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); } }
+let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter;
+let lastVolL = 0, lastVolR = 0;
+let bassLevel = 0, trebleLevel = 0, loudnessOn = false, monoOn = false;
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaElementSource(audio);
+
+    // Splitter stereo
+    splitter = audioCtx.createChannelSplitter(2);
+
+    // Analyseurs L et R
+    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 256;
+    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 256;
+    dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
+    dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
+
+    // EQ filters
+    bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type = 'lowshelf'; bassFilter.frequency.value = 250; bassFilter.gain.value = 0;
+    trebleFilter = audioCtx.createBiquadFilter();
+    trebleFilter.type = 'highshelf'; trebleFilter.frequency.value = 4000; trebleFilter.gain.value = 0;
+
+    // Loudness gain
+    loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
+
+    // Mono merger
+    channelMerger = audioCtx.createChannelMerger(2);
+
+    // Signal chain: source → bass → treble → loudness → splitter → analyseurs → merger → destination
+    source.connect(bassFilter);
+    bassFilter.connect(trebleFilter);
+    trebleFilter.connect(loudnessGain);
+    loudnessGain.connect(splitter);
+    splitter.connect(analyserL, 0);
+    splitter.connect(analyserR, 1);
+    splitter.connect(channelMerger, 0, 0);
+    splitter.connect(channelMerger, 1, 1);
+    channelMerger.connect(audioCtx.destination);
+
+    analyser = analyserL; // compat
+    dataArray = dataArrayL;
+    drawVU();
+}
+
+function drawVU() {
+    requestAnimationFrame(drawVU);
+    if (!vuVisible || !analyserL) return;
+    analyserL.getByteFrequencyData(dataArrayL);
+    analyserR.getByteFrequencyData(dataArrayR);
+
+    let sumL = 0, sumR = 0;
+    for (let i = 0; i < 15; i++) { sumL += dataArrayL[i]; sumR += dataArrayR[i]; }
+    let volL = sumL / 15, volR = sumR / 15;
+
+    // En mono : les deux barres affichent la même valeur (moyenne L+R)
+    if (monoOn) { const avg = (volL + volR) / 2; volL = avg; volR = avg; }
+
+    lastVolL = volL < lastVolL ? lastVolL - 2 : volL;
+    lastVolR = volR < lastVolR ? lastVolR - 2 : volR;
+
+    const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif";
+    ctx.textBaseline = "middle";
+
+    // Labels L / R
+    ctx.fillStyle = lastVolL > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17);
+    ctx.fillStyle = lastVolR > 10 ? mainColor : "#222"; ctx.fillText("R", 18, 52);
+
+    for (let i = 0; i < 25; i++) {
+        const threshL = (i / 25) * 255, threshR = (i / 25) * 255;
+        // L
+        if (lastVolL > threshL) { ctx.fillStyle = i > 21 ? redColor : i > 15 ? orangeColor : mainColor; }
+        else { ctx.fillStyle = "#111"; }
+        ctx.fillRect(60 + i * 28, 8, 25, 18);
+        // R
+        if (lastVolR > threshR) { ctx.fillStyle = i > 21 ? redColor : i > 15 ? orangeColor : mainColor; }
+        else { ctx.fillStyle = "#111"; }
+        ctx.fillRect(60 + i * 28, 43, 25, 18);
+    }
+}
+
+function applyMono() {
+    if (!channelMerger || !splitter) return;
+    try { splitter.disconnect(channelMerger, 0, 1); } catch(e) {}
+    try { splitter.disconnect(channelMerger, 1, 1); } catch(e) {}
+    if (monoOn) {
+        splitter.connect(channelMerger, 0, 1); // L → R output (mono)
+    } else {
+        splitter.connect(channelMerger, 1, 1); // R → R output (stereo)
+    }
+}
+
+let statusResetTimer = null;
+function delayedStatusReset() { clearTimeout(statusResetTimer); statusResetTimer = setTimeout(updateStatusText, 2000); }
+
+function toggleLoudness() {
+    if (!audioCtx) return;
+    loudnessOn = !loudnessOn;
+    loudnessGain.gain.setTargetAtTime(loudnessOn ? 1.5 : 1, audioCtx.currentTime, 0.05);
+    const el = document.getElementById('ind-loudness');
+    el.classList.toggle('active', loudnessOn);
+    statusFunc.innerText = loudnessOn ? "LOUDNESS ON" : "LOUDNESS OFF";
+    setTimeout(updateStatusText, 1200);
+}
+
+function toggleMono() {
+    if (!audioCtx) return;
+    monoOn = !monoOn;
+    applyMono();
+    const el = document.getElementById('ind-mono');
+    el.classList.toggle('active', monoOn);
+    statusFunc.innerText = monoOn ? "MONO" : "STEREO";
+    setTimeout(updateStatusText, 1200);
+}
+
+function changeBass(d) {
+    if (!bassFilter) return;
+    bassLevel = Math.min(12, Math.max(-12, bassLevel + d));
+    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
+    showBass();
+}
+function showBass() { statusFunc.innerText = `BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`; }
+
+function changeTreble(d) {
+    if (!trebleFilter) return;
+    trebleLevel = Math.min(12, Math.max(-12, trebleLevel + d));
+    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
+    showTreble();
+}
+function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
 
 async function runPeak() {
     if (!playlist.length || !audio.src) return;

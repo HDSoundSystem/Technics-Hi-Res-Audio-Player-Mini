@@ -61,14 +61,17 @@
                                         class="digit">0</span><span id="s2"
                                         class="digit">0</span>
                                 </div>
-                                <div id="format-info">---</div>
+                                <div class="format-group">
+                                    <div id="format-info">---</div>
+                                    <div id="ind-loudness" class="ind-inline">LOUDNESS</div>
+                                    <div id="ind-mono" class="ind-inline">MONO</div>
+                                </div>
                             </div>
                             <div class="side-indicators">
                                 <div id="ind-ab" class="ind">A-B</div>
                                 <div id="ind-shuffle" class="ind">RANDOM</div>
                                 <div id="ind-repeat1" class="ind">Repeat 1</div>
-                                <div id="ind-repeatAll" class="ind">Repeat
-                                    All</div>
+                                <div id="ind-repeatAll" class="ind">Repeat All</div>
                             </div>
                         </div>
                         <div id="file-info-line" onclick="openArtModal()">- - -
@@ -106,6 +109,7 @@
                 <!-- RIGHT : all controls -->
                 <div class="right-section">
                     <div class="ctrl-group">
+                        <div class="ctrl-group-label">Search</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="skip(-10)">-10s</button>
                             <button onclick="skip(10)">+10s</button>
@@ -117,6 +121,7 @@
                     </div>
 
                     <div class="ctrl-group">
+                        <div class="ctrl-group-label">Mode</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="toggleShuffle()">Random</button>
                             <button onclick="toggleRepeat()">Repeat</button>
@@ -128,20 +133,26 @@
                     </div>
 
                     <div class="ctrl-group">
-
+                        <div class="ctrl-group-label">Volume</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeVolume(-0.1)"
-                                onmouseenter="showVolume()"
-                                onmouseleave="updateStatusText()">VOL −</button>
-                            <button onclick="changeVolume(0.1)"
-                                onmouseenter="showVolume()"
-                                onmouseleave="updateStatusText()">VOL +</button>
-                            <button>LOUDNESS</button>
-                            <button>MONO</button>
-                            <button>BASS -</button>
-                            <button>BASS +</button>
-                            <button>TREB -</button>
-                            <button>TREB +</button>
+                            <button onclick="changeVolume(-0.1)" onmouseenter="showVolume()" onmouseleave="delayedStatusReset()">VOL −</button>
+                            <button onclick="changeVolume(0.1)" onmouseenter="showVolume()" onmouseleave="delayedStatusReset()">VOL +</button>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-group">
+                        <div class="ctrl-group-label">Tone</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="changeBass(-2)" onmouseenter="showBass()" onmouseleave="delayedStatusReset()">BASS −</button>
+                            <button onclick="changeBass(2)" onmouseenter="showBass()" onmouseleave="delayedStatusReset()">BASS +</button>
+                        </div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="changeTreble(-2)" onmouseenter="showTreble()" onmouseleave="delayedStatusReset()">TREB −</button>
+                            <button onclick="changeTreble(2)" onmouseenter="showTreble()" onmouseleave="delayedStatusReset()">TREB +</button>
+                        </div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="toggleLoudness()">Loudness</button>
+                            <button onclick="toggleMono()">Mono</button>
                         </div>
                     </div>
 

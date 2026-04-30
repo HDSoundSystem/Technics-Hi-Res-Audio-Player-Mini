@@ -226,6 +226,27 @@ body {
     letter-spacing: 1px;
 }
 
+.format-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-start;
+}
+
+.ind-inline {
+    font-size: 0.52rem;
+    font-weight: 600;
+    color: #181818;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+
+.ind-inline.active {
+    color: var(--vfd-main);
+    text-shadow: 0 0 8px var(--vfd-shadow-main);
+}
+
 #file-info-line {
     color: var(--vfd-main);
     font-size: 0.62rem;
@@ -305,7 +326,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 12px;
-    margin-top: 35px;
+    margin-top: 40px;
     align-items: end;
 }
 
@@ -344,10 +365,11 @@ body {
 .ctrl-group-label {
     font-size: 0.52rem;
     font-weight: 600;
-    color: var(--accent-line);
+    color: white;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 2px;
+    text-align: center;
 }
 
 .ctrl-row {
