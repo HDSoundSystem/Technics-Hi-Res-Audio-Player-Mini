@@ -35,12 +35,14 @@
 
                 <!-- POWER button left of VFD -->
                 <div class="power-col">
+                    <span class="btn-label-power">Power</span>
                     <button class="btn-power" onclick="confirmRestart()">
                         <i class="fa-solid fa-power-off"></i>
                     </button>
+                    <span class="btn-label-power">Eject</span>
                     <button class="btn-open" onclick="fileIn.click()">
-                                <i class="fa-solid fa-eject"></i>
-                            </button>
+                        <i class="fa-solid fa-eject"></i>
+                    </button>
                 </div>
 
                 <!-- LEFT : VFD + numpad -->
@@ -143,12 +145,12 @@
                             <button onclick="changeVolume(0.1)"
                                 onmouseenter="showVolume()"
                                 onmouseleave="updateStatusText()">VOL +</button>
-                                <button>LOUDNESS</button>
-                                <button>MONO</button>
-                                <button>BASS -</button>
-                                <button>BASS +</button>
-                                <button>TREB -</button>
-                                <button>TREB +</button>
+                            <button>LOUDNESS</button>
+                            <button>MONO</button>
+                            <button>BASS -</button>
+                            <button>BASS +</button>
+                            <button>TREB -</button>
+                            <button>TREB +</button>
                         </div>
                     </div>
 
@@ -173,7 +175,8 @@
                 <div class="confirm-icon"><i
                         class="fa-solid fa-power-off"></i></div>
                 <div class="confirm-title">Restart the application ?</div>
-                <div class="confirm-sub">The current playback will be interrupted.</div>
+                <div class="confirm-sub">The current playback will be
+                    interrupted.</div>
                 <div class="confirm-buttons">
                     <button class="btn-confirm-cancel"
                         onclick="document.getElementById('restartModal').style.display='none'">Cancel</button>
