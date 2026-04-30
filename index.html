@@ -100,7 +100,7 @@
                                 class="fa-solid fa-stop"></i></button>
                         <button class="btn-transport" onclick="prevTrack()"><i
                                 class="fa-solid fa-backward-step"></i></button>
-                                <button class="btn-transport" onclick="nextTrack()"><i
+                        <button class="btn-transport" onclick="nextTrack()"><i
                                 class="fa-solid fa-forward-step"></i></button>
                         <button class="btn-transport"
                             onclick="toggleTime()">Time</button>
@@ -111,14 +111,13 @@
                 <div class="right-section">
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">File</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button class="btn-open" onclick="fileIn.click()">Open</button>
+                            <button class="btn-open"
+                                onclick="fileIn.click()">Open</button>
                         </div>
                     </div>
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Search</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="skip(-10)">-10s</button>
                             <button onclick="skip(10)">+10s</button>
@@ -130,7 +129,6 @@
                     </div>
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Mode</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="toggleShuffle()">Random</button>
                             <button onclick="toggleRepeat()">Repeat</button>
@@ -142,7 +140,7 @@
                     </div>
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Volume</div>
+
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="changeVolume(-0.1)"
                                 onmouseenter="showVolume()"
@@ -171,12 +169,16 @@
         <!-- Restart confirmation modal -->
         <div id="restartModal" class="modal">
             <div class="modal-confirm" onclick="event.stopPropagation()">
-                <div class="confirm-icon"><i class="fa-solid fa-power-off"></i></div>
+                <div class="confirm-icon"><i
+                        class="fa-solid fa-power-off"></i></div>
                 <div class="confirm-title">Redémarrer l'application ?</div>
-                <div class="confirm-sub">La lecture en cours sera interrompue.</div>
+                <div class="confirm-sub">La lecture en cours sera
+                    interrompue.</div>
                 <div class="confirm-buttons">
-                    <button class="btn-confirm-cancel" onclick="document.getElementById('restartModal').style.display='none'">Annuler</button>
-                    <button class="btn-confirm-ok" onclick="location.reload()">Redémarrer</button>
+                    <button class="btn-confirm-cancel"
+                        onclick="document.getElementById('restartModal').style.display='none'">Annuler</button>
+                    <button class="btn-confirm-ok"
+                        onclick="location.reload()">Redémarrer</button>
                 </div>
             </div>
         </div>
