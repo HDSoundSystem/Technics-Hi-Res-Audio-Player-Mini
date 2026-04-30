@@ -122,8 +122,8 @@ function initAudio() {
     splitter = audioCtx.createChannelSplitter(2);
 
     // Analyseurs L et R
-    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 256;
-    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 256;
+    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 64;
+    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 64;
     dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
     dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
 
@@ -187,13 +187,13 @@ function drawVU() {
 
     if (monoOn) { const avg = (volL + volR) / 2; volL = avg; volR = avg; }
 
-    lastVolL = volL < lastVolL ? lastVolL - 2 : volL;
-    lastVolR = volR < lastVolR ? lastVolR - 2 : volR;
+    lastVolL = volL < lastVolL ? lastVolL - 5 : volL;
+    lastVolR = volR < lastVolR ? lastVolR - 5 : volR;
 
     // Peak hold
-    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 60; }
+    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 25; }
     else if (peakTimerL > 0) { peakTimerL--; } else { peakL = Math.max(0, peakL - 1.5); }
-    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 60; }
+    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 25; }
     else if (peakTimerR > 0) { peakTimerR--; } else { peakR = Math.max(0, peakR - 1.5); }
 
     const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
