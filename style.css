@@ -159,7 +159,7 @@ body {
 
 .timer-group {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 8px;
 }
 
