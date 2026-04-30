@@ -60,8 +60,23 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 22px 8px;
-    border-bottom: 1px solid var(--accent-line);
     background: rgba(0, 0, 0, 0.15);
+
+    /* On définit l'épaisseur de la bordure */
+    border-bottom: 2px solid; 
+    
+    /* On applique le dégradé "Or" sur la bordure */
+    border-image-source: linear-gradient(
+        to right, 
+        #bf953f, 
+        #fcf6ba 25%, 
+        #b38728 50%, 
+        #fbf5b7 75%, 
+        #aa771c
+    );
+    
+    /* Requis pour que l'image de bordure s'affiche correctement */
+    border-image-slice: 1;
 }
 
 .brand-logo-img {
