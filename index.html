@@ -196,8 +196,11 @@
         </div>
 
         <div id="artModal" class="modal" onclick="this.style.display='none'">
-            <div class="modal-content"><img id="modalImg"
-                    src="img/Technics_logo.png"></div>
+            <div class="art-modal-content" onclick="event.stopPropagation()">
+                <div id="art-track-info" class="art-track-info">- - -</div>
+                <img id="modalImg" src="img/Technics_logo.png">
+                <img src="img/Technics_logo.png" class="art-technics-logo">
+            </div>
         </div>
 
         <audio id="audio" crossorigin="anonymous" playsinline></audio>

@@ -1,5 +1,13 @@
 const audio = document.getElementById('audio'), statusFunc = document.getElementById('status-function'), fileInfoLine = document.getElementById('file-info-line'), formatInfo = document.getElementById('format-info'), fileIn = document.getElementById('file-in'), canvas = document.getElementById('vu-meter'), ctx = canvas.getContext('2d'), m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), modalImg = document.getElementById('modalImg');
 
+// Dessine les pixels éteints dès le chargement
+(function initVUOff() {
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52);
+    for (let i = 0; i < 25; i++) { ctx.fillStyle = "#111"; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); }
+})();
+
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
 
@@ -64,6 +72,7 @@ audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.cur
 
 let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter;
 let lastVolL = 0, lastVolR = 0;
+let peakL = 0, peakR = 0, peakTimerL = 0, peakTimerR = 0;
 let bassLevel = 0, trebleLevel = 0, loudnessOn = false, monoOn = false;
 
 function initAudio() {
@@ -107,9 +116,25 @@ function initAudio() {
     drawVU();
 }
 
+function drawVUOff() {
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17);
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("R", 18, 52);
+    for (let i = 0; i < 25; i++) {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(60 + i * 28, 8, 25, 18);
+        ctx.fillRect(60 + i * 28, 43, 25, 18);
+    }
+}
+
 function drawVU() {
     requestAnimationFrame(drawVU);
-    if (!vuVisible || !analyserL) return;
+    if (!analyserL) return;
+
+    if (!vuVisible) { drawVUOff(); return; }
+
     analyserL.getByteFrequencyData(dataArrayL);
     analyserR.getByteFrequencyData(dataArrayR);
 
@@ -117,31 +142,42 @@ function drawVU() {
     for (let i = 0; i < 15; i++) { sumL += dataArrayL[i]; sumR += dataArrayR[i]; }
     let volL = sumL / 15, volR = sumR / 15;
 
-    // En mono : les deux barres affichent la même valeur (moyenne L+R)
     if (monoOn) { const avg = (volL + volR) / 2; volL = avg; volR = avg; }
 
     lastVolL = volL < lastVolL ? lastVolL - 2 : volL;
     lastVolR = volR < lastVolR ? lastVolR - 2 : volR;
+
+    // Peak hold
+    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 60; }
+    else if (peakTimerL > 0) { peakTimerL--; } else { peakL = Math.max(0, peakL - 1.5); }
+    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 60; }
+    else if (peakTimerR > 0) { peakTimerR--; } else { peakR = Math.max(0, peakR - 1.5); }
 
     const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
     ctx.clearRect(0, 0, 800, 70);
     ctx.font = "500 14px 'Inter', sans-serif";
     ctx.textBaseline = "middle";
 
-    // Labels L / R
     ctx.fillStyle = lastVolL > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17);
     ctx.fillStyle = lastVolR > 10 ? mainColor : "#222"; ctx.fillText("R", 18, 52);
 
     for (let i = 0; i < 25; i++) {
         const threshL = (i / 25) * 255, threshR = (i / 25) * 255;
-        // L
-        if (lastVolL > threshL) { ctx.fillStyle = i > 21 ? redColor : i > 15 ? orangeColor : mainColor; }
-        else { ctx.fillStyle = "#111"; }
+        ctx.fillStyle = lastVolL > threshL ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
         ctx.fillRect(60 + i * 28, 8, 25, 18);
-        // R
-        if (lastVolR > threshR) { ctx.fillStyle = i > 21 ? redColor : i > 15 ? orangeColor : mainColor; }
-        else { ctx.fillStyle = "#111"; }
+        ctx.fillStyle = lastVolR > threshR ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
         ctx.fillRect(60 + i * 28, 43, 25, 18);
+    }
+
+    const pkIdxL = Math.min(24, Math.floor((peakL / 255) * 25));
+    if (peakL > 10) {
+        ctx.fillStyle = pkIdxL > 21 ? redColor : pkIdxL > 15 ? orangeColor : mainColor;
+        ctx.fillRect(60 + pkIdxL * 28, 8, 25, 18);
+    }
+    const pkIdxR = Math.min(24, Math.floor((peakR / 255) * 25));
+    if (peakR > 10) {
+        ctx.fillStyle = pkIdxR > 21 ? redColor : pkIdxR > 15 ? orangeColor : mainColor;
+        ctx.fillRect(60 + pkIdxR * 28, 43, 25, 18);
     }
 }
 
@@ -243,10 +279,15 @@ function skip(v) { audio.currentTime += v; }
 function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
 function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
-function toggleVUMode() { vuVisible = !vuVisible; canvas.style.display = vuVisible ? 'block' : 'none'; }
+function toggleVUMode() { vuVisible = !vuVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
-function openArtModal() { if (playlist.length) document.getElementById('artModal').style.display = 'flex'; }
+function openArtModal() {
+    if (!playlist.length) return;
+    // Populate info from file-info-line
+    document.getElementById('art-track-info').innerText = fileInfoLine.innerText;
+    document.getElementById('artModal').style.display = 'flex';
+}
 function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }
