@@ -173,15 +173,29 @@
                     </div>
 
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Volume</div>
+                        <div class="ctrl-group-label">VOLUME</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button onclick="changeVolume(-0.1)"
                                 onmouseenter="showVolume()"
-                                onmouseleave="delayedStatusReset()">VOL
+                                onmouseleave="delayedStatusReset()">
                                 −</button>
                             <button onclick="changeVolume(0.1)"
                                 onmouseenter="showVolume()"
-                                onmouseleave="delayedStatusReset()">VOL
+                                onmouseleave="delayedStatusReset()">
+                                +</button>
+                        </div>
+                    </div>
+
+                    <div class="ctrl-group">
+                        <div class="ctrl-group-label">BALANCE</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="changeBalance(-0.1)"
+                                onmouseenter="showBalance()"
+                                onmouseleave="delayedStatusReset()">
+                                −</button>
+                            <button onclick="changeBalance(0.1)"
+                                onmouseenter="showBalance()"
+                                onmouseleave="delayedStatusReset()">
                                 +</button>
                         </div>
                     </div>
