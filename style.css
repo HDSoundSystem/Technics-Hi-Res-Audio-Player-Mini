@@ -42,8 +42,8 @@ body {
 .player-container {
     background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
     border-radius: 6px 6px 4px 4px;
-    width: 98%;
-    max-width: 1060px;
+    width: 100%;
+    max-width: 1160px;
     border: 1px solid var(--panel-border);
     border-bottom: 3px solid #090909;
     box-shadow:
