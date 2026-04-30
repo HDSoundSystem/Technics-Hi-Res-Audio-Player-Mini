@@ -90,11 +90,11 @@ body {
 }
 
 .btn-label-power {
-    font-size: 9px;         /* Ajuste la taille selon tes besoins */
+    font-size: 9px;
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #ccc;            /* À adapter selon ton design */
+    color: var(--btn-text);
     padding-bottom: 3px;
 }
 
@@ -368,7 +368,7 @@ body {
 .ctrl-group-label {
     font-size: 9px;
     font-weight: normal;
-    color: #e0e0e0;
+    color: var(--btn-text);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 2px;
