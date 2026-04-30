@@ -329,7 +329,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 10px;
-    margin-top: 60px;
+    margin-top: 40px;
     align-items: end;
 }
 
@@ -736,4 +736,55 @@ input[type="range"]::-webkit-slider-thumb {
 .btn-confirm-ok:hover {
     background: linear-gradient(180deg, #4a1515 0%, #2a0a0a 100%);
     color: #ff6655;
+}
+/* ── TRAY ASSEMBLY ── */
+.tray-assembly {
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+    height: 105px;
+    overflow: hidden;
+    border-radius: 2px;
+}
+
+/* Boutons cachés dans le fond du logement */
+.tray-hidden-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #080808;
+    border: 1px solid #111;
+    border-radius: 2px;
+}
+
+.tray-hidden-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 100%;
+    align-items: end;
+}
+
+/* La trappe — glisse vers le bas dans le chassis */
+.tray-door {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 50%, var(--panel-bottom) 100%);
+    border: 2px solid var(--panel-border);
+    border-bottom: 3px solid #080808;
+    border-radius: 2px;
+    transform: translateY(0);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    cursor: pointer;
+}
+
+.tray-door:hover {
+    filter: brightness(0.9);
+}
+
+.tray-door.tray-open {
+    transform: translateY(95%);
 }
