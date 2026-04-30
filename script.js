@@ -93,11 +93,9 @@ function toggleBypass() {
         // Couper loudness
         loudnessGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.05);
         document.getElementById('ind-loudness').classList.remove('active');
-        statusFunc.innerText = "BYPASS ON";
     } else {
         // Restaurer depuis snapshot
         if (bypassSnapshot) {
-            document.getElementById('ind-bypass').classList.remove('active');
             bassFilter.gain.setTargetAtTime(bypassSnapshot.bass, audioCtx.currentTime, 0.05);
             trebleFilter.gain.setTargetAtTime(bypassSnapshot.treble, audioCtx.currentTime, 0.05);
             if (bypassSnapshot.loudness) {
@@ -108,7 +106,7 @@ function toggleBypass() {
             trebleLevel = bypassSnapshot.treble;
             loudnessOn = bypassSnapshot.loudness;
         }
-        statusFunc.innerText = "BYPASS OFF";
+        document.getElementById('ind-bypass').classList.remove('active');
     }
     const btn = document.querySelector('[onclick="toggleBypass()"]');
     if (btn) btn.style.color = isBypass ? 'var(--vfd-main)' : '';
@@ -223,8 +221,8 @@ function drawVU() {
 
 function applyMono() {
     if (!channelMerger || !splitter) return;
-    try { splitter.disconnect(channelMerger, 0, 1); } catch(e) {}
-    try { splitter.disconnect(channelMerger, 1, 1); } catch(e) {}
+    try { splitter.disconnect(channelMerger, 0, 1); } catch (e) { }
+    try { splitter.disconnect(channelMerger, 1, 1); } catch (e) { }
     if (monoOn) {
         splitter.connect(channelMerger, 0, 1); // L → R output (mono)
     } else {
@@ -241,7 +239,6 @@ function toggleLoudness() {
     loudnessGain.gain.setTargetAtTime(loudnessOn ? 1.5 : 1, audioCtx.currentTime, 0.05);
     const el = document.getElementById('ind-loudness');
     el.classList.toggle('active', loudnessOn);
-    statusFunc.innerText = loudnessOn ? "LOUDNESS ON" : "LOUDNESS OFF";
     setTimeout(updateStatusText, 1200);
 }
 
@@ -251,7 +248,6 @@ function toggleMono() {
     applyMono();
     const el = document.getElementById('ind-mono');
     el.classList.toggle('active', monoOn);
-    statusFunc.innerText = monoOn ? "MONO" : "STEREO";
     setTimeout(updateStatusText, 1200);
 }
 
