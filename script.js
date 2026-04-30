@@ -7,7 +7,7 @@ function getVFDColor(name) { return getComputedStyle(document.documentElement).g
 function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', currentTheme); localStorage.setItem('user-theme', currentTheme); }
 document.documentElement.setAttribute('data-theme', localStorage.getItem('user-theme') || 'dark');
 
-function updateStatusText() { if (digitEntry !== "") return; if (!audio.src || playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 
 function openPlaylist() {
     if (playlist.length === 0) return;
@@ -29,7 +29,7 @@ function closePlaylist() { document.getElementById('playlistModal').style.displa
 function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
-fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); statusFunc.innerText = "READY"; } };
+fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); } };
 
 function loadTrack(index) {
     const file = playlist[index];
@@ -52,16 +52,20 @@ function loadTrack(index) {
     updateTrackDisplay(); audio.load();
 }
 
-function handlePlay() { if (playlist.length > 0) { if (!audioCtx) initAudio(); audio.play().then(updateStatusText); } }
-function handlePause() { audio.pause(); updateStatusText(); }
-function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
+let pauseBlinkInterval = null;
+function startPauseBlink() { if (pauseBlinkInterval) return; const timer = document.getElementById('timer'); let visible = true; pauseBlinkInterval = setInterval(() => { visible = !visible; timer.style.visibility = visible ? 'visible' : 'hidden'; }, 500); }
+function stopPauseBlink() { if (pauseBlinkInterval) { clearInterval(pauseBlinkInterval); pauseBlinkInterval = null; } document.getElementById('timer').style.visibility = 'visible'; }
+
+function handlePlay() { if (playlist.length > 0) { if (!audioCtx) initAudio(); stopPauseBlink(); audio.play().then(updateStatusText); } }
+function handlePause() { audio.pause(); updateStatusText(); if (audio.currentTime > 0) startPauseBlink(); }
+function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 function prevTrack() { if (!playlist.length) return; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
-audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; let t = (timeMode === 'remaining' && audio.duration) ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; };
+audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
 function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
-function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'); ctx.clearRect(0, 0, 800, 120); ctx.font = "500 22px 'Inter', sans-serif"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 15, 42); ctx.fillText("R", 15, 98); for (let i = 0; i < 25; i++) { ctx.fillStyle = lastVolume > (i / 25) * 255 ? (i > 20 ? redColor : mainColor) : "#111"; ctx.fillRect(60 + i * 28, 15, 25, 20); ctx.fillRect(60 + i * 28, 70, 25, 20); } }
+function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800'; ctx.clearRect(0, 0, 800, 120); ctx.font = "500 16px 'Inter', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 25); ctx.fillText("R", 18, 80); for (let i = 0; i < 25; i++) { let color; if (lastVolume > (i / 25) * 255) { if (i > 21) color = redColor; else if (i > 15) color = orangeColor; else color = mainColor; } else { color = "#111"; } ctx.fillStyle = color; ctx.fillRect(60 + i * 28, 15, 25, 20); ctx.fillRect(60 + i * 28, 70, 25, 20); } }
 
 async function runPeak() {
     if (!playlist.length || !audio.src) return;

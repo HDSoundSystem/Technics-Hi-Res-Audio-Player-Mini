@@ -1,6 +1,7 @@
 :root {
     --vfd-main: #B0FEFF;
     --vfd-red: #ff3c22;
+    --vfd-orange: #ff8800;
     --vfd-shadow-main: rgba(203, 255, 179, 0.3);
     --vfd-shadow-red: rgba(255, 60, 34, 0.6);
     --vfd-sep-line: #1a1a1a;
@@ -124,6 +125,12 @@ body {
 .digit {
     width: 0.6em;
     text-align: center;
+}
+
+.time-sign {
+    width: 0.4em;
+    text-align: center;
+    display: inline-block;
 }
 
 .side-indicators {
