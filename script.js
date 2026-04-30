@@ -1,11 +1,21 @@
 const audio = document.getElementById('audio'), statusFunc = document.getElementById('status-function'), fileInfoLine = document.getElementById('file-info-line'), formatInfo = document.getElementById('format-info'), fileIn = document.getElementById('file-in'), canvas = document.getElementById('vu-meter'), ctx = canvas.getContext('2d'), m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), modalImg = document.getElementById('modalImg');
 
+// Dessine les pixels éteints dès le chargement
+(function initVUOff() {
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52);
+    for (let i = 0; i < 25; i++) { ctx.fillStyle = "#111"; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); }
+})();
+
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
 
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
-function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+let isMuted = false;
+function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 
 function openPlaylist() {
     if (playlist.length === 0) return;
@@ -62,8 +72,166 @@ function prevTrack() { if (!playlist.length) return; currentIndex = (currentInde
 audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
-function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); const source = audioCtx.createMediaElementSource(audio); source.connect(analyser); analyser.connect(audioCtx.destination); dataArray = new Uint8Array(analyser.frequencyBinCount); drawVU(); }
-function drawVU() { requestAnimationFrame(drawVU); if (!vuVisible) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for (let i = 0; i < 15; i++) sum += dataArray[i]; let vol = sum / 15; lastVolume = vol < lastVolume ? lastVolume - 2 : vol; const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800'; ctx.clearRect(0, 0, 800, 70); ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = lastVolume > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52); for (let i = 0; i < 25; i++) { let color; if (lastVolume > (i / 25) * 255) { if (i > 21) color = redColor; else if (i > 15) color = orangeColor; else color = mainColor; } else { color = "#111"; } ctx.fillStyle = color; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); } }
+let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter;
+let lastVolL = 0, lastVolR = 0;
+let peakL = 0, peakR = 0, peakTimerL = 0, peakTimerR = 0;
+let bassLevel = 0, trebleLevel = 0, loudnessOn = false, monoOn = false;
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaElementSource(audio);
+
+    // Splitter stereo
+    splitter = audioCtx.createChannelSplitter(2);
+
+    // Analyseurs L et R
+    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 256;
+    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 256;
+    dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
+    dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
+
+    // EQ filters
+    bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type = 'lowshelf'; bassFilter.frequency.value = 250; bassFilter.gain.value = 0;
+    trebleFilter = audioCtx.createBiquadFilter();
+    trebleFilter.type = 'highshelf'; trebleFilter.frequency.value = 4000; trebleFilter.gain.value = 0;
+
+    // Loudness gain
+    loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
+
+    // Mono merger
+    channelMerger = audioCtx.createChannelMerger(2);
+
+    // Signal chain: source → bass → treble → loudness → splitter → analyseurs → merger → destination
+    source.connect(bassFilter);
+    bassFilter.connect(trebleFilter);
+    trebleFilter.connect(loudnessGain);
+    loudnessGain.connect(splitter);
+    splitter.connect(analyserL, 0);
+    splitter.connect(analyserR, 1);
+    splitter.connect(channelMerger, 0, 0);
+    splitter.connect(channelMerger, 1, 1);
+    channelMerger.connect(audioCtx.destination);
+
+    analyser = analyserL; // compat
+    dataArray = dataArrayL;
+    drawVU();
+}
+
+function drawVUOff() {
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17);
+    ctx.fillStyle = "#1a1a1a"; ctx.fillText("R", 18, 52);
+    for (let i = 0; i < 25; i++) {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(60 + i * 28, 8, 25, 18);
+        ctx.fillRect(60 + i * 28, 43, 25, 18);
+    }
+}
+
+function drawVU() {
+    requestAnimationFrame(drawVU);
+    if (!analyserL) return;
+
+    if (!vuVisible) { drawVUOff(); return; }
+
+    analyserL.getByteFrequencyData(dataArrayL);
+    analyserR.getByteFrequencyData(dataArrayR);
+
+    let sumL = 0, sumR = 0;
+    for (let i = 0; i < 15; i++) { sumL += dataArrayL[i]; sumR += dataArrayR[i]; }
+    let volL = sumL / 15, volR = sumR / 15;
+
+    if (monoOn) { const avg = (volL + volR) / 2; volL = avg; volR = avg; }
+
+    lastVolL = volL < lastVolL ? lastVolL - 2 : volL;
+    lastVolR = volR < lastVolR ? lastVolR - 2 : volR;
+
+    // Peak hold
+    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 60; }
+    else if (peakTimerL > 0) { peakTimerL--; } else { peakL = Math.max(0, peakL - 1.5); }
+    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 60; }
+    else if (peakTimerR > 0) { peakTimerR--; } else { peakR = Math.max(0, peakR - 1.5); }
+
+    const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
+    ctx.clearRect(0, 0, 800, 70);
+    ctx.font = "500 14px 'Inter', sans-serif";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = lastVolL > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17);
+    ctx.fillStyle = lastVolR > 10 ? mainColor : "#222"; ctx.fillText("R", 18, 52);
+
+    for (let i = 0; i < 25; i++) {
+        const threshL = (i / 25) * 255, threshR = (i / 25) * 255;
+        ctx.fillStyle = lastVolL > threshL ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
+        ctx.fillRect(60 + i * 28, 8, 25, 18);
+        ctx.fillStyle = lastVolR > threshR ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
+        ctx.fillRect(60 + i * 28, 43, 25, 18);
+    }
+
+    const pkIdxL = Math.min(24, Math.floor((peakL / 255) * 25));
+    if (peakL > 10) {
+        ctx.fillStyle = pkIdxL > 21 ? redColor : pkIdxL > 15 ? orangeColor : mainColor;
+        ctx.fillRect(60 + pkIdxL * 28, 8, 25, 18);
+    }
+    const pkIdxR = Math.min(24, Math.floor((peakR / 255) * 25));
+    if (peakR > 10) {
+        ctx.fillStyle = pkIdxR > 21 ? redColor : pkIdxR > 15 ? orangeColor : mainColor;
+        ctx.fillRect(60 + pkIdxR * 28, 43, 25, 18);
+    }
+}
+
+function applyMono() {
+    if (!channelMerger || !splitter) return;
+    try { splitter.disconnect(channelMerger, 0, 1); } catch(e) {}
+    try { splitter.disconnect(channelMerger, 1, 1); } catch(e) {}
+    if (monoOn) {
+        splitter.connect(channelMerger, 0, 1); // L → R output (mono)
+    } else {
+        splitter.connect(channelMerger, 1, 1); // R → R output (stereo)
+    }
+}
+
+let statusResetTimer = null;
+function delayedStatusReset() { clearTimeout(statusResetTimer); statusResetTimer = setTimeout(updateStatusText, 2000); }
+
+function toggleLoudness() {
+    if (!audioCtx) return;
+    loudnessOn = !loudnessOn;
+    loudnessGain.gain.setTargetAtTime(loudnessOn ? 1.5 : 1, audioCtx.currentTime, 0.05);
+    const el = document.getElementById('ind-loudness');
+    el.classList.toggle('active', loudnessOn);
+    statusFunc.innerText = loudnessOn ? "LOUDNESS ON" : "LOUDNESS OFF";
+    setTimeout(updateStatusText, 1200);
+}
+
+function toggleMono() {
+    if (!audioCtx) return;
+    monoOn = !monoOn;
+    applyMono();
+    const el = document.getElementById('ind-mono');
+    el.classList.toggle('active', monoOn);
+    statusFunc.innerText = monoOn ? "MONO" : "STEREO";
+    setTimeout(updateStatusText, 1200);
+}
+
+function changeBass(d) {
+    if (!bassFilter) return;
+    bassLevel = Math.min(12, Math.max(-12, bassLevel + d));
+    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
+    showBass();
+}
+function showBass() { statusFunc.innerText = `BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`; }
+
+function changeTreble(d) {
+    if (!trebleFilter) return;
+    trebleLevel = Math.min(12, Math.max(-12, trebleLevel + d));
+    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
+    showTreble();
+}
+function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
 
 async function runPeak() {
     if (!playlist.length || !audio.src) return;
@@ -113,10 +281,15 @@ function skip(v) { audio.currentTime += v; }
 function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
 function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
-function toggleVUMode() { vuVisible = !vuVisible; canvas.style.display = vuVisible ? 'block' : 'none'; }
+function toggleVUMode() { vuVisible = !vuVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 function runAutoCue() { statusFunc.innerText = "AUTO CUE"; setTimeout(updateStatusText, 1000); }
-function openArtModal() { if (playlist.length) document.getElementById('artModal').style.display = 'flex'; }
+function openArtModal() {
+    if (!playlist.length) return;
+    // Populate info from file-info-line
+    document.getElementById('art-track-info').innerText = fileInfoLine.innerText;
+    document.getElementById('artModal').style.display = 'flex';
+}
 function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }
