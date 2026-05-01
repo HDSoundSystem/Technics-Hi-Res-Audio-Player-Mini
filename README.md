@@ -2,7 +2,7 @@
 
 A high-fidelity web application emulating the aesthetics and user experience of the iconic Technics CD player from the 1990s.
 
-<img width="1317" height="686" alt="Capture d’écran 2026-04-30 182835" src="https://github.com/user-attachments/assets/71c84065-3c83-4fbb-8f1f-a27668f201c8" />
+<img width="1276" height="713" alt="Capture d’écran 2026-05-01 072343" src="https://github.com/user-attachments/assets/41064bd5-0a30-4eb0-8cc3-5b78caeb5836" />
 
 ## 📱 Overview
 This audio player recreates the authentic look of the vintage Vacuum Fluorescent Displays (VFD) and physical tactile controls, blending retro hardware vibes with modern web capabilities.
