@@ -72,7 +72,8 @@ function prevTrack() { if (!playlist.length) return; currentIndex = (currentInde
 audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
-let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter;
+let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter, pannerNode;
+let balanceLevel = 0;
 let lastVolL = 0, lastVolR = 0;
 let peakL = 0, peakR = 0, peakTimerL = 0, peakTimerR = 0;
 let bassLevel = 0, trebleLevel = 0, loudnessOn = false, monoOn = false;
@@ -121,8 +122,8 @@ function initAudio() {
     splitter = audioCtx.createChannelSplitter(2);
 
     // Analyseurs L et R
-    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 256;
-    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 256;
+    analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 64;
+    analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 64;
     dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
     dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
 
@@ -135,14 +136,18 @@ function initAudio() {
     // Loudness gain
     loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
 
+    // Balance panner
+    pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
+
     // Mono merger
     channelMerger = audioCtx.createChannelMerger(2);
 
-    // Signal chain: source → bass → treble → loudness → splitter → analyseurs → merger → destination
+    // Signal chain: source → bass → treble → loudness → panner → splitter → analyseurs → merger → destination
     source.connect(bassFilter);
     bassFilter.connect(trebleFilter);
     trebleFilter.connect(loudnessGain);
-    loudnessGain.connect(splitter);
+    loudnessGain.connect(pannerNode);
+    pannerNode.connect(splitter);
     splitter.connect(analyserL, 0);
     splitter.connect(analyserR, 1);
     splitter.connect(channelMerger, 0, 0);
@@ -178,17 +183,17 @@ function drawVU() {
 
     let sumL = 0, sumR = 0;
     for (let i = 0; i < 15; i++) { sumL += dataArrayL[i]; sumR += dataArrayR[i]; }
-    let volL = sumL / 15, volR = sumR / 15;
+    let volL = Math.min(255, (sumL / 15) * vuGain), volR = Math.min(255, (sumR / 15) * vuGain);
 
     if (monoOn) { const avg = (volL + volR) / 2; volL = avg; volR = avg; }
 
-    lastVolL = volL < lastVolL ? lastVolL - 2 : volL;
-    lastVolR = volR < lastVolR ? lastVolR - 2 : volR;
+    lastVolL = volL < lastVolL ? lastVolL - 5 : volL;
+    lastVolR = volR < lastVolR ? lastVolR - 5 : volR;
 
     // Peak hold
-    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 60; }
+    if (lastVolL >= peakL) { peakL = lastVolL; peakTimerL = 25; }
     else if (peakTimerL > 0) { peakTimerL--; } else { peakL = Math.max(0, peakL - 1.5); }
-    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 60; }
+    if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 25; }
     else if (peakTimerR > 0) { peakTimerR--; } else { peakR = Math.max(0, peakR - 1.5); }
 
     const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
@@ -267,6 +272,31 @@ function changeTreble(d) {
 }
 function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
 
+function changeToneFlat() {
+    if (!bassFilter || !trebleFilter) return;
+    bassLevel = 0; trebleLevel = 0;
+    bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    statusFunc.innerText = "TONE FLAT";
+    setTimeout(updateStatusText, 1500);
+}
+
+let vfdWhite = false;
+function toggleVFDColor() {
+    vfdWhite = !vfdWhite;
+    const root = document.documentElement;
+    if (vfdWhite) {
+        root.style.setProperty('--vfd-main', '#ffffff');
+        root.style.setProperty('--vfd-shadow-main', 'rgba(255, 255, 255, 0.35)');
+        root.style.setProperty('--vfd-glow', 'rgba(255, 255, 255, 0.2)');
+    } else {
+        root.style.setProperty('--vfd-main', '#B0FEFF');
+        root.style.setProperty('--vfd-shadow-main', 'rgba(176, 254, 255, 0.35)');
+        root.style.setProperty('--vfd-glow', 'rgba(0, 255, 255, 0.2)');
+    }
+    setTimeout(updateStatusText, 1200);
+}
+
 
 
 function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; statusFunc.innerText = v > 0 ? "SEARCH >>" : "<< SEARCH"; } }
@@ -297,6 +327,17 @@ function updateTrackDisplay() {
 function skip(v) { audio.currentTime += v; }
 function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
 function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }
+function changeBalance(d) {
+    if (!pannerNode) return;
+    balanceLevel = Math.min(1, Math.max(-1, Math.round((balanceLevel + d) * 10) / 10));
+    pannerNode.pan.setTargetAtTime(balanceLevel, audioCtx.currentTime, 0.05);
+    showBalance();
+}
+function showBalance() {
+    if (balanceLevel === 0) { statusFunc.innerText = 'BALANCE: CENTER'; return; }
+    const side = balanceLevel > 0 ? 'R' : 'L';
+    statusFunc.innerText = `BALANCE: ${side} ${Math.round(Math.abs(balanceLevel) * 10)}`;
+}
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
 function toggleVUMode() { vuVisible = !vuVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
@@ -309,3 +350,24 @@ function openArtModal() {
     document.getElementById('artModal').style.display = 'flex';
 }
 function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }
+
+let trayOpen = false;
+function toggleTray() {
+    trayOpen = !trayOpen;
+    const door = document.getElementById('trayDoor');
+    const icon = document.getElementById('trayIcon');
+    if (trayOpen) {
+        door.classList.add('tray-open');
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    } else {
+        door.classList.remove('tray-open');
+        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    }
+}
+
+let vuGain = 1;
+function changeVUGain(d) {
+    vuGain = Math.min(3, Math.max(0.1, Math.round((vuGain + d) * 10) / 10));
+    statusFunc.innerText = `VU GAIN: ${Math.round(vuGain * 100)}%`;
+    setTimeout(updateStatusText, 1200);
+}
