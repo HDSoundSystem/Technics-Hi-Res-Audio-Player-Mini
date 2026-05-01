@@ -45,7 +45,7 @@ body {
     background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
     border-radius: 6px 6px 4px 4px;
     width: 100%;
-    max-width: 1300px;
+    max-width: 1400px;
     border: 1px solid var(--panel-border);
     border-bottom: 3px solid #090909;
     box-shadow:
@@ -473,7 +473,7 @@ button i {
 
 /* Open button accent */
 .btn-open {
-    width: 40px;
+    width: 55px;
     height: 40px;
     background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
     border: 2px solid #3a3a3a;
@@ -646,16 +646,14 @@ input[type="range"]::-webkit-slider-thumb {
 .power-col {
     display: flex;
     flex-direction: column;
-    /* Empile les éléments verticalement */
     justify-content: flex-start;
-    /* Aligne au début (en haut) */
     align-items: center;
-    /* Centre horizontalement */
-    padding-right: 10px;
+    padding-right: 6px;
+    padding-left: 1px;
 }
 
 .btn-power {
-    width: 40px;
+    width: 55px;
     height: 40px;
     background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
     border: 2px solid #3a3a3a;
