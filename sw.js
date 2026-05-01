@@ -4,7 +4,9 @@ const ASSETS = [
   './index.html',
   './style.css',
   './script.js',
-  './img/Technics_logo.png',
+  './img/technics_brand.png',
+  './img/technics-logo-cover-footer.png',
+  './img/art-Technics-cover.png',
   './img/classAA.png',
   './img/favicon.png'
 ];

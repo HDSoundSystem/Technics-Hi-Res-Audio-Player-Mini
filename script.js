@@ -60,7 +60,7 @@ function loadTrack(index) {
                     const { data, format } = t.picture; let base64 = "";
                     for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]);
                     modalImg.src = `data:${format};base64,${window.btoa(base64)}`;
-                } else { modalImg.src = "img/Technics_logo.png"; }
+                } else { modalImg.src = "img/art-Technics-cover.png"; }
             }, onError: () => { fileInfoLine.innerText = file.name.toUpperCase(); }
         });
     }
