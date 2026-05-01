@@ -114,6 +114,8 @@ function toggleBypass() {
     setTimeout(updateStatusText, 1500);
 }
 
+let specAnalyser, specDataArray, specCtx;
+
 function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const source = audioCtx.createMediaElementSource(audio);
@@ -126,6 +128,12 @@ function initAudio() {
     analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 64;
     dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
     dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
+
+    // Spectrum analyser (higher resolution, pre-EQ for accuracy)
+    specAnalyser = audioCtx.createAnalyser();
+    specAnalyser.fftSize = 256;
+    specAnalyser.smoothingTimeConstant = 0.75;
+    specDataArray = new Uint8Array(specAnalyser.frequencyBinCount);
 
     // EQ filters
     bassFilter = audioCtx.createBiquadFilter();
@@ -142,7 +150,7 @@ function initAudio() {
     // Mono merger
     channelMerger = audioCtx.createChannelMerger(2);
 
-    // Signal chain: source → bass → treble → loudness → panner → splitter → analyseurs → merger → destination
+    // Signal chain
     source.connect(bassFilter);
     bassFilter.connect(trebleFilter);
     trebleFilter.connect(loudnessGain);
@@ -154,9 +162,102 @@ function initAudio() {
     splitter.connect(channelMerger, 1, 1);
     channelMerger.connect(audioCtx.destination);
 
-    analyser = analyserL; // compat
+    // Spectrum tap (post-EQ)
+    loudnessGain.connect(specAnalyser);
+
+    analyser = analyserL;
     dataArray = dataArrayL;
     drawVU();
+}
+
+function drawSpectrum() {
+    requestAnimationFrame(drawSpectrum);
+    const specCanvas = document.getElementById('spectrum-canvas');
+    if (!specCanvas || !specCtx) return;
+
+    const W = specCanvas.width = specCanvas.offsetWidth || 200;
+    const H = specCanvas.height = specCanvas.offsetHeight || 80;
+
+    specCtx.clearRect(0, 0, W, H);
+
+    if (!specAnalyser) {
+        // No audio — draw flat off-state
+        const offColor = '#111';
+        const barW = Math.max(1, Math.floor(W / 32) - 1);
+        for (let i = 0; i < 32; i++) {
+            const x = i * (barW + 1);
+            specCtx.fillStyle = offColor;
+            specCtx.fillRect(x, H - 2, barW, 2);
+        }
+        return;
+    }
+
+    specAnalyser.getByteFrequencyData(specDataArray);
+    const mainColor = getVFDColor('--vfd-main');
+    const barCount = 28;
+    const usefulBins = 60;
+    const step = usefulBins / barCount;
+
+    const barW = Math.floor(W / barCount) - 2;
+    const barGap = Math.floor(W / barCount) - barW;
+
+    const ledH = 3;
+    const ledGap = 2;
+    const ledStep = ledH + ledGap;
+    const ledCount = Math.floor(H / ledStep);
+
+    // Init peak arrays on first call
+    if (!drawSpectrum.peaks) {
+        drawSpectrum.peaks = new Array(barCount).fill(0);
+        drawSpectrum.peakTimers = new Array(barCount).fill(0);
+    }
+
+    // Parse color once
+    let cr = 176, cg = 254, cb = 255;
+    const hex = mainColor.replace('#', '');
+    if (hex.length === 6) {
+        cr = parseInt(hex.slice(0, 2), 16);
+        cg = parseInt(hex.slice(2, 4), 16);
+        cb = parseInt(hex.slice(4, 6), 16);
+    } else if (mainColor === '#ffffff' || mainColor === 'ffffff' || mainColor.toLowerCase() === 'white') {
+        cr = cg = cb = 255;
+    }
+
+    for (let i = 0; i < barCount; i++) {
+        let sum = 0;
+        const start = Math.floor(i * step);
+        const end = Math.max(start + 1, Math.floor((i + 1) * step));
+        for (let j = start; j < end; j++) sum += specDataArray[j] || 0;
+        const val = sum / (end - start);
+        const activeLeds = Math.round((val / 255) * ledCount);
+        const x = i * (barW + barGap);
+
+        // Peak hold logic
+        if (activeLeds >= drawSpectrum.peaks[i]) {
+            drawSpectrum.peaks[i] = activeLeds;
+            drawSpectrum.peakTimers[i] = 45;
+        } else if (drawSpectrum.peakTimers[i] > 0) {
+            drawSpectrum.peakTimers[i]--;
+        } else {
+            drawSpectrum.peaks[i] = Math.max(0, drawSpectrum.peaks[i] - 1);
+        }
+
+        const peakLed = drawSpectrum.peaks[i];
+
+        for (let l = 0; l < ledCount; l++) {
+            const y = H - (l + 1) * ledStep;
+            if (l === peakLed && peakLed > 0) {
+                // Peak LED — rouge
+                specCtx.fillStyle = 'rgba(255, 60, 34, 0.9)';
+            } else if (l < activeLeds) {
+                const alpha = 0.2 + (l / ledCount) * 0.8;
+                specCtx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
+            } else {
+                specCtx.fillStyle = '#111';
+            }
+            specCtx.fillRect(x, y, barW, ledH);
+        }
+    }
 }
 
 function drawVUOff() {
@@ -371,3 +472,7 @@ function changeVUGain(d) {
     statusFunc.innerText = `VU GAIN: ${Math.round(vuGain * 100)}%`;
     setTimeout(updateStatusText, 1200);
 }
+
+// Start spectrum loop after DOM is fully parsed
+const specCanvas = document.getElementById('spectrum-canvas');
+if (specCanvas) { specCtx = specCanvas.getContext('2d'); drawSpectrum(); }

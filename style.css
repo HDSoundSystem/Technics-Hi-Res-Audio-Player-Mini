@@ -156,9 +156,17 @@ body {
 
 .timer-row {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     gap: 8px;
+}
+
+.spectrum-canvas {
+    flex: 1;
+    min-width: 0;
+    height: 80px;
+    display: block;
+    align-self: stretch;
 }
 
 .timer-group {
