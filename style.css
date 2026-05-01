@@ -802,7 +802,7 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 9px;
     font-weight: normal;
     text-align: center;
-    color: #e0e0e0;
+    color: var(--btn-text);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: -3px;
@@ -816,9 +816,9 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(10, auto);
+    grid-template-columns: repeat(8, auto);
     gap: 10px;
-    align-items: center;
+    margin-bottom: -8px;
 }
 
 /* La trappe — glisse vers le bas dans le chassis */

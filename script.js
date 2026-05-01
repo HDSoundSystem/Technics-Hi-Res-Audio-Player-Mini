@@ -456,7 +456,6 @@ function applyEQPreset(name) {
     const p = EQ_PRESETS[name];
     if (!p) return;
     bassLevel = p.bass; trebleLevel = p.treble;
-    // Fréquences plus efficaces pour un effet perceptible
     bassFilter.frequency.value = 80;
     trebleFilter.frequency.value = 8000;
     bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.02);
@@ -464,7 +463,6 @@ function applyEQPreset(name) {
     currentPreset = name === 'flat' ? null : name;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = currentPreset ? `EQ: ${currentPreset.toUpperCase()}` : '';
-    statusFunc.innerText = `EQ: ${name.toUpperCase()}`;
     setTimeout(updateStatusText, 1500);
 }
 
