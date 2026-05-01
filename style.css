@@ -45,7 +45,7 @@ body {
     background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
     border-radius: 6px 6px 4px 4px;
     width: 100%;
-    max-width: 1160px;
+    max-width: 1300px;
     border: 1px solid var(--panel-border);
     border-bottom: 3px solid #090909;
     box-shadow:
@@ -156,9 +156,17 @@ body {
 
 .timer-row {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     gap: 8px;
+}
+
+.spectrum-canvas {
+    flex: 1;
+    min-width: 0;
+    height: 80px;
+    display: block;
+    align-self: stretch;
 }
 
 .timer-group {
@@ -330,7 +338,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 10px;
-    margin-top: 40px;
+    margin-top: 70px;
     align-items: end;
 }
 
@@ -742,7 +750,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 58px;
     height: 105px;
     overflow: hidden;
     border-radius: 2px;
