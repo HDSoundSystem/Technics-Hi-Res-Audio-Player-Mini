@@ -431,7 +431,38 @@ function changeToneFlat() {
     bassLevel = 0; trebleLevel = 0;
     bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
     trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    currentPreset = null;
+    const ind = document.getElementById('eq-preset-ind');
+    if (ind) ind.textContent = '';
     statusFunc.innerText = "TONE FLAT";
+    setTimeout(updateStatusText, 1500);
+}
+
+const EQ_PRESETS = {
+    rock:    { bass: 8,  treble: 6  },
+    pop:     { bass: 3,  treble: 5  },
+    dance:   { bass: 10, treble: 3  },
+    jazz:    { bass: 4,  treble: -3 },
+    classic: { bass: -3, treble: 4  },
+    live:    { bass: -3, treble: 6  },
+    vocal:   { bass: -5, treble: 7  },
+    flat:    { bass: 0,  treble: 0  },
+};
+
+let currentPreset = null;
+
+function applyEQPreset(name) {
+    if (!bassFilter || !trebleFilter) return;
+    const p = EQ_PRESETS[name];
+    if (!p) return;
+    bassLevel = p.bass; trebleLevel = p.treble;
+    bassFilter.frequency.value = 80;
+    trebleFilter.frequency.value = 8000;
+    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.02);
+    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.02);
+    currentPreset = name === 'flat' ? null : name;
+    const ind = document.getElementById('eq-preset-ind');
+    if (ind) ind.textContent = currentPreset ? `EQ: ${currentPreset.toUpperCase()}` : '';
     setTimeout(updateStatusText, 1500);
 }
 
