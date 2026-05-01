@@ -5,7 +5,14 @@ const audio = document.getElementById('audio'), statusFunc = document.getElement
     ctx.clearRect(0, 0, 800, 70);
     ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle";
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52);
-    for (let i = 0; i < 25; i++) { ctx.fillStyle = "#111"; ctx.fillRect(60 + i * 28, 8, 25, 18); ctx.fillRect(60 + i * 28, 43, 25, 18); }
+    const ledH = 4, ledStep = 6, ledsPerSeg = Math.floor(18 / ledStep);
+    for (let i = 0; i < 25; i++) {
+        for (let l = 0; l < ledsPerSeg; l++) {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(60 + i * 28, 8 + l * ledStep, 25, ledH);
+            ctx.fillRect(60 + i * 28, 43 + l * ledStep, 25, ledH);
+        }
+    }
 })();
 
 audio.volume = 0.2;
@@ -180,14 +187,20 @@ function drawSpectrum() {
 
     specCtx.clearRect(0, 0, W, H);
 
-    if (!specAnalyser) {
-        // No audio — draw flat off-state
-        const offColor = '#111';
-        const barW = Math.max(1, Math.floor(W / 32) - 1);
-        for (let i = 0; i < 32; i++) {
-            const x = i * (barW + 1);
-            specCtx.fillStyle = offColor;
-            specCtx.fillRect(x, H - 2, barW, 2);
+    if (!specAnalyser || !spectrumVisible) {
+        // Off-state: draw dim LED grid
+        const barCount = 28;
+        const barW = Math.floor(W / barCount) - 2;
+        const barGap = Math.floor(W / barCount) - barW;
+        const ledH = 3, ledGap = 2, ledStep = ledH + ledGap;
+        const ledCount = Math.floor(H / ledStep);
+        for (let i = 0; i < barCount; i++) {
+            const x = i * (barW + barGap);
+            for (let l = 0; l < ledCount; l++) {
+                const y = H - (l + 1) * ledStep;
+                specCtx.fillStyle = '#111';
+                specCtx.fillRect(x, y, barW, ledH);
+            }
         }
         return;
     }
@@ -266,10 +279,14 @@ function drawVUOff() {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17);
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("R", 18, 52);
+    const ledH = 4, ledGap = 2, ledStep = ledH + ledGap;
+    const ledsPerSeg = Math.floor(18 / ledStep);
     for (let i = 0; i < 25; i++) {
-        ctx.fillStyle = "#111";
-        ctx.fillRect(60 + i * 28, 8, 25, 18);
-        ctx.fillRect(60 + i * 28, 43, 25, 18);
+        for (let l = 0; l < ledsPerSeg; l++) {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(60 + i * 28, 8 + l * ledStep, 25, ledH);
+            ctx.fillRect(60 + i * 28, 43 + l * ledStep, 25, ledH);
+        }
     }
 }
 
@@ -305,23 +322,59 @@ function drawVU() {
     ctx.fillStyle = lastVolL > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17);
     ctx.fillStyle = lastVolR > 10 ? mainColor : "#222"; ctx.fillText("R", 18, 52);
 
-    for (let i = 0; i < 25; i++) {
-        const threshL = (i / 25) * 255, threshR = (i / 25) * 255;
-        ctx.fillStyle = lastVolL > threshL ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
-        ctx.fillRect(60 + i * 28, 8, 25, 18);
-        ctx.fillStyle = lastVolR > threshR ? (i > 21 ? redColor : i > 15 ? orangeColor : mainColor) : "#111";
-        ctx.fillRect(60 + i * 28, 43, 25, 18);
-    }
+    // Parse mainColor to RGB for gradient LEDs
+    let cr = 176, cg = 254, cb = 255;
+    const hexC = mainColor.replace(/\s/g,'').replace('#','');
+    if (hexC.length === 6) { cr = parseInt(hexC.slice(0,2),16); cg = parseInt(hexC.slice(2,4),16); cb = parseInt(hexC.slice(4,6),16); }
+    else if (hexC === 'ffffff' || mainColor.toLowerCase().includes('white')) { cr = cg = cb = 255; }
 
-    const pkIdxL = Math.min(24, Math.floor((peakL / 255) * 25));
-    if (peakL > 10) {
-        ctx.fillStyle = pkIdxL > 21 ? redColor : pkIdxL > 15 ? orangeColor : mainColor;
-        ctx.fillRect(60 + pkIdxL * 28, 8, 25, 18);
-    }
-    const pkIdxR = Math.min(24, Math.floor((peakR / 255) * 25));
-    if (peakR > 10) {
-        ctx.fillStyle = pkIdxR > 21 ? redColor : pkIdxR > 15 ? orangeColor : mainColor;
-        ctx.fillRect(60 + pkIdxR * 28, 43, 25, 18);
+    const segCount = 25; // segments per row
+    const segW = 25, segH = 18, segSpacing = 28;
+    // Each segment = 3 mini-LEDs of 4px + 2px gap = 18px total
+    const ledH = 4, ledGap = 2, ledStep = ledH + ledGap; // 6px per mini-LED
+    const ledsPerSeg = Math.floor(segH / ledStep); // 3 LEDs
+
+    for (let i = 0; i < segCount; i++) {
+        const threshL = (i / segCount) * 255;
+        const threshR = (i / segCount) * 255;
+        const xPos = 60 + i * segSpacing;
+
+        // Determine zone ratio for this segment (0=bass, 1=treble)
+        const ratio = i / (segCount - 1);
+
+        for (let row = 0; row < 2; row++) {
+            const yBase = row === 0 ? 8 : 43;
+            const vol = row === 0 ? lastVolL : lastVolR;
+            const active = vol > (row === 0 ? threshL : threshR);
+            const isPeak = row === 0
+                ? (i === Math.min(24, Math.floor((peakL / 255) * 25)) && peakL > 10)
+                : (i === Math.min(24, Math.floor((peakR / 255) * 25)) && peakR > 10);
+
+            for (let l = 0; l < ledsPerSeg; l++) {
+                const yLed = yBase + l * ledStep;
+                if (isPeak) {
+                    // Peak = rouge
+                    ctx.fillStyle = `rgba(255,60,34,0.9)`;
+                } else if (active) {
+                    if (i > 21) {
+                        // Zone rouge : dégradé rouge
+                        const a = 0.5 + ratio * 0.5;
+                        ctx.fillStyle = `rgba(255,60,34,${a})`;
+                    } else if (i > 15) {
+                        // Zone orange
+                        const a = 0.4 + ratio * 0.6;
+                        ctx.fillStyle = `rgba(255,136,0,${a})`;
+                    } else {
+                        // Zone cyan/blanc : dégradé ratio
+                        const a = 0.25 + ratio * 0.75;
+                        ctx.fillStyle = `rgba(${cr},${cg},${cb},${a})`;
+                    }
+                } else {
+                    ctx.fillStyle = '#111';
+                }
+                ctx.fillRect(xPos, yLed, segW, ledH);
+            }
+        }
     }
 }
 
@@ -441,6 +494,8 @@ function showBalance() {
 }
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
 function toggleVUMode() { vuVisible = !vuVisible; }
+let spectrumVisible = true;
+function toggleSpectrum() { spectrumVisible = !spectrumVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
