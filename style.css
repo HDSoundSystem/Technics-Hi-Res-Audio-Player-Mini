@@ -156,6 +156,15 @@ body {
     height: 1.1rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+
+.eq-preset-ind {
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+    color: var(--vfd-main);
+    text-shadow: 0 0 8px var(--vfd-shadow-main);
+    opacity: 0.85;
 }
 
 .timer-row {
@@ -754,8 +763,8 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 35px;
-    height: 105px;
+    margin-top: 27px;
+    height: 115px;
     overflow: hidden;
     border-radius: 2px;
 }
@@ -792,9 +801,11 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-row-label {
     font-size: 9px;
     font-weight: normal;
+    text-align: center;
     color: #e0e0e0;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-top: -3px;
 }
 
 .tray-eq-buttons {
