@@ -272,6 +272,31 @@ function changeTreble(d) {
 }
 function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
 
+function changeToneFlat() {
+    if (!bassFilter || !trebleFilter) return;
+    bassLevel = 0; trebleLevel = 0;
+    bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    statusFunc.innerText = "TONE FLAT";
+    setTimeout(updateStatusText, 1500);
+}
+
+let vfdWhite = false;
+function toggleVFDColor() {
+    vfdWhite = !vfdWhite;
+    const root = document.documentElement;
+    if (vfdWhite) {
+        root.style.setProperty('--vfd-main', '#ffffff');
+        root.style.setProperty('--vfd-shadow-main', 'rgba(255, 255, 255, 0.35)');
+        root.style.setProperty('--vfd-glow', 'rgba(255, 255, 255, 0.2)');
+    } else {
+        root.style.setProperty('--vfd-main', '#B0FEFF');
+        root.style.setProperty('--vfd-shadow-main', 'rgba(176, 254, 255, 0.35)');
+        root.style.setProperty('--vfd-glow', 'rgba(0, 255, 255, 0.2)');
+    }
+    setTimeout(updateStatusText, 1200);
+}
+
 
 
 function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; statusFunc.innerText = v > 0 ? "SEARCH >>" : "<< SEARCH"; } }
