@@ -21,7 +21,7 @@ let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = '
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
 let isMuted = false;
-function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO DISC"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 
 function openPlaylist() {
@@ -466,7 +466,7 @@ function applyEQPreset(name) {
     setTimeout(updateStatusText, 1500);
 }
 
-let vfdWhite = false;
+let vfdWhite = true;
 function toggleVFDColor() {
     vfdWhite = !vfdWhite;
     const root = document.documentElement;
