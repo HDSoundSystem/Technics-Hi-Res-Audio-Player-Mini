@@ -5,7 +5,7 @@ const audio = document.getElementById('audio'), statusFunc = document.getElement
     ctx.clearRect(0, 0, 800, 70);
     ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle";
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17); ctx.fillText("R", 18, 52);
-    const ledH = 4, ledStep = 6, ledsPerSeg = Math.floor(18 / ledStep);
+    const ledH = 18, ledStep = 18, ledsPerSeg = 1;
     for (let i = 0; i < 25; i++) {
         for (let l = 0; l < ledsPerSeg; l++) {
             ctx.fillStyle = "#111";
@@ -279,7 +279,7 @@ function drawVUOff() {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("L", 18, 17);
     ctx.fillStyle = "#1a1a1a"; ctx.fillText("R", 18, 52);
-    const ledH = 4, ledGap = 2, ledStep = ledH + ledGap;
+    const ledH = 18, ledGap = 0, ledStep = 18;
     const ledsPerSeg = Math.floor(18 / ledStep);
     for (let i = 0; i < 25; i++) {
         for (let l = 0; l < ledsPerSeg; l++) {
@@ -331,7 +331,7 @@ function drawVU() {
     const segCount = 25; // segments per row
     const segW = 25, segH = 18, segSpacing = 28;
     // Each segment = 3 mini-LEDs of 4px + 2px gap = 18px total
-    const ledH = 4, ledGap = 2, ledStep = ledH + ledGap; // 6px per mini-LED
+    const ledH = 18, ledGap = 0, ledStep = 18; // LED pleine
     const ledsPerSeg = Math.floor(segH / ledStep); // 3 LEDs
 
     for (let i = 0; i < segCount; i++) {
