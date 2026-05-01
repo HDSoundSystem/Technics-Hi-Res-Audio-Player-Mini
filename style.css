@@ -755,7 +755,7 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;      /* Centre verticalement */
     justify-content: center;   /* Centre horizontalement */
     padding: 0 12px;
-    background: #080808;
+    background: #1d1d1d;
     border: 1px solid #111;
     border-radius: 2px;
 }
@@ -764,8 +764,8 @@ input[type="range"]::-webkit-slider-thumb {
     display: grid;
     /* On définit la largeur des colonnes (ex: 60px) plutôt que 1fr 
        pour éviter que les boutons s'étirent sur toute la largeur */
-    grid-template-columns: repeat(4, auto); 
-    gap: 15px;                 /* Augmenté pour un look plus aéré */
+    grid-template-columns: repeat(8, auto); 
+    gap: 10px;                 /* Augmenté pour un look plus aéré */
     align-items: center;       /* Aligne les boutons entre eux verticalement */
 }
 
@@ -784,9 +784,17 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .tray-door:hover {
-    filter: brightness(0.9);
+    filter: brightness(0.95);
 }
 
 .tray-door.tray-open {
-    transform: translateY(95%);
+    transform: translateY(93%);
+}
+
+.vertical-separator {
+    width: 1px;
+    height: 30px; /* Ajustez la hauteur selon vos besoins */
+    background-color: rgb(117, 117, 117);
+    opacity: 0.5; /* Optionnel : pour un look plus subtil */
+    margin: 5px 5px; /* Espace à gauche et à droite */
 }

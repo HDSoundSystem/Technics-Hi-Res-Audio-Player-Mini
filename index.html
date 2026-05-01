@@ -145,10 +145,14 @@
                         <div class="tray-door" id="trayDoor" onclick="toggleTray()"></div>
                         <div class="tray-hidden-panel" id="trayPanel">
                             <div class="tray-hidden-buttons">
-                                <div><button onclick="openPlaylist()">TRACK LIST</button></div>
-                                <div><button onclick="openArtModal()">COVER</button></div>
+                                <div><button onclick="changeToneFlat(0)">TONE FLAT</button></div>
                                 <div><button onclick="changeVUGain(-0.2)">VU -</button></div>
                                 <div><button onclick="changeVUGain(0.2)">VU +</button></div>
+                                <div class="vertical-separator"></div>
+                                <div><button onclick="openPlaylist()">TRACK LIST</button></div>
+                                <div><button onclick="openArtModal()">TRACK COVER</button></div>
+                                <div class="vertical-separator"></div>
+                                <div><button onclick="changeVFDcolor(0.2)">VFD COLOR</button></div>
                             </div>
                         </div>
                     </div>
