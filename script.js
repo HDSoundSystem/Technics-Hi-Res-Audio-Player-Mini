@@ -208,7 +208,7 @@ function drawSpectrum() {
     specAnalyser.getByteFrequencyData(specDataArray);
     const mainColor = getVFDColor('--vfd-main');
     const barCount = 28;
-    const usefulBins = 60;
+    const usefulBins = 30;
     const step = usefulBins / barCount;
 
     const barW = Math.floor(W / barCount) - 2;
