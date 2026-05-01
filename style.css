@@ -43,7 +43,6 @@ body {
 /* ── CHASSIS ── */
 .player-container {
     background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
-    border-radius: 6px 6px 4px 4px;
     width: 100%;
     max-width: 1400px;
     border: 1px solid var(--panel-border);
@@ -53,7 +52,46 @@ body {
         0 60px 120px var(--shadow-main),
         0 0 0 1px rgba(255, 255, 255, 0.03);
     overflow: hidden;
+
+    position: relative;
+    overflow: visible;
+    margin: 0 40px;
 }
+
+.player-container::before,
+.player-container::after {
+    content: "";
+    position: absolute;
+    top: -1px;          /* Aligné avec la bordure du châssis */
+    bottom: -3px;       /* Aligné avec le bas plus épais du châssis */
+    width: 50px;        /* Largeur du panneau de bois */
+    
+    /* Texture bois (Dégradé linéaire pour simuler les veines) */
+    background: linear-gradient(90deg, #4d331f 0%, #7a5230 50%, #4d331f 100%);
+    
+    /* Effet de relief */
+    box-shadow: 
+        inset 1px 0 2px rgba(255,255,255,0.1),
+        3px 5px 15px rgba(0,0,0,0.5);
+    border-radius: 2px;
+    z-index: -1; /* Placé juste derrière le panneau pour une fusion parfaite */
+}
+
+/* Positionnement à gauche */
+.player-container::before {
+    left: -40px;
+    border-radius: 2px 0 0 2px;
+    border-right: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
+}
+
+/* Positionnement à droite */
+.player-container::after {
+    right: -40px;
+    border-radius: 0 2px 2px 0;
+    border-left: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
+}
+
+
 
 .header-line {
     display: flex;
@@ -63,8 +101,8 @@ body {
     background: rgba(0, 0, 0, 0.25); /* Légèrement assombri pour faire ressortir l'or */
 
     /* 1. L'effet "dépassement" */
-    margin-left: -10px;  /* Sort à gauche */
-    margin-right: -10px; /* Sort à droite */
+    margin-left: 0px;  /* Sort à gauche */
+    margin-right: 0px; /* Sort à droite */
     position: relative;  /* Pour s'assurer qu'il passe au-dessus du reste */
     z-index: 10;
 
