@@ -55,18 +55,21 @@ body {
     overflow: hidden;
 }
 
-/* ── HEADER ── */
 .header-line {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 22px 8px;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.25); /* Légèrement assombri pour faire ressortir l'or */
 
-    /* On définit l'épaisseur de la bordure */
+    /* 1. L'effet "dépassement" */
+    margin-left: -10px;  /* Sort à gauche */
+    margin-right: -10px; /* Sort à droite */
+    position: relative;  /* Pour s'assurer qu'il passe au-dessus du reste */
+    z-index: 10;
+
+    /* Bordure Or existante */
     border-bottom: 2px solid; 
-    
-    /* On applique le dégradé "Or" sur la bordure */
     border-image-source: linear-gradient(
         to right, 
         #bf953f, 
@@ -75,9 +78,12 @@ body {
         #fbf5b7 75%, 
         #aa771c
     );
-    
-    /* Requis pour que l'image de bordure s'affiche correctement */
     border-image-slice: 1;
+
+    /* 2. L'effet de relief (3D) */
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.5),      /* Ombre portée principale */
+        0 1px 0 rgba(255, 255, 255, 0.1);  /* Très léger reflet sur le dessus */
 }
 
 .brand-logo-img {
