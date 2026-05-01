@@ -319,13 +319,14 @@ function drawVU() {
     ctx.font = "500 14px 'Inter', sans-serif";
     ctx.textBaseline = "middle";
 
-    ctx.fillStyle = lastVolL > 10 ? mainColor : "#222"; ctx.fillText("L", 18, 17);
-    ctx.fillStyle = lastVolR > 10 ? mainColor : "#222"; ctx.fillText("R", 18, 52);
+    ctx.fillStyle = mainColor;
+    ctx.fillText("L", 18, 17);
+    ctx.fillText("R", 18, 52);
 
     // Parse mainColor to RGB for gradient LEDs
     let cr = 176, cg = 254, cb = 255;
-    const hexC = mainColor.replace(/\s/g,'').replace('#','');
-    if (hexC.length === 6) { cr = parseInt(hexC.slice(0,2),16); cg = parseInt(hexC.slice(2,4),16); cb = parseInt(hexC.slice(4,6),16); }
+    const hexC = mainColor.replace(/\s/g, '').replace('#', '');
+    if (hexC.length === 6) { cr = parseInt(hexC.slice(0, 2), 16); cg = parseInt(hexC.slice(2, 4), 16); cb = parseInt(hexC.slice(4, 6), 16); }
     else if (hexC === 'ffffff' || mainColor.toLowerCase().includes('white')) { cr = cg = cb = 255; }
 
     const segCount = 25; // segments per row
@@ -439,14 +440,14 @@ function changeToneFlat() {
 }
 
 const EQ_PRESETS = {
-    rock:    { bass: 8,  treble: 6  },
-    pop:     { bass: 3,  treble: 5  },
-    dance:   { bass: 10, treble: 3  },
-    jazz:    { bass: 4,  treble: -3 },
-    classic: { bass: -3, treble: 4  },
-    live:    { bass: -3, treble: 6  },
-    vocal:   { bass: -5, treble: 7  },
-    flat:    { bass: 0,  treble: 0  },
+    rock: { bass: 8, treble: 6 },
+    pop: { bass: 3, treble: 5 },
+    dance: { bass: 10, treble: 3 },
+    jazz: { bass: 4, treble: -3 },
+    classic: { bass: -3, treble: 4 },
+    live: { bass: -3, treble: 6 },
+    vocal: { bass: -5, treble: 7 },
+    flat: { bass: 0, treble: 0 },
 };
 
 let currentPreset = null;
