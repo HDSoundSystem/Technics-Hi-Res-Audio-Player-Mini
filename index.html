@@ -145,17 +145,32 @@
                     <div class="tray-assembly">
                         <div class="tray-door" id="trayDoor" onclick="toggleTray()"></div>
                         <div class="tray-hidden-panel" id="trayPanel">
-                            <div class="tray-hidden-buttons">
-                                <div><button onclick="changeToneFlat()">TONE FLAT</button></div>
-                                <div><button onclick="changeVUGain(-0.2)">VU -</button></div>
-                                <div><button onclick="changeVUGain(0.2)">VU +</button></div>
-                                <div class="vertical-separator"></div>
-                                <div><button onclick="openPlaylist()">TRACK LIST</button></div>
-                                <div><button onclick="openArtModal()">TRACK COVER</button></div>
-                                <div class="vertical-separator"></div>
-                                <div><button onclick="toggleVFDColor()">VFD COLOR</button></div>
-                                <div class="vertical-separator"></div>
-                                <div><button onclick="toggleInfo()">INFO</button></div>
+                            <div class="tray-inner">
+                                <div class="tray-eq-row">
+                                    <span class="tray-row-label">EQ PRESETS</span>
+                                    <div class="tray-eq-buttons">
+                                        <button onclick="applyEQPreset('rock')">ROCK</button>
+                                        <button onclick="applyEQPreset('pop')">POP</button>
+                                        <button onclick="applyEQPreset('dance')">DANCE</button>
+                                        <button onclick="applyEQPreset('jazz')">JAZZ</button>
+                                        <button onclick="applyEQPreset('classic')">CLASSIC</button>
+                                        <button onclick="applyEQPreset('live')">LIVE</button>
+                                        <button onclick="applyEQPreset('vocal')">VOCAL</button>
+                                        <button onclick="applyEQPreset('flat')">FLAT</button>
+                                    </div>
+                                </div>
+                                <div class="tray-hidden-buttons">
+                                    <div><button onclick="changeToneFlat()">TONE FLAT</button></div>
+                                    <div><button onclick="changeVUGain(-0.2)">VU -</button></div>
+                                    <div><button onclick="changeVUGain(0.2)">VU +</button></div>
+                                    <div class="vertical-separator"></div>
+                                    <div><button onclick="openPlaylist()">TRACK LIST</button></div>
+                                    <div><button onclick="openArtModal()">TRACK COVER</button></div>
+                                    <div class="vertical-separator"></div>
+                                    <div><button onclick="toggleVFDColor()">VFD COLOR</button></div>
+                                    <div class="vertical-separator"></div>
+                                    <div><button onclick="toggleInfo()">INFO</button></div>
+                                </div>
                             </div>
                         </div>
                     </div>

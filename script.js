@@ -435,6 +435,28 @@ function changeToneFlat() {
     setTimeout(updateStatusText, 1500);
 }
 
+const EQ_PRESETS = {
+    rock:    { bass:  6, treble:  4 },
+    pop:     { bass:  2, treble:  3 },
+    dance:   { bass:  8, treble:  2 },
+    jazz:    { bass:  3, treble: -2 },
+    classic: { bass: -2, treble:  2 },
+    live:    { bass: -2, treble:  4 },
+    vocal:   { bass: -4, treble:  5 },
+    flat:    { bass:  0, treble:  0 },
+};
+
+function applyEQPreset(name) {
+    if (!bassFilter || !trebleFilter) return;
+    const p = EQ_PRESETS[name];
+    if (!p) return;
+    bassLevel = p.bass; trebleLevel = p.treble;
+    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
+    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
+    statusFunc.innerText = `EQ: ${name.toUpperCase()}`;
+    setTimeout(updateStatusText, 1500);
+}
+
 let vfdWhite = false;
 function toggleVFDColor() {
     vfdWhite = !vfdWhite;
