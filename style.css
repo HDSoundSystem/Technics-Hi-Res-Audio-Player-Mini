@@ -79,14 +79,14 @@ body {
 
 /* Positionnement à gauche */
 .player-container::before {
-    left: -40px;
+    left: -50px;
     border-radius: 2px 0 0 2px;
     border-right: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
 }
 
 /* Positionnement à droite */
 .player-container::after {
-    right: -40px;
+    right: -50px;
     border-radius: 0 2px 2px 0;
     border-left: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
 }
