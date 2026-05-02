@@ -50,8 +50,6 @@ body {
         0 2px 0 rgba(255, 255, 255, 0.04) inset,
         0 60px 120px var(--shadow-main),
         0 0 0 1px rgba(255, 255, 255, 0.03);
-    overflow: hidden;
-
     position: relative;
     overflow: visible;
     margin: 0 40px;
@@ -64,53 +62,48 @@ body {
     top: -1px;
     bottom: -3px;
     width: 50px;
-
-    background: 
-        
-        linear-gradient(90deg, 
-            rgba(0,0,0,0.2) 0%, 
-            rgba(255,255,255,0.05) 50%, 
-            rgba(0,0,0,0.2) 100%
-        ),
-        
-        repeating-linear-gradient(
-            90deg,
-            #5d3f28 0px,
-            #5d3f28 1px,
-            #6b4423 2px,
-            #5d3f28 3px
-        ),
-        
-        radial-gradient(
-            ellipse at 20% 50%, 
-            #7a5230 0%, 
-            #4d331f 100%
-        );
-    
-    
     background-blend-mode: soft-light;
-
-    box-shadow:
-        inset 1px 0 2px rgba(255, 255, 255, 0.1),
-        inset -1px 0 2px rgba(0, 0, 0, 0.4),
-        3px 5px 15px rgba(0, 0, 0, 0.5);
-        
-    border-radius: 2px;
     z-index: -1;
 }
 
+/* --- CÔTÉ GAUCHE --- */
 .player-container::before {
     left: -50px;
-    border-radius: 2px 0 0 2px;
-    border-right: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 4px 0 0 4px;
+    /* Bordure de jonction affinée */
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
+    
+    background: 
+        linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.2)),
+        repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
+        radial-gradient(ellipse at 20% 50%, #7a5230 0%, #4d331f 100%);
+
+    /* Ombre interne : lumière à gauche (1px), ombre à droite (-1px) */
+    box-shadow:
+        inset 1px 0 2px rgba(255, 255, 255, 0.1),
+        inset -1px 0 2px rgba(0, 0, 0, 0.4),
+        -3px 5px 15px rgba(0, 0, 0, 0.5); 
 }
 
+/* --- CÔTÉ DROIT (EFFET MIROIR TOTAL) --- */
 .player-container::after {
     right: -50px;
-    border-radius: 0 2px 2px 0;
-    border-left: 2px solid rgba(0, 0, 0, 0.4);
-}
+    border-radius: 0 4px 4px 0;
+    /* On inverse la bordure de jonction */
+    border-left: 1px solid rgba(0, 0, 0, 0.5);
 
+    background: 
+        linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.2)),
+        repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
+        /* Miroir du motif : 80% au lieu de 20% */
+        radial-gradient(ellipse at 80% 50%, #7a5230 0%, #4d331f 100%);
+
+    /* Inversion des ombres internes pour la symétrie lumineuse */
+    box-shadow:
+        inset -1px 0 2px rgba(255, 255, 255, 0.1), /* Lumière à droite */
+        inset 1px 0 2px rgba(0, 0, 0, 0.4),        /* Ombre à gauche */
+        3px 5px 15px rgba(0, 0, 0, 0.5);
+}
 .header-line {
     display: flex;
     justify-content: space-between;
