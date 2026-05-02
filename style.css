@@ -865,7 +865,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(10, auto);
     gap: 10px;
     margin-bottom: -8px;
 }
