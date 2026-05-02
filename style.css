@@ -654,8 +654,8 @@ input[type="range"]::-webkit-slider-thumb {
     transform: translateX(-50%);
     width: 420px;
     min-width: 280px;
-    max-width: 95vw;
-    max-height: 60vh;
+    max-width: 110vw;
+    max-height: 80vh;
     background: #0a0a0a;
     border: 1px solid var(--btn-border);
     border-radius: 6px;
