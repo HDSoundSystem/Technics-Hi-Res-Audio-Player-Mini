@@ -40,7 +40,6 @@ body {
     user-select: none;
 }
 
-/* ── CHASSIS ── */
 .player-container {
     background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
     width: 100%;
@@ -62,51 +61,41 @@ body {
 .player-container::after {
     content: "";
     position: absolute;
-    top: -1px;          /* Aligné avec la bordure du châssis */
-    bottom: -3px;       /* Aligné avec le bas plus épais du châssis */
-    width: 50px;        /* Largeur du panneau de bois */
+    top: -1px;
+    bottom: -3px;
+    width: 50px;
     
-    /* Texture bois (Dégradé linéaire pour simuler les veines) */
     background: linear-gradient(90deg, #4d331f 0%, #7a5230 50%, #4d331f 100%);
     
-    /* Effet de relief */
     box-shadow: 
         inset 1px 0 2px rgba(255,255,255,0.1),
         3px 5px 15px rgba(0,0,0,0.5);
     border-radius: 2px;
-    z-index: -1; /* Placé juste derrière le panneau pour une fusion parfaite */
+    z-index: -1;
 }
 
-/* Positionnement à gauche */
 .player-container::before {
     left: -50px;
     border-radius: 2px 0 0 2px;
-    border-right: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
+    border-right: 2px solid rgba(0,0,0,0.4);
 }
 
-/* Positionnement à droite */
 .player-container::after {
     right: -50px;
     border-radius: 0 2px 2px 0;
-    border-left: 2px solid rgba(0,0,0,0.4); /* Jointure avec le châssis */
+    border-left: 2px solid rgba(0,0,0,0.4);
 }
-
-
 
 .header-line {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 22px 8px;
-    background: rgba(0, 0, 0, 0.25); /* Légèrement assombri pour faire ressortir l'or */
-
-    /* 1. L'effet "dépassement" */
-    margin-left: 0px;  /* Sort à gauche */
-    margin-right: 0px; /* Sort à droite */
-    position: relative;  /* Pour s'assurer qu'il passe au-dessus du reste */
+    background: rgba(0, 0, 0, 0.25);
+    margin-left: 0px;
+    margin-right: 0px;
+    position: relative;
     z-index: 10;
-
-    /* Bordure Or existante */
     border-bottom: 2px solid; 
     border-image-source: linear-gradient(
         to right, 
@@ -117,11 +106,9 @@ body {
         #aa771c
     );
     border-image-slice: 1;
-
-    /* 2. L'effet de relief (3D) */
     box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.5),      /* Ombre portée principale */
-        0 1px 0 rgba(255, 255, 255, 0.1);  /* Très léger reflet sur le dessus */
+        0 4px 8px rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .brand-logo-img {
@@ -338,7 +325,7 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-    padding: 3px 0 4px;
+    padding: 5px 0 1px;
     border-top: 1px solid var(--vfd-sep-line);
     cursor: pointer;
     min-height: 24px;
@@ -350,6 +337,12 @@ body {
     color: var(--vfd-main);
     opacity: 0.6;
     font-weight: 500;
+}
+
+.track-num-off {
+    color: #1c1c1c !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
 }
 
 .track-num.active {
@@ -367,6 +360,12 @@ body {
     animation: vfd-blink 2s infinite;
 }
 
+.track-more-off {
+    color: #1c1c1c !important;
+    text-shadow: none !important;
+    animation: none !important;
+}
+
 @keyframes vfd-blink {
     0%, 100% {
         opacity: 1;
@@ -379,12 +378,11 @@ body {
 
 .vu-wrap {
     height: 55px;
-    margin-top: 4px;
+    margin-top: 1px;
     border-top: 1px solid var(--vfd-sep-line);
-    padding-top: 2px;
+    padding-top: 1px;
 }
 
-/* ── NUMPAD ── */
 .num-pad {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -392,7 +390,6 @@ body {
     margin-top: 7px;
 }
 
-/* ── TRANSPORT BAR ── */
 .transport-bar {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -401,7 +398,6 @@ body {
     align-items: end;
 }
 
-/* Center 7 wrappers over 10 columns: start at col 2 (1.5 rounded) */
 .transport-bar .btn-labeled:first-child {
     grid-column: 2;
 }
@@ -410,7 +406,6 @@ body {
     width: 100%;
 }
 
-/* ── RIGHT SECTION ── */
 .right-section {
     width: 240px;
     flex-shrink: 0;
@@ -420,7 +415,6 @@ body {
     padding-left: 18px;
 }
 
-/* ── CONTROL GROUPS ── */
 .ctrl-group {
     display: flex;
     flex-direction: column;
@@ -450,7 +444,6 @@ body {
     gap: 5px;
 }
 
-/* ── BUTTONS ── */
 button {
     background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
     border: 1px solid var(--btn-border);
@@ -488,21 +481,14 @@ button i {
     font-size: 0.9rem;
 }
 
-/* Transport buttons same size as other buttons */
 .btn-transport {
     width: 70px;
     height: 50px;
-    
-    /* Indispensable pour que le padding ne déforme pas la taille */
     box-sizing: border-box; 
-    
-    /* On centre parfaitement l'icône à l'intérieur */
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    
-    /* On ajuste le reste */
-    padding: 0; /* Le flex gère l'alignement, plus besoin de padding précis */
+    padding: 0;
     font-size: 0.9rem;
     cursor: pointer;
 }
@@ -514,7 +500,6 @@ button i {
     gap: 0;
 }
 
-/* Open button accent */
 .btn-open {
     width: 55px;
     height: 40px;
@@ -574,7 +559,6 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 2px;
 }
 
-/* ── MODALS ── */
 .modal {
     display: none;
     position: fixed;
@@ -607,7 +591,6 @@ input[type="range"]::-webkit-slider-thumb {
     object-fit: contain;
 }
 
-/* ── ART MODAL ── */
 .art-modal-content {
     display: flex;
     flex-direction: column;
@@ -844,12 +827,10 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 0 6px var(--vfd-shadow-main);
 }
 
-/* Explicit 2-col rows */
 .ctrl-row-2 {
     grid-template-columns: repeat(2, 1fr);
 }
 
-/* ── POWER COLUMN ── */
 .power-col {
     display: flex;
     flex-direction: column;
@@ -888,7 +869,6 @@ input[type="range"]::-webkit-slider-thumb {
     border-bottom-width: 2px;
 }
 
-/* ── RESTART CONFIRM MODAL ── */
 .modal-confirm {
     background: #000;
     border: 2px solid var(--btn-border);
@@ -970,13 +950,12 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 24px;
+    margin-top: 26px;
     height: 115px;
     overflow: hidden;
     border-radius: 2px;
 }
 
-/* Boutons cachés dans le fond du logement */
 .tray-hidden-panel {
     position: absolute;
     inset: 0;
@@ -1028,7 +1007,6 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: -8px;
 }
 
-/* La trappe — glisse vers le bas dans le chassis */
 .tray-door {
     position: absolute;
     inset: 0;
@@ -1052,12 +1030,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 .vertical-separator {
     width: 1px;
-    height: 30px; /* Ajustez la hauteur selon vos besoins */
+    height: 30px;
     background-color: rgb(117, 117, 117);
-    opacity: 0.5; /* Optionnel : pour un look plus subtil */
-    margin: 5px 5px; /* Espace à gauche et à droite */
+    opacity: 0.5;
+    margin: 5px 5px;
 }
-/* ── SPECTRUM FREQ LABELS ── */
+
 .spectrum-outer {
     flex: 1;
     min-width: 0;
@@ -1086,11 +1064,6 @@ input[type="range"]::-webkit-slider-thumb {
     line-height: 1;
     white-space: nowrap;
     overflow: visible;
-}
-
-/* ── VU dB SCALE ── */
-.vu-outer {
-    margin-top: 4px;
 }
 
 .vu-outer .vu-wrap {
