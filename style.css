@@ -2,7 +2,7 @@
     --vfd-main: white;
     --vfd-red: #ff3c22;
     --vfd-orange: #ff8800;
-    --vfd-glow: rgba(0, 255, 255, 0.2);
+    --vfd-glow: rgb(87, 87, 87);
     --vfd-shadow-main: rgba(176, 254, 255, 0.35);
     --vfd-shadow-red: rgba(255, 60, 34, 0.6);
     --vfd-sep-line: #1a1a1a;
