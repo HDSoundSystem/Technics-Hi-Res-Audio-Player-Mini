@@ -353,11 +353,10 @@ body {
 
 .track-more {
     color: var(--vfd-red);
-    font-size: 0.85rem;
+    font-size: 0.90rem;
     display: flex;
     align-items: center;
     text-shadow: 0 0 10px var(--vfd-shadow-red);
-    animation: vfd-blink 2s infinite;
 }
 
 .track-more-off {
