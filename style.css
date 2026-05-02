@@ -397,7 +397,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 10px;
-    margin-top: 70px;
+    margin-top: 50px;
     align-items: end;
 }
 
@@ -812,7 +812,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 25px;
+    margin-top: 24px;
     height: 115px;
     overflow: hidden;
     border-radius: 2px;
@@ -865,7 +865,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(10, auto);
     gap: 10px;
     margin-bottom: -8px;
 }
@@ -898,4 +898,67 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: rgb(117, 117, 117);
     opacity: 0.5; /* Optionnel : pour un look plus subtil */
     margin: 5px 5px; /* Espace à gauche et à droite */
+}
+/* ── SPECTRUM FREQ LABELS ── */
+.spectrum-outer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.spectrum-outer .spectrum-canvas {
+    flex: none;
+}
+
+.spectrum-freq-labels {
+    display: grid;
+    grid-template-columns: repeat(28, 1fr);
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.spectrum-freq-labels span {
+    font-family: 'Inter', sans-serif;
+    font-size: 7px;
+    font-weight: 500;
+    color: var(--vfd-main);
+    opacity: 0.5;
+    text-align: center;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+/* ── VU dB SCALE ── */
+.vu-outer {
+    margin-top: 4px;
+}
+
+.vu-outer .vu-wrap {
+    margin-top: 0;
+}
+
+.vu-db-scale {
+    position: relative;
+    height: 13px;
+    width: 100%;
+}
+
+.vu-db-scale span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    color: var(--vfd-main);
+    opacity: 0.5;
+    line-height: 1;
+    top: 2px;
+    white-space: nowrap;
+}
+
+.vu-db-scale span.vu-db-red {
+    color: var(--vfd-red);
+    opacity: 0.7;
 }
