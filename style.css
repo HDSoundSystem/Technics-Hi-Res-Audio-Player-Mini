@@ -16,7 +16,7 @@
     --display-border: #0a0a0a;
     --btn-bg: #252525;
     --btn-border: #3a3a3a;
-    --btn-text: #ccc;
+    --btn-text: #949494;
     --shuttle-bg: #0a0a0a;
     --shuttle-thumb: #262626;
     --shuttle-label: #a8a8a8;
@@ -1018,7 +1018,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(10, auto);
+    grid-template-columns: repeat(8, auto);
     gap: 10px;
     margin-bottom: -8px;
 }
