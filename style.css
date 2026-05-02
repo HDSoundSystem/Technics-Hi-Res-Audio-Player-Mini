@@ -339,6 +339,12 @@ body {
     font-weight: 500;
 }
 
+.track-num-off {
+    color: #1c1c1c !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
 .track-num.active {
     color: var(--vfd-red);
     opacity: 1;
@@ -352,6 +358,12 @@ body {
     align-items: center;
     text-shadow: 0 0 10px var(--vfd-shadow-red);
     animation: vfd-blink 2s infinite;
+}
+
+.track-more-off {
+    color: #1c1c1c !important;
+    text-shadow: none !important;
+    animation: none !important;
 }
 
 @keyframes vfd-blink {

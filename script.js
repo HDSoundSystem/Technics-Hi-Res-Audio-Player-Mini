@@ -16,7 +16,7 @@ const audio = document.getElementById('audio'), statusFunc = document.getElement
 })();
 
 audio.volume = 0.2;
-let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null;
+let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null, musicScanActive = false, musicScanTimer = null;
 
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
@@ -286,12 +286,28 @@ let pauseBlinkInterval = null;
 function startPauseBlink() { if (pauseBlinkInterval) return; const timer = document.getElementById('timer'); let visible = true; pauseBlinkInterval = setInterval(() => { visible = !visible; timer.style.visibility = visible ? 'visible' : 'hidden'; }, 500); }
 function stopPauseBlink() { if (pauseBlinkInterval) { clearInterval(pauseBlinkInterval); pauseBlinkInterval = null; } document.getElementById('timer').style.visibility = 'visible'; }
 
-function handlePlay() { if (playlist.length > 0) { if (!audioCtx) initAudio(); stopPauseBlink(); audio.play().then(updateStatusText); } }
+function handlePlay() {
+    if (playlist.length > 0) {
+        if (!audioCtx) initAudio();
+        stopPauseBlink();
+        if (musicScanActive) {
+            // Désactiver Music Scan et continuer la lecture normalement
+            musicScanActive = false;
+            clearTimeout(musicScanTimer);
+            document.getElementById('ind-musicscan').classList.remove('active');
+        }
+        audio.play().then(updateStatusText);
+    }
+}
 function handlePause() { audio.pause(); updateStatusText(); if (audio.currentTime > 0) startPauseBlink(); }
 function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 function prevTrack() { if (!playlist.length) return; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); }
-audio.onended = () => { if (repeatMode === 1) { audio.currentTime = 0; audio.play(); } else { nextTrack(); } };
+audio.onended = () => {
+    clearTimeout(musicScanTimer);
+    if (repeatMode === 1) { audio.currentTime = 0; audio.play(); }
+    else { nextTrack(); }
+};
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
 let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter, pannerNode;
@@ -706,21 +722,32 @@ function updateTrackDisplay() {
     const grid = document.getElementById('track-grid');
     grid.innerHTML = '';
 
-    // On limite l'affichage aux 20 premiers éléments
     const displayLimit = 20;
     const tracksToShow = playlist.slice(0, displayLimit);
 
-    tracksToShow.forEach((_, i) => {
+    // Always show 20 slots (dim if no track, lit if exists)
+    for (let i = 0; i < displayLimit; i++) {
         const s = document.createElement('span');
-        s.className = 'track-num' + (i === currentIndex ? ' active' : '');
-        s.innerText = i + 1;
+        if (i < tracksToShow.length) {
+            s.className = 'track-num' + (i === currentIndex ? ' active' : '');
+            s.innerText = i + 1;
+        } else {
+            s.className = 'track-num track-num-off';
+            s.innerText = i + 1;
+        }
         grid.appendChild(s);
-    });
+    }
 
-    // Si la playlist dépasse 20, on ajoute l'indicateur "OVER"
+    // Arrow if playlist exceeds 20
     if (playlist.length > displayLimit) {
         const more = document.createElement('span');
         more.className = 'track-more';
+        more.innerHTML = '<i class="fa-solid fa-caret-right"></i>';
+        grid.appendChild(more);
+    } else {
+        // Always show dim arrow
+        const more = document.createElement('span');
+        more.className = 'track-more track-more-off';
         more.innerHTML = '<i class="fa-solid fa-caret-right"></i>';
         grid.appendChild(more);
     }
@@ -746,6 +773,43 @@ function toggleSpectrum() { spectrumVisible = !spectrumVisible; }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
+
+function toggleMusicScan() {
+    musicScanActive = !musicScanActive;
+    clearTimeout(musicScanTimer);
+    const ind = document.getElementById('ind-musicscan');
+    ind.classList.toggle('active', musicScanActive);
+    if (musicScanActive) {
+        if (playlist.length > 0) {
+            if (!audioCtx) initAudio();
+            audio.currentTime = 0;
+            stopPauseBlink();
+            audio.play().then(() => {
+                updateStatusText();
+                startMusicScanTimer();
+            });
+        }
+    } else {
+        clearTimeout(musicScanTimer);
+    }
+}
+
+function startMusicScanTimer() {
+    clearTimeout(musicScanTimer);
+    if (!musicScanActive) return;
+    musicScanTimer = setTimeout(() => {
+        if (!musicScanActive) return;
+        // Passer à la piste suivante
+        currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex);
+        audio.currentTime = 0;
+        stopPauseBlink();
+        audio.play().then(() => {
+            updateStatusText();
+            startMusicScanTimer();
+        });
+    }, 15000);
+}
 function openArtModal() {
     if (!playlist.length) return;
     // Populate info from file-info-line
@@ -778,6 +842,7 @@ function changeVUGain(d) {
 // Start spectrum loop after DOM is fully parsed
 const specCanvas = document.getElementById('spectrum-canvas');
 if (specCanvas) { specCtx = specCanvas.getContext('2d'); drawSpectrum(); }
+updateTrackDisplay();
 
 // ── DRAG & DROP ──────────────────────────────────────────────────
 (function initDragDrop() {
