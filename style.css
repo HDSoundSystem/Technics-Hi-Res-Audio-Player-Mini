@@ -646,32 +646,128 @@ input[type="range"]::-webkit-slider-thumb {
     width: auto;
 }
 
-.playlist-title {
+.playlist-popup {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+    min-width: 280px;
+    max-width: 95vw;
+    max-height: 60vh;
+    background: #0a0a0a;
+    border: 1px solid var(--btn-border);
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.9);
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+}
+
+.playlist-popup.open {
+    display: flex;
+}
+
+.playlist-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #111;
+    border-bottom: 1px solid var(--btn-border);
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.playlist-popup-header:active { cursor: grabbing; }
+
+.playlist-popup-title {
     color: var(--vfd-main);
-    font-size: 0.9rem;
-    margin-bottom: 14px;
-    border-bottom: 1px solid var(--vfd-sep-line);
-    padding-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--vfd-shadow-main);
+}
+
+.playlist-popup-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.playlist-eject-btn {
+    color: var(--vfd-main);
+    font-size: 0.95rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+    line-height: 1;
+    margin-right: 20px;
+}
+
+.playlist-eject-btn:hover { opacity: 1; }
+
+.playlist-close-btn {
+    background: none;
+    border: none;
+    color: var(--btn-text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.playlist-close-btn:hover { opacity: 1; color: var(--vfd-red); }
+
+#playlist-items-container {
+    overflow-y: auto;
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--vfd-main) #111;
+}
+
+#playlist-items-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+#playlist-items-container::-webkit-scrollbar-track {
+    background: #0d0d0d;
+    border-left: 1px solid #1a1a1a;
+}
+
+#playlist-items-container::-webkit-scrollbar-thumb {
+    background: var(--vfd-main);
+    opacity: 0.4;
+    border-radius: 3px;
+    box-shadow: 0 0 6px var(--vfd-shadow-main);
+}
+
+#playlist-items-container::-webkit-scrollbar-thumb:hover {
+    background: var(--vfd-main);
+    opacity: 0.8;
+}
+
+.playlist-title {
+    display: none;
 }
 
 .playlist-item {
-    padding: 10px 12px;
+    padding: 6px 10px;
     border-bottom: 1px solid #0f0f0f;
     cursor: pointer;
     color: var(--btn-text);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     display: flex;
     align-items: center;
-    gap: 12px;
-    transition: 0.15s;
+    gap: 8px;
+    transition: background 0.15s;
 }
 
-.playlist-item:hover {
-    background: #0d0d0d;
-    color: var(--vfd-main);
-}
+.playlist-item:hover { background: #0d0d0d; color: var(--vfd-main); }
 
 .playlist-item.active {
     color: var(--vfd-red);
@@ -679,11 +775,74 @@ input[type="range"]::-webkit-slider-thumb {
     background: rgba(255, 60, 34, 0.04);
 }
 
-.playlist-item span {
+.playlist-item-cover {
+    width: 68px;
+    height: 68px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: #1a1a1a;
+    border: 1px solid #222;
+}
+
+.playlist-item-num {
     opacity: 0.45;
     font-family: 'DS-Digital';
     font-size: 1rem;
-    min-width: 22px;
+    min-width: 20px;
+    flex-shrink: 0;
+}
+
+.playlist-item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.playlist-item-remove {
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.playlist-item-remove:hover { color: var(--vfd-red); }
+
+/* Resize handle */
+.playlist-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+}
+
+.playlist-resize-handle::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 24px;
+    background: var(--btn-border);
+    border-radius: 2px;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+}
+
+.playlist-resize-handle:hover::after {
+    opacity: 1;
+    background: var(--vfd-main);
+    box-shadow: 0 0 6px var(--vfd-shadow-main);
 }
 
 /* Explicit 2-col rows */

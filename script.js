@@ -24,47 +24,189 @@ let isMuted = false;
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 
-function openPlaylist() {
-    if (playlist.length === 0) return;
+// Cache covers per file name
+const coverCache = {};
+
+function getFileCover(file, callback) {
+    if (coverCache[file.name]) { callback(coverCache[file.name]); return; }
+    try {
+        jsmediatags.read(file, {
+            onSuccess: (tag) => {
+                const pic = tag.tags.picture;
+                if (pic) {
+                    const blob = new Blob([new Uint8Array(pic.data)], { type: pic.format });
+                    const url = URL.createObjectURL(blob);
+                    coverCache[file.name] = url;
+                    callback(url);
+                } else {
+                    coverCache[file.name] = null;
+                    callback(null);
+                }
+            },
+            onError: () => { coverCache[file.name] = null; callback(null); }
+        });
+    } catch(e) { callback(null); }
+}
+
+function renderPlaylistItems() {
     const container = document.getElementById('playlist-items-container');
     container.innerHTML = '';
     playlist.forEach((file, index) => {
         const item = document.createElement('div');
         item.className = 'playlist-item' + (index === currentIndex ? ' active' : '');
-        item.innerHTML = `<span>${index + 1}</span> ${file.name.toUpperCase()}`;
-        item.onclick = () => { playDirect(index); closePlaylist(); };
+        item.dataset.index = index;
+
+        // Cover
+        const cover = document.createElement('img');
+        cover.className = 'playlist-item-cover';
+        cover.src = 'img/art-Technics-cover.png';
+        if (coverCache[file.name]) {
+            cover.src = coverCache[file.name] || 'img/art-Technics-cover.png';
+        } else {
+            getFileCover(file, (url) => { if (url) cover.src = url; });
+        }
+
+        // Number
+        const num = document.createElement('span');
+        num.className = 'playlist-item-num';
+        num.textContent = String(index + 1).padStart(2, '0');
+
+        // Name
+        const name = document.createElement('span');
+        name.className = 'playlist-item-name';
+        name.textContent = file.name.replace(/\.[^.]+$/, '').toUpperCase();
+
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'playlist-item-remove';
+        removeBtn.innerHTML = '✕';
+        removeBtn.title = 'Remove';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeTrack(index);
+        };
+
+        item.appendChild(cover);
+        item.appendChild(num);
+        item.appendChild(name);
+        item.appendChild(removeBtn);
+        item.onclick = () => { playDirect(index); };
         container.appendChild(item);
     });
-    document.getElementById('playlistModal').style.display = 'flex';
 }
 
-function closePlaylist() { document.getElementById('playlistModal').style.display = 'none'; }
+function removeTrack(index) {
+    const wasPlaying = !audio.paused;
+    playlist.splice(index, 1);
+    if (playlist.length === 0) {
+        audio.pause(); audio.src = '';
+        currentIndex = 0;
+        updateStatusText();
+        closePlaylist();
+        return;
+    }
+    if (index < currentIndex) {
+        currentIndex--;
+    } else if (index === currentIndex) {
+        currentIndex = Math.min(currentIndex, playlist.length - 1);
+        loadTrack(currentIndex);
+        if (wasPlaying) handlePlay();
+    }
+    renderPlaylistItems();
+}
 
+function openPlaylist() {
+    const modal = document.getElementById('playlistModal');
+    if (modal.classList.contains('open')) { closePlaylist(); return; }
+    renderPlaylistItems();
+    modal.classList.add('open');
+}
 
-function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
-function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
+function closePlaylist() {
+    document.getElementById('playlistModal').classList.remove('open');
+}
 
-fileIn.onchange = (e) => {
-    const files = Array.from(e.target.files);
+function playlistAddFiles(input) {
+    const files = Array.from(input.files);
     if (!files.length) return;
     if (playlist.length > 0) {
         playlist.push(...files);
         statusFunc.innerText = `+${files.length} TRACK${files.length > 1 ? 'S' : ''}`;
         setTimeout(updateStatusText, 1500);
+        renderPlaylistItems();
     } else {
         playlist = files;
         currentIndex = 0;
         loadTrack(0);
         handlePlay();
+        renderPlaylistItems();
     }
-    e.target.value = '';
-};
+    input.value = '';
+}
+
+// Draggable + resizable popup
+(function initPlaylistDrag() {
+    const modal = document.getElementById('playlistModal');
+    const handle = document.getElementById('playlistDragHandle');
+    const resizeHandle = document.getElementById('playlistResizeHandle');
+    let dragging = false, resizing = false, ox = 0, oy = 0, startW = 0, startX = 0;
+
+    // ── DRAG ──
+    handle.addEventListener('mousedown', (e) => {
+        dragging = true;
+        const rect = modal.getBoundingClientRect();
+        modal.style.left = rect.left + 'px';
+        modal.style.top = rect.top + 'px';
+        modal.style.transform = 'none';
+        ox = e.clientX - rect.left;
+        oy = e.clientY - rect.top;
+        e.preventDefault();
+    });
+
+    // ── RESIZE ──
+    resizeHandle.addEventListener('mousedown', (e) => {
+        resizing = true;
+        const rect = modal.getBoundingClientRect();
+        // Fix position before resizing
+        modal.style.left = rect.left + 'px';
+        modal.style.top = rect.top + 'px';
+        modal.style.transform = 'none';
+        startW = rect.width;
+        startX = e.clientX;
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (dragging) {
+            let x = e.clientX - ox;
+            let y = e.clientY - oy;
+            x = Math.max(0, Math.min(window.innerWidth - modal.offsetWidth, x));
+            y = Math.max(0, Math.min(window.innerHeight - modal.offsetHeight, y));
+            modal.style.left = x + 'px';
+            modal.style.top = y + 'px';
+        }
+        if (resizing) {
+            const newW = Math.max(280, Math.min(window.innerWidth * 0.95, startW + (e.clientX - startX)));
+            modal.style.width = newW + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => { dragging = false; resizing = false; });
+})();
+
+function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
+function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
+
+fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); } };
 
 function loadTrack(index) {
     const file = playlist[index];
     if (audio.src) URL.revokeObjectURL(audio.src);
     audio.src = URL.createObjectURL(file);
     formatInfo.innerText = file.name.split('.').pop().toUpperCase();
+    // Refresh playlist active state if open
+    if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
     if (window.jsmediatags) {
         window.jsmediatags.read(file, {
             onSuccess: (tag) => {
@@ -667,10 +809,11 @@ if (specCanvas) { specCtx = specCanvas.getContext('2d'); drawSpectrum(); }
         if (!files.length) return;
 
         if (playlist.length > 0) {
-            // Ajouter à la suite sans interrompre la lecture
+            // Ajouter à la playlist existante
+            const startIndex = playlist.length;
             playlist.push(...files);
-            statusFunc.innerText = `+${files.length} TRACK${files.length > 1 ? 'S' : ''}`;
-            setTimeout(updateStatusText, 1500);
+            loadTrack(startIndex);
+            handlePlay();
         } else {
             playlist = files;
             currentIndex = 0;

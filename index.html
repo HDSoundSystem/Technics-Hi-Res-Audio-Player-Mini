@@ -318,11 +318,19 @@
             </div>
         </div>
 
-        <div id="playlistModal" class="modal" onclick="closePlaylist()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="playlist-title">Track List</div>
-                <div id="playlist-items-container"></div>
+        <div id="playlistModal" class="playlist-popup">
+            <div class="playlist-resize-handle" id="playlistResizeHandle"></div>
+            <div class="playlist-popup-header" id="playlistDragHandle">
+                <span class="playlist-popup-title">TRACK LIST</span>
+                <div class="playlist-popup-actions">
+                    <label class="playlist-eject-btn" title="Add files">
+                        <i class="fa fa-eject"></i>
+                        <input type="file" accept="audio/*" multiple style="display:none" onchange="playlistAddFiles(this)">
+                    </label>
+                    <button class="playlist-close-btn" onclick="closePlaylist()">✕</button>
+                </div>
             </div>
+            <div id="playlist-items-container"></div>
         </div>
 
         <div id="artModal" class="modal" onclick="this.style.display='none'">
