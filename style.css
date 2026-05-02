@@ -325,7 +325,7 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-    padding: 3px 0 4px;
+    padding: 5px 0 1px;
     border-top: 1px solid var(--vfd-sep-line);
     cursor: pointer;
     min-height: 24px;
@@ -378,9 +378,9 @@ body {
 
 .vu-wrap {
     height: 55px;
-    margin-top: 4px;
+    margin-top: 1px;
     border-top: 1px solid var(--vfd-sep-line);
-    padding-top: 2px;
+    padding-top: 1px;
 }
 
 .num-pad {
@@ -950,7 +950,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 24px;
+    margin-top: 26px;
     height: 115px;
     overflow: hidden;
     border-radius: 2px;
@@ -1064,11 +1064,6 @@ input[type="range"]::-webkit-slider-thumb {
     line-height: 1;
     white-space: nowrap;
     overflow: visible;
-}
-
-/* ── VU dB SCALE ── */
-.vu-outer {
-    margin-top: 4px;
 }
 
 .vu-outer .vu-wrap {
