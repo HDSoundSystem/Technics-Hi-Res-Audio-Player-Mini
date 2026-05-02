@@ -44,7 +44,21 @@ function closePlaylist() { document.getElementById('playlistModal').style.displa
 function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
-fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); } };
+fileIn.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    if (playlist.length > 0) {
+        playlist.push(...files);
+        statusFunc.innerText = `+${files.length} TRACK${files.length > 1 ? 'S' : ''}`;
+        setTimeout(updateStatusText, 1500);
+    } else {
+        playlist = files;
+        currentIndex = 0;
+        loadTrack(0);
+        handlePlay();
+    }
+    e.target.value = '';
+};
 
 function loadTrack(index) {
     const file = playlist[index];
@@ -152,17 +166,11 @@ function toggleBypass() {
     if (isBypass) {
         document.getElementById('ind-bypass').classList.add('active');
         // Sauvegarder l'état actuel
-        bypassSnapshot = { bass: bassLevel, treble: trebleLevel, loudness: loudnessOn,
-            m1: window.midFilter1 ? window.midFilter1.gain.value : 0,
-            m2: window.midFilter2 ? window.midFilter2.gain.value : 0,
-            m3: window.midFilter3 ? window.midFilter3.gain.value : 0 };
+        bypassSnapshot = { bass: bassLevel, treble: trebleLevel, loudness: loudnessOn };
         // Couper bass
         bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
         // Couper treble
         trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-        if (window.midFilter1) window.midFilter1.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-        if (window.midFilter2) window.midFilter2.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-        if (window.midFilter3) window.midFilter3.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
         // Couper loudness
         loudnessGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.05);
         document.getElementById('ind-loudness').classList.remove('active');
@@ -171,9 +179,6 @@ function toggleBypass() {
         if (bypassSnapshot) {
             bassFilter.gain.setTargetAtTime(bypassSnapshot.bass, audioCtx.currentTime, 0.05);
             trebleFilter.gain.setTargetAtTime(bypassSnapshot.treble, audioCtx.currentTime, 0.05);
-            if (window.midFilter1) window.midFilter1.gain.setTargetAtTime(bypassSnapshot.m1 || 0, audioCtx.currentTime, 0.05);
-            if (window.midFilter2) window.midFilter2.gain.setTargetAtTime(bypassSnapshot.m2 || 0, audioCtx.currentTime, 0.05);
-            if (window.midFilter3) window.midFilter3.gain.setTargetAtTime(bypassSnapshot.m3 || 0, audioCtx.currentTime, 0.05);
             if (bypassSnapshot.loudness) {
                 loudnessGain.gain.setTargetAtTime(1.5, audioCtx.currentTime, 0.05);
                 document.getElementById('ind-loudness').classList.add('active');
@@ -216,14 +221,6 @@ function initAudio() {
     trebleFilter = audioCtx.createBiquadFilter();
     trebleFilter.type = 'highshelf'; trebleFilter.frequency.value = 4000; trebleFilter.gain.value = 0;
 
-    // Mid filters for proper 5-band EQ
-    window.midFilter1 = audioCtx.createBiquadFilter();
-    window.midFilter1.type = 'peaking'; window.midFilter1.frequency.value = 500; window.midFilter1.Q.value = 1.0; window.midFilter1.gain.value = 0;
-    window.midFilter2 = audioCtx.createBiquadFilter();
-    window.midFilter2.type = 'peaking'; window.midFilter2.frequency.value = 2000; window.midFilter2.Q.value = 1.0; window.midFilter2.gain.value = 0;
-    window.midFilter3 = audioCtx.createBiquadFilter();
-    window.midFilter3.type = 'peaking'; window.midFilter3.frequency.value = 8000; window.midFilter3.Q.value = 1.0; window.midFilter3.gain.value = 0;
-
     // Loudness gain
     loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
 
@@ -235,10 +232,7 @@ function initAudio() {
 
     // Signal chain
     source.connect(bassFilter);
-    bassFilter.connect(window.midFilter1);
-    window.midFilter1.connect(window.midFilter2);
-    window.midFilter2.connect(window.midFilter3);
-    window.midFilter3.connect(trebleFilter);
+    bassFilter.connect(trebleFilter);
     trebleFilter.connect(loudnessGain);
     loudnessGain.connect(pannerNode);
     pannerNode.connect(splitter);
@@ -511,9 +505,6 @@ function changeToneFlat() {
     bassLevel = 0; trebleLevel = 0;
     bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
     trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-    if (window.midFilter1) window.midFilter1.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-    if (window.midFilter2) window.midFilter2.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-    if (window.midFilter3) window.midFilter3.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
     currentPreset = null;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = '';
@@ -521,16 +512,15 @@ function changeToneFlat() {
     setTimeout(updateStatusText, 1500);
 }
 
-// 5-band EQ presets: [bass(250Hz), mid-low(500Hz), mid(2kHz), mid-high(8kHz), treble(highshelf)]
 const EQ_PRESETS = {
-    rock:    { bass: 6,  m1: 2,  m2: -2, m3: 2,  treble: 5  },
-    pop:     { bass: 2,  m1: 4,  m2: 3,  m3: 2,  treble: 3  },
-    dance:   { bass: 8,  m1: 4,  m2: -2, m3: 1,  treble: 4  },
-    jazz:    { bass: 3,  m1: -1, m2: 2,  m3: 3,  treble: -2 },
-    classic: { bass: -2, m1: -1, m2: 1,  m3: 3,  treble: 4  },
-    live:    { bass: -2, m1: 2,  m2: 4,  m3: 3,  treble: 5  },
-    vocal:   { bass: -4, m1: -2, m2: 5,  m3: 4,  treble: 3  },
-    flat:    { bass: 0,  m1: 0,  m2: 0,  m3: 0,  treble: 0  },
+    rock: { bass: 8, treble: 6 },
+    pop: { bass: 3, treble: 5 },
+    dance: { bass: 10, treble: 3 },
+    jazz: { bass: 4, treble: -3 },
+    classic: { bass: -3, treble: 4 },
+    live: { bass: -3, treble: 6 },
+    vocal: { bass: -5, treble: 7 },
+    flat: { bass: 0, treble: 0 },
 };
 
 let currentPreset = null;
@@ -539,15 +529,11 @@ function applyEQPreset(name) {
     if (!bassFilter || !trebleFilter) return;
     const p = EQ_PRESETS[name];
     if (!p) return;
-    const t = audioCtx.currentTime;
     bassLevel = p.bass; trebleLevel = p.treble;
-    bassFilter.frequency.value = 250;
-    trebleFilter.frequency.value = 10000;
-    bassFilter.gain.setTargetAtTime(p.bass, t, 0.02);
-    trebleFilter.gain.setTargetAtTime(p.treble, t, 0.02);
-    if (window.midFilter1) { window.midFilter1.frequency.value = 500;  window.midFilter1.Q.value = 1.2; window.midFilter1.gain.setTargetAtTime(p.m1, t, 0.02); }
-    if (window.midFilter2) { window.midFilter2.frequency.value = 2000; window.midFilter2.Q.value = 1.0; window.midFilter2.gain.setTargetAtTime(p.m2, t, 0.02); }
-    if (window.midFilter3) { window.midFilter3.frequency.value = 8000; window.midFilter3.Q.value = 1.0; window.midFilter3.gain.setTargetAtTime(p.m3, t, 0.02); }
+    bassFilter.frequency.value = 80;
+    trebleFilter.frequency.value = 8000;
+    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.02);
+    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.02);
     currentPreset = name === 'flat' ? null : name;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = currentPreset ? `EQ: ${currentPreset.toUpperCase()}` : '';
@@ -650,3 +636,46 @@ function changeVUGain(d) {
 // Start spectrum loop after DOM is fully parsed
 const specCanvas = document.getElementById('spectrum-canvas');
 if (specCanvas) { specCtx = specCanvas.getContext('2d'); drawSpectrum(); }
+
+// ── DRAG & DROP ──────────────────────────────────────────────────
+(function initDragDrop() {
+    const overlay = document.getElementById('drop-overlay');
+    let dragCounter = 0;
+
+    document.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        dragCounter++;
+        overlay.classList.add('visible');
+    });
+
+    document.addEventListener('dragleave', (e) => {
+        dragCounter--;
+        if (dragCounter === 0) overlay.classList.remove('visible');
+    });
+
+    document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+    });
+
+    document.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragCounter = 0;
+        overlay.classList.remove('visible');
+
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/') || /\.(mp3|flac|wav|ogg|aac|m4a|opus|weba)$/i.test(f.name));
+        if (!files.length) return;
+
+        if (playlist.length > 0) {
+            // Ajouter à la suite sans interrompre la lecture
+            playlist.push(...files);
+            statusFunc.innerText = `+${files.length} TRACK${files.length > 1 ? 'S' : ''}`;
+            setTimeout(updateStatusText, 1500);
+        } else {
+            playlist = files;
+            currentIndex = 0;
+            loadTrack(0);
+            handlePlay();
+        }
+    });
+})();
