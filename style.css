@@ -215,7 +215,7 @@ body {
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
     background-size: 3px 4px;
     background-repeat: repeat;
-    opacity: 0.85;
+    opacity: 0.90;
 }
 
 .eq-preset-ind {
@@ -339,7 +339,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: uppercase;
-    opacity: 0.85;
+    opacity: 0.90;
     text-align: center;
     position: relative;
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
