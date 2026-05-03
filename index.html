@@ -62,7 +62,9 @@
                 <div class="left-section">
                     <div class="display-panel">
                         <div class="status-line"><span id="status-function">NO
-                                TRACK</span><span id="status-center" class="status-center"></span><span id="eq-preset-ind"
+                                TRACK</span><span id="status-center"
+                                class="status-center"></span><span
+                                id="eq-preset-ind"
                                 class="eq-preset-ind"></span></div>
                         <div class="timer-row">
                             <div class="timer-group">
@@ -132,16 +134,26 @@
                     </div>
 
                     <div class="num-pad">
-                        <button onclick="pressDigit(1)">1</button>
-                        <button onclick="pressDigit(2)">2</button>
-                        <button onclick="pressDigit(3)">3</button>
-                        <button onclick="pressDigit(4)">4</button>
-                        <button onclick="pressDigit(5)">5</button>
-                        <button onclick="pressDigit(6)">6</button>
-                        <button onclick="pressDigit(7)">7</button>
-                        <button onclick="pressDigit(8)">8</button>
-                        <button onclick="pressDigit(9)">9</button>
-                        <button onclick="pressDigit(0)">0</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(1)">1</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(2)">2</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(3)">3</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(4)">4</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(5)">5</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(6)">6</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(7)">7</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(8)">8</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(9)">9</button>
+                        <button class="num-pad-button"
+                            onclick="pressDigit(0)">0</button>
                     </div>
 
                     <div class="transport-bar">
@@ -272,11 +284,13 @@
                     <div class="ctrl-group">
                         <div class="ctrl-group-label">VOLUME</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeVolume(-0.1)"
+                            <button class="btn-volume"
+                                onclick="changeVolume(-0.1)"
                                 onmouseenter="showVolume()"
                                 onmouseleave="delayedStatusReset()">
                                 −</button>
-                            <button onclick="changeVolume(0.1)"
+                            <button class="btn-volume"
+                                onclick="changeVolume(0.1)"
                                 onmouseenter="showVolume()"
                                 onmouseleave="delayedStatusReset()">
                                 +</button>
@@ -286,11 +300,13 @@
                     <div class="ctrl-group">
                         <div class="ctrl-group-label">BALANCE</div>
                         <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeBalance(-0.1)"
+                            <button class="btn-balance"
+                                onclick="changeBalance(-0.1)"
                                 onmouseenter="showBalance()"
                                 onmouseleave="delayedStatusReset()">
                                 −</button>
-                            <button onclick="changeBalance(0.1)"
+                            <button class="btn-balance"
+                                onclick="changeBalance(0.1)"
                                 onmouseenter="showBalance()"
                                 onmouseleave="delayedStatusReset()">
                                 +</button>
