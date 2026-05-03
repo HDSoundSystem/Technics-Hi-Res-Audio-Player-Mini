@@ -1,4 +1,11 @@
-const audio = document.getElementById('audio'), statusFunc = document.getElementById('status-function'), fileInfoLine = document.getElementById('file-info-line'), formatInfo = document.getElementById('format-info'), fileIn = document.getElementById('file-in'), canvas = document.getElementById('vu-meter'), ctx = canvas.getContext('2d'), m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), modalImg = document.getElementById('modalImg');
+const audio = document.getElementById('audio'), statusFunc = document.getElementById('status-function'), statusCenter = document.getElementById('status-center'), fileInfoLine = document.getElementById('file-info-line'), formatInfo = document.getElementById('format-info'), fileIn = document.getElementById('file-in'), canvas = document.getElementById('vu-meter'), ctx = canvas.getContext('2d'), m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), modalImg = document.getElementById('modalImg');
+
+let statusCenterTimer = null;
+function showCenter(msg, delay = 1800) {
+    statusCenter.textContent = msg;
+    clearTimeout(statusCenterTimer);
+    statusCenterTimer = setTimeout(() => { statusCenter.textContent = ''; }, delay);
+}
 
 // Dessine les pixels éteints dès le chargement
 (function initVUOff() {
@@ -131,7 +138,7 @@ function playlistAddFiles(input) {
     if (!files.length) return;
     if (playlist.length > 0) {
         playlist.push(...files);
-        statusFunc.innerText = `+${files.length} TRACK${files.length > 1 ? 'S' : ''}`;
+        showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
         setTimeout(updateStatusText, 1500);
         renderPlaylistItems();
     } else {
@@ -195,7 +202,7 @@ function playlistAddFiles(input) {
     document.addEventListener('mouseup', () => { dragging = false; resizing = false; });
 })();
 
-function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; statusFunc.innerText = "SELECT: " + digitEntry; digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
+function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; showCenter("SELECT: " + digitEntry, 1500); digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
 fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); } };
@@ -648,7 +655,7 @@ function changeBass(d) {
     bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
     showBass();
 }
-function showBass() { statusFunc.innerText = `BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`; }
+function showBass() { showCenter(`BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`); }
 
 function changeTreble(d) {
     if (!trebleFilter || isBypass) return;
@@ -656,7 +663,7 @@ function changeTreble(d) {
     trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
     showTreble();
 }
-function showTreble() { statusFunc.innerText = `TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`; }
+function showTreble() { showCenter(`TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`); }
 
 function changeToneFlat() {
     if (!bassFilter || !trebleFilter) return;
@@ -666,7 +673,7 @@ function changeToneFlat() {
     currentPreset = null;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = '';
-    statusFunc.innerText = "TONE FLAT";
+    showCenter("TONE FLAT");
     setTimeout(updateStatusText, 1500);
 }
 
@@ -716,7 +723,7 @@ function toggleVFDColor() {
 
 
 
-function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; statusFunc.innerText = v > 0 ? "SEARCH >>" : "<< SEARCH"; } }
+function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; showCenter(v > 0 ? "SEARCH >>" : "<< SEARCH", 600); } }
 function resetShuttle() { document.getElementById('shuttle').value = 0; updateStatusText(); }
 function updateTrackDisplay() {
     const grid = document.getElementById('track-grid');
@@ -754,7 +761,7 @@ function updateTrackDisplay() {
 }
 function skip(v) { audio.currentTime += v; }
 function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
-function showVolume() { statusFunc.innerText = `VOL: ${Math.round(audio.volume * 10)}`; }
+function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 10)}`); }
 function changeBalance(d) {
     if (!pannerNode) return;
     balanceLevel = Math.min(1, Math.max(-1, Math.round((balanceLevel + d) * 10) / 10));
@@ -762,9 +769,9 @@ function changeBalance(d) {
     showBalance();
 }
 function showBalance() {
-    if (balanceLevel === 0) { statusFunc.innerText = 'BALANCE: CENTER'; return; }
+    if (balanceLevel === 0) { showCenter('BALANCE: CENTER'); return; }
     const side = balanceLevel > 0 ? 'R' : 'L';
-    statusFunc.innerText = `BALANCE: ${side} ${Math.round(Math.abs(balanceLevel) * 10)}`;
+    showCenter(`BALANCE: ${side} ${Math.round(Math.abs(balanceLevel) * 10)}`);
 }
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
 function toggleVUMode() { vuVisible = !vuVisible; }
@@ -839,7 +846,7 @@ function toggleTray() {
 let vuGain = 1;
 function changeVUGain(d) {
     vuGain = Math.min(3, Math.max(0.1, Math.round((vuGain + d) * 10) / 10));
-    statusFunc.innerText = `VU GAIN: ${Math.round(vuGain * 100)}%`;
+    showCenter(`VU GAIN: ${Math.round(vuGain * 100)}%`);
     setTimeout(updateStatusText, 1200);
 }
 
