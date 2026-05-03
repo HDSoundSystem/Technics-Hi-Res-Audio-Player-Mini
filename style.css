@@ -199,7 +199,7 @@ body {
 
 .status-line {
     color: var(--vfd-main);
-    font-size: 0.65rem;
+    font-size: 0.98rem;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     text-shadow: 0 0 8px var(--vfd-shadow-main);
@@ -207,10 +207,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "ROND"0;
+    background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+    background-size: 3px 4px;
+    background-repeat: repeat;
+    opacity: 0.85;
 }
 
 .eq-preset-ind {
-    font-size: 0.55rem;
+    font-size: 0.98rem;
     letter-spacing: 1.5px;
     color: var(--vfd-main);
     text-shadow: 0 0 8px var(--vfd-shadow-main);
@@ -336,7 +345,7 @@ body {
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
     background-size: 3px 4px;
     background-repeat: repeat;
-    padding: 2px 4px;
+    
     border-radius: 1px;
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
