@@ -975,7 +975,6 @@ input[type="range"]::-webkit-slider-thumb {
     color: #ff6655;
 }
 
-/* ── TRAY ASSEMBLY ── */
 .tray-assembly {
     position: relative;
     width: 100%;
@@ -1004,7 +1003,6 @@ input[type="range"]::-webkit-slider-thumb {
     width: 100%;
 }
 
-/* EQ Presets row */
 .tray-eq-row {
     display: flex;
     flex-direction: column;
