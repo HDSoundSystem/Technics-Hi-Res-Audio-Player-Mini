@@ -247,57 +247,14 @@
                 <!-- RIGHT : all controls -->
                 <div class="right-section">
                     <div class="ctrl-group">
-                        <div class="ctrl-group-label">Search</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="skip(-10)">-10s</button>
-                            <button onclick="skip(10)">+10s</button>
-                        </div>
-
-                        <div class="shuttle-zone">
-                            <div class="shuttle-label">Jog Shuttle</div>
-                            <input type="range" id="shuttle" min="-10" max="10"
-                                value="0"
-                                oninput="doShuttle(this.value)"
-                                onchange="resetShuttle()">
-                        </div>
-
-                    </div>
-
-                    <div class="ctrl-group">
-                        <div class="ctrl-group-label">Mode</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="toggleShuffle()">Random</button>
-                            <button onclick="toggleRepeat()">Repeat</button>
-                        </div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="handleAB()">A-B</button>
-                            <button onclick="toggleMusicScan()">MUSIC
-                                SCAN</button>
-                        </div></div>
-                    <div class="ctrl-group">
-                        <div class="ctrl-group-label">ANALYZER</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="toggleVUMode()">VU METER</button>
-                            <button onclick="toggleSpectrum()">GRAPH</button>
-                        </div></div>
-
-                    <div class="ctrl-group">
                         <div class="ctrl-group-label">VOLUME</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button class="btn-volume"
-                                onclick="changeVolume(-0.1)"
-                                onmouseenter="showVolume()"
-                                onmouseleave="delayedStatusReset()">
-                                −</button>
-                            <button class="btn-volume"
-                                onclick="changeVolume(0.1)"
-                                onmouseenter="showVolume()"
-                                onmouseleave="delayedStatusReset()">
-                                +</button>
+                        <div class="volume-knob-wrap">
+                            <div class="volume-knob" id="volumeKnob">
+                                <div class="knob-left-zone" onclick="changeVolume(-0.1)"></div>
+                                <div class="knob-right-zone" onclick="changeVolume(0.1)"></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="ctrl-group">
+                        <div class="ctrl-group">
                         <div class="ctrl-group-label">BALANCE</div>
                         <div class="ctrl-row ctrl-row-2">
                             <button class="btn-balance"
@@ -340,6 +297,44 @@
                             <button onclick="toggleMono()">Mono</button>
                         </div>
                     </div>
+                                                
+
+                    </div>
+
+                    <div class="ctrl-group">
+                        <div class="ctrl-group-label">Mode</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="toggleShuffle()">Random</button>
+                            <button onclick="toggleRepeat()">Repeat</button>
+                        </div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="handleAB()">A-B</button>
+                            <button onclick="toggleMusicScan()">MUSIC
+                                SCAN</button>
+                        </div></div>
+
+                         <div class="ctrl-group-label">Search</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="skip(-10)">-10s</button>
+                            <button onclick="skip(10)">+10s</button>
+                        </div>
+
+                        <div class="shuttle-zone">
+                            <div class="shuttle-label">Jog Shuttle</div>
+                            <input type="range" id="shuttle" min="-10" max="10"
+                                value="0"
+                                oninput="doShuttle(this.value)"
+                                onchange="resetShuttle()">
+                        </div>
+                    <div class="ctrl-group">
+                        <div class="ctrl-group-label">ANALYZER</div>
+                        <div class="ctrl-row ctrl-row-2">
+                            <button onclick="toggleVUMode()">VU METER</button>
+                            <button onclick="toggleSpectrum()">GRAPH</button>
+                        </div></div>
+
+                   
+
                 </div>
             </div>
         </div>
