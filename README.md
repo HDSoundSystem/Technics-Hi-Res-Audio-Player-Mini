@@ -2,7 +2,7 @@
 
 A high-fidelity web application emulating the aesthetics and user experience of the iconic Technics CD player from the 1990s.
 
-<img width="1572" height="745" alt="Capture d'écran 2026-05-02 225627" src="https://github.com/user-attachments/assets/7aa462fa-e032-435a-905d-5b2d754094b2" />
+<img width="1616" height="749" alt="Capture d’écran 2026-05-03 083952" src="https://github.com/user-attachments/assets/b14be3fb-51b0-41f0-916f-74d478797321" />
 
 ## 📱 Overview
 
@@ -149,4 +149,4 @@ Saved automatically via `localStorage`:
 
 ---
 
-*Developed with passion for vintage audio by Yohann Zaoui — [@yohannzaoui](https://github.com/yohannzaoui)*
+*Developed with passion for vintage audio by Yohann Zaoui — [Yohann Zaoui](https://github.com/HDSoundSystem)*

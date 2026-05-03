@@ -66,30 +66,23 @@ body {
     z-index: -1;
 }
 
-/* --- CÔTÉ GAUCHE --- */
 .player-container::before {
     left: -50px;
     border-radius: 4px 0 0 4px;
-    /* Bordure de jonction affinée */
     border-right: 1px solid rgba(0, 0, 0, 0.5);
-
     background:
         linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2)),
         repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
         radial-gradient(ellipse at 20% 50%, #7a5230 0%, #4d331f 100%);
-
-    /* Ombre interne : lumière à gauche (1px), ombre à droite (-1px) */
     box-shadow:
         inset 1px 0 2px rgba(255, 255, 255, 0.1),
         inset -1px 0 2px rgba(0, 0, 0, 0.4),
         -3px 5px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* --- CÔTÉ DROIT (EFFET MIROIR TOTAL) --- */
 .player-container::after {
     right: -50px;
     border-radius: 0 4px 4px 0;
-    /* On inverse la bordure de jonction */
     border-left: 1px solid rgba(0, 0, 0, 0.5);
 
     background:
@@ -97,13 +90,9 @@ body {
         repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
         /* Miroir du motif : 80% au lieu de 20% */
         radial-gradient(ellipse at 80% 50%, #7a5230 0%, #4d331f 100%);
-
-    /* Inversion des ombres internes pour la symétrie lumineuse */
     box-shadow:
         inset -1px 0 2px rgba(255, 255, 255, 0.1),
-        /* Lumière à droite */
         inset 1px 0 2px rgba(0, 0, 0, 0.4),
-        /* Ombre à gauche */
         3px 5px 15px rgba(0, 0, 0, 0.5);
 }
 
@@ -161,7 +150,6 @@ body {
         1px 1px 1px rgba(255, 255, 255, 0.1);
 }
 
-/* ── MAIN BODY ── */
 .main-body {
     display: flex;
     align-items: stretch;
@@ -170,7 +158,6 @@ body {
     gap: 18px;
 }
 
-/* ── LEFT SECTION ── */
 .left-section {
     flex: 1 1 0;
     min-width: 0;
@@ -179,7 +166,6 @@ body {
     gap: 10px;
 }
 
-/* ── VFD DISPLAY ── */
 .display-panel {
     background: #000;
     border: 2px solid var(--display-border);
@@ -188,8 +174,6 @@ body {
     flex-direction: column;
     gap: 4px;
     border-radius: 2px;
-
-    /* Box shadow mis à jour */
     box-shadow:
         inset 0 0 30px rgba(0, 0, 0, 1),
         inset 0 0 8px rgba(255, 255, 255, 0.03),
@@ -199,7 +183,7 @@ body {
 
 .status-line {
     color: var(--vfd-main);
-    font-size: 0.65rem;
+    font-size: 0.98rem;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     text-shadow: 0 0 8px var(--vfd-shadow-main);
@@ -207,10 +191,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-family: "Doto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "ROND"0;
+    background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+    background-size: 3px 4px;
+    background-repeat: repeat;
+    opacity: 0.90;
 }
 
 .eq-preset-ind {
-    font-size: 0.55rem;
+    font-size: 0.98rem;
     letter-spacing: 1.5px;
     color: var(--vfd-main);
     text-shadow: 0 0 8px var(--vfd-shadow-main);
@@ -330,13 +323,12 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: uppercase;
-    opacity: 0.85;
+    opacity: 0.90;
     text-align: center;
     position: relative;
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
     background-size: 3px 4px;
     background-repeat: repeat;
-    padding: 2px 4px;
     border-radius: 1px;
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
@@ -983,7 +975,6 @@ input[type="range"]::-webkit-slider-thumb {
     color: #ff6655;
 }
 
-/* ── TRAY ASSEMBLY ── */
 .tray-assembly {
     position: relative;
     width: 100%;
@@ -1012,7 +1003,6 @@ input[type="range"]::-webkit-slider-thumb {
     width: 100%;
 }
 
-/* EQ Presets row */
 .tray-eq-row {
     display: flex;
     flex-direction: column;
