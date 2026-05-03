@@ -191,6 +191,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
     font-family: "Doto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -199,7 +200,6 @@ body {
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
     background-size: 3px 4px;
     background-repeat: repeat;
-    opacity: 0.90;
 }
 
 .eq-preset-ind {
@@ -208,6 +208,19 @@ body {
     color: var(--vfd-main);
     text-shadow: 0 0 8px var(--vfd-shadow-main);
     opacity: 0.85;
+}
+
+.status-center {
+    font-size: 0.98rem;
+    letter-spacing: 1.5px;
+    color: var(--vfd-main);
+    text-shadow: 0 0 8px var(--vfd-shadow-main);
+    opacity: 0.85;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .timer-row {
@@ -247,16 +260,55 @@ body {
 .digit {
     width: 0.6em;
     text-align: center;
+    position: relative;
+}
+
+.digit::before {
+    content: "8";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .time-sign {
     width: 0.4em;
     text-align: center;
     display: inline-block;
+    position: relative;
+}
+
+.time-sign::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .sep {
     margin: 0 1px;
+    position: relative;
+}
+
+.sep::before {
+    content: ":";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .side-indicators {
@@ -323,7 +375,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: uppercase;
-    opacity: 0.90;
     text-align: center;
     position: relative;
     background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
