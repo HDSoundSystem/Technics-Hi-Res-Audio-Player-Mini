@@ -812,9 +812,13 @@ function startMusicScanTimer() {
 }
 function openArtModal() {
     if (!playlist.length) return;
-    // Populate info from file-info-line
     document.getElementById('art-track-info').innerText = fileInfoLine.innerText;
-    document.getElementById('artModal').style.display = 'flex';
+    document.getElementById('artModal').classList.add('open');
+}
+
+function toggleInfo() {
+    const modal = document.getElementById('infoModal');
+    modal.classList.toggle('open');
 }
 function confirmRestart() { document.getElementById('restartModal').style.display = 'flex'; }
 
@@ -885,5 +889,38 @@ updateTrackDisplay();
             loadTrack(0);
             handlePlay();
         }
+    });
+})();
+
+// ── DRAG pour Art et Info popups ──
+(function initGenericDrag() {
+    [
+        { modal: 'artModal',  handle: 'artDragHandle'  },
+        { modal: 'infoModal', handle: 'infoDragHandle' },
+    ].forEach(({ modal: modalId, handle: handleId }) => {
+        const modal  = document.getElementById(modalId);
+        const handle = document.getElementById(handleId);
+        let dragging = false, ox = 0, oy = 0;
+
+        handle.addEventListener('mousedown', (e) => {
+            dragging = true;
+            const rect = modal.getBoundingClientRect();
+            modal.style.left      = rect.left + 'px';
+            modal.style.top       = rect.top  + 'px';
+            modal.style.transform = 'none';
+            ox = e.clientX - rect.left;
+            oy = e.clientY - rect.top;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            let x = Math.max(0, Math.min(window.innerWidth  - modal.offsetWidth,  e.clientX - ox));
+            let y = Math.max(0, Math.min(window.innerHeight - modal.offsetHeight, e.clientY - oy));
+            modal.style.left = x + 'px';
+            modal.style.top  = y + 'px';
+        });
+
+        document.addEventListener('mouseup', () => { dragging = false; });
     });
 })();

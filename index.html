@@ -366,12 +366,40 @@
             <div id="playlist-items-container"></div>
         </div>
 
-        <div id="artModal" class="modal" onclick="this.style.display='none'">
-            <div class="art-modal-content" onclick="event.stopPropagation()">
+        <!-- Art popup draggable -->
+        <div id="artModal" class="draggable-popup">
+            <div class="draggable-popup-header" id="artDragHandle">
+                <span class="draggable-popup-title">ALBUM ART</span>
+                <button class="draggable-popup-close"
+                    onclick="document.getElementById('artModal').classList.remove('open')">✕</button>
+            </div>
+            <div class="art-popup-body">
                 <div id="art-track-info" class="art-track-info">- - -</div>
                 <img id="modalImg" src="img/art-Technics-cover.png">
                 <img src="img/technics-logo-cover-footer.png"
                     class="art-technics-logo">
+            </div>
+        </div>
+
+        <!-- Info popup draggable -->
+        <div id="infoModal" class="draggable-popup">
+            <div class="draggable-popup-header" id="infoDragHandle">
+                <span class="draggable-popup-title">ABOUT</span>
+                <button class="draggable-popup-close"
+                    onclick="document.getElementById('infoModal').classList.remove('open')">✕</button>
+            </div>
+            <div class="info-popup-body">
+                <img src="img/technics_brand.png" class="info-brand-logo">
+                <div class="info-text">
+                    <span>Technics HR Vintage Player</span>
+                    <span><a
+                            href="https://github.com/HDSoundSystem/Technics-Hi-Res-Audio-Player-Mini"
+                            class="color-link"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            GITHUB
+                        </a></span>
+                </div>
             </div>
         </div>
 

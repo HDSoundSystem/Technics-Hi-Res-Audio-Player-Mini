@@ -72,9 +72,9 @@ body {
     border-radius: 4px 0 0 4px;
     /* Bordure de jonction affinée */
     border-right: 1px solid rgba(0, 0, 0, 0.5);
-    
-    background: 
-        linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.2)),
+
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2)),
         repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
         radial-gradient(ellipse at 20% 50%, #7a5230 0%, #4d331f 100%);
 
@@ -82,7 +82,7 @@ body {
     box-shadow:
         inset 1px 0 2px rgba(255, 255, 255, 0.1),
         inset -1px 0 2px rgba(0, 0, 0, 0.4),
-        -3px 5px 15px rgba(0, 0, 0, 0.5); 
+        -3px 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 /* --- CÔTÉ DROIT (EFFET MIROIR TOTAL) --- */
@@ -92,18 +92,21 @@ body {
     /* On inverse la bordure de jonction */
     border-left: 1px solid rgba(0, 0, 0, 0.5);
 
-    background: 
-        linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.2)),
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2)),
         repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
         /* Miroir du motif : 80% au lieu de 20% */
         radial-gradient(ellipse at 80% 50%, #7a5230 0%, #4d331f 100%);
 
     /* Inversion des ombres internes pour la symétrie lumineuse */
     box-shadow:
-        inset -1px 0 2px rgba(255, 255, 255, 0.1), /* Lumière à droite */
-        inset 1px 0 2px rgba(0, 0, 0, 0.4),        /* Ombre à gauche */
+        inset -1px 0 2px rgba(255, 255, 255, 0.1),
+        /* Lumière à droite */
+        inset 1px 0 2px rgba(0, 0, 0, 0.4),
+        /* Ombre à gauche */
         3px 5px 15px rgba(0, 0, 0, 0.5);
 }
+
 .header-line {
     display: flex;
     justify-content: space-between;
@@ -1128,7 +1131,6 @@ input[type="range"]::-webkit-slider-thumb {
     opacity: 0.7;
 }
 
-/* ── DRAG & DROP OVERLAY ── */
 #drop-overlay {
     display: none;
     position: fixed;
@@ -1169,4 +1171,128 @@ input[type="range"]::-webkit-slider-thumb {
     letter-spacing: 3px;
     color: var(--vfd-main);
     text-shadow: 0 0 10px var(--vfd-shadow-main);
+}
+
+.draggable-popup {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 260px;
+    max-width: 95vw;
+    background: #0a0a0a;
+    border: 1px solid var(--btn-border);
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+}
+
+.draggable-popup.open {
+    display: flex;
+}
+
+.draggable-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #111;
+    border-bottom: 1px solid var(--btn-border);
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.draggable-popup-header:active {
+    cursor: grabbing;
+}
+
+.draggable-popup-title {
+    color: var(--vfd-main);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--vfd-shadow-main);
+}
+
+.draggable-popup-close {
+    background: none;
+    border: none;
+    color: var(--btn-text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.draggable-popup-close:hover {
+    opacity: 1;
+    color: var(--vfd-red);
+}
+
+/* Art popup */
+.art-popup-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    width: 500px;
+}
+
+.art-popup-body img#modalImg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 1px solid #2a2a2a;
+    border-radius: 3px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
+}
+
+/* Info popup */
+.info-popup-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+}
+
+.info-brand-logo {
+    width: 170px;
+    height: auto;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px var(--vfd-shadow-main));
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.info-text span {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: var(--vfd-main);
+    opacity: 0.45;
+    text-transform: uppercase;
+}
+
+.color-link {
+    color: var(--btn-text);
+    text-decoration: none;
+}
+
+.color-link:hover {
+    opacity: 0.8;
 }
