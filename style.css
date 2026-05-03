@@ -260,16 +260,55 @@ body {
 .digit {
     width: 0.6em;
     text-align: center;
+    position: relative;
+}
+
+.digit::before {
+    content: "8";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .time-sign {
     width: 0.4em;
     text-align: center;
     display: inline-block;
+    position: relative;
+}
+
+.time-sign::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .sep {
     margin: 0 1px;
+    position: relative;
+}
+
+.sep::before {
+    content: ":";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
 }
 
 .side-indicators {
