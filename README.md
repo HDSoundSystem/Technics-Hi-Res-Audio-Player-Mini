@@ -2,7 +2,7 @@
 
 A high-fidelity web application emulating the aesthetics and user experience of the iconic Technics CD player from the 1990s.
 
-<img width="1616" height="749" alt="Capture d’écran 2026-05-03 083952" src="https://github.com/user-attachments/assets/b14be3fb-51b0-41f0-916f-74d478797321" />
+<img width="1847" height="834" alt="Capture d’écran 2026-05-04 214929" src="https://github.com/user-attachments/assets/260dab3f-b5c4-4f0a-b4ff-876b3b2057f6" />
 
 ## 📱 Overview
 
