@@ -1403,9 +1403,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 50%;
     transform: rotate(var(--knob-angle, -81deg));
     will-change: transform;
-
     background-color: #262626;
-
     border: 3px solid transparent;
     background-origin: border-box;
     background-clip: padding-box, border-box;
