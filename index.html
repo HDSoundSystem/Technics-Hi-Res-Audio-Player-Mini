@@ -205,9 +205,9 @@
                                     <span class="tray-row-label">EQ
                                         PRESETS</span>
                                     <div class="tray-eq-buttons">
-										<button
-                                            onclick="EQCustom">EQ CUSTOM</button>
-										<div class="vertical-separator"></div>
+                                        <button
+                                            class="btn-eq-custom" onclick="EQCustom">EQ
+                                            CUSTOM</button>
                                         <button
                                             onclick="applyEQPreset('rock')">ROCK</button>
                                         <button
@@ -223,29 +223,25 @@
                                         <button
                                             onclick="applyEQPreset('vocal')">VOCAL</button>
                                         <button
-                                            onclick="applyEQPreset('flat')">FLAT</button>
+                                            class="btn-eq-flat" onclick="applyEQPreset('flat')">FLAT</button>
                                     </div>
                                 </div>
                                 <div class="tray-hidden-buttons">
                                     <div><button onclick="changeToneFlat()">TONE
                                             FLAT</button></div>
-					<div class="vertical-separator"></div>
-<div><button onclick="toggleSpectrum()">GRAPH</button></div>
-<div class="vertical-separator"></div>
-					<div><button onclick="toggleVUMode()">VU METER</button></div>
                                     
+                                    <div><button
+                                            onclick="toggleSpectrum()">GRAPH</button></div>
+                                    <div><button onclick="toggleVUMode()">VU
+                                            METER</button></div>
                                     <div><button onclick="changeVUGain(-0.2)">VU
                                             METER -</button></div>
                                     <div><button onclick="changeVUGain(0.2)">VU
                                             METER +</button></div>
-                                    
-                                    
-                                    <div class="vertical-separator"></div>
                                     <div><button onclick="openPlaylist()">TRACK
                                             LIST</button></div>
                                     <div><button onclick="openArtModal()">TRACK
                                             COVER</button></div>
-                                    <div class="vertical-separator"></div>
                                     <div><button
                                             onclick="toggleInfo()">INFORMATION</button></div>
                                 </div>
@@ -262,53 +258,54 @@
                             <div class="volume-knob-container">
                                 <div class="volume-knob" id="volumeKnob"></div>
                                 <div class="knob-left-zone" id="knobLeft"></div>
-                                <div class="knob-right-zone" id="knobRight"></div>
+                                <div class="knob-right-zone"
+                                    id="knobRight"></div>
                             </div>
                         </div>
                         <div class="ctrl-group">
-                        <div class="ctrl-group-label">BALANCE</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button class="btn-balance"
-                                onclick="changeBalance(-0.1)"
-                                onmouseenter="showBalance()"
-                                onmouseleave="delayedStatusReset()">
-                                −</button>
-                            <button class="btn-balance"
-                                onclick="changeBalance(0.1)"
-                                onmouseenter="showBalance()"
-                                onmouseleave="delayedStatusReset()">
-                                +</button>
+                            <div class="ctrl-group-label">BALANCE</div>
+                            <div class="ctrl-row ctrl-row-2">
+                                <button class="btn-balance"
+                                    onclick="changeBalance(-0.1)"
+                                    onmouseenter="showBalance()"
+                                    onmouseleave="delayedStatusReset()">
+                                    −</button>
+                                <button class="btn-balance"
+                                    onclick="changeBalance(0.1)"
+                                    onmouseenter="showBalance()"
+                                    onmouseleave="delayedStatusReset()">
+                                    +</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="ctrl-group">
-                        <div class="ctrl-group-label">Tone</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeBass(-2)"
-                                onmouseenter="showBass()"
-                                onmouseleave="delayedStatusReset()">BASS
-                                −</button>
-                            <button onclick="changeBass(2)"
-                                onmouseenter="showBass()"
-                                onmouseleave="delayedStatusReset()">BASS
-                                +</button>
+                        <div class="ctrl-group">
+                            <div class="ctrl-group-label">Tone</div>
+                            <div class="ctrl-row ctrl-row-2">
+                                <button onclick="changeBass(-2)"
+                                    onmouseenter="showBass()"
+                                    onmouseleave="delayedStatusReset()">BASS
+                                    −</button>
+                                <button onclick="changeBass(2)"
+                                    onmouseenter="showBass()"
+                                    onmouseleave="delayedStatusReset()">BASS
+                                    +</button>
+                            </div>
+                            <div class="ctrl-row ctrl-row-2">
+                                <button onclick="changeTreble(-2)"
+                                    onmouseenter="showTreble()"
+                                    onmouseleave="delayedStatusReset()">TREBLE
+                                    −</button>
+                                <button onclick="changeTreble(2)"
+                                    onmouseenter="showTreble()"
+                                    onmouseleave="delayedStatusReset()">TREBLE
+                                    +</button>
+                            </div>
+                            <div class="ctrl-row ctrl-row-2">
+                                <button
+                                    onclick="toggleLoudness()">Loudness</button>
+                                <button onclick="toggleMono()">Mono</button>
+                            </div>
                         </div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="changeTreble(-2)"
-                                onmouseenter="showTreble()"
-                                onmouseleave="delayedStatusReset()">TREBLE
-                                −</button>
-                            <button onclick="changeTreble(2)"
-                                onmouseenter="showTreble()"
-                                onmouseleave="delayedStatusReset()">TREBLE
-                                +</button>
-                        </div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="toggleLoudness()">Loudness</button>
-                            <button onclick="toggleMono()">Mono</button>
-                        </div>
-                    </div>
-                                                
 
                     </div>
 
@@ -324,103 +321,103 @@
                                 SCAN</button>
                         </div></div>
 
-                         <div class="ctrl-group-label">Search</div>
-                        <div class="ctrl-row ctrl-row-2">
-                            <button onclick="skip(-10)">-10s</button>
-                            <button onclick="skip(10)">+10s</button>
-                        </div>
+                    <div class="ctrl-group-label">Search</div>
+                    <div class="ctrl-row ctrl-row-2">
+                        <button onclick="skip(-10)">-10s</button>
+                        <button onclick="skip(10)">+10s</button>
+                    </div>
 
-                        <div class="shuttle-zone">
-                            <div class="shuttle-label">Jog Shuttle</div>
-                            <input type="range" id="shuttle" min="-10" max="10"
-                                value="0"
-                                oninput="doShuttle(this.value)"
-                                onchange="resetShuttle()">
-                        </div>
+                    <div class="shuttle-zone">
+                        <div class="shuttle-label">Jog Shuttle</div>
+                        <input type="range" id="shuttle" min="-10" max="10"
+                            value="0"
+                            oninput="doShuttle(this.value)"
+                            onchange="resetShuttle()">
+                    </div>
                     <div class="ctrl-group">
 
-                   
-
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <input type="file" id="file-in" style="display:none" accept="audio/*"
-            multiple>
+            <input type="file" id="file-in" style="display:none"
+                accept="audio/*"
+                multiple>
 
-        <!-- Restart confirmation modal -->
-        <div id="restartModal" class="modal">
-            <div class="modal-confirm" onclick="event.stopPropagation()">
-                <div class="confirm-icon"><i
-                        class="fa-solid fa-power-off"></i></div>
-                <div class="confirm-title">Restart the application ?</div>
-                <div class="confirm-sub">The current playback will be
-                    interrupted.</div>
-                <div class="confirm-buttons">
-                    <button class="btn-confirm-cancel"
-                        onclick="document.getElementById('restartModal').style.display='none'">Cancel</button>
-                    <button class="btn-confirm-ok"
-                        onclick="location.reload()">Restart</button>
+            <!-- Restart confirmation modal -->
+            <div id="restartModal" class="modal">
+                <div class="modal-confirm" onclick="event.stopPropagation()">
+                    <div class="confirm-icon"><i
+                            class="fa-solid fa-power-off"></i></div>
+                    <div class="confirm-title">Restart the application ?</div>
+                    <div class="confirm-sub">The current playback will be
+                        interrupted.</div>
+                    <div class="confirm-buttons">
+                        <button class="btn-confirm-cancel"
+                            onclick="document.getElementById('restartModal').style.display='none'">Cancel</button>
+                        <button class="btn-confirm-ok"
+                            onclick="location.reload()">Restart</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="playlistModal" class="playlist-popup">
-            <div class="playlist-resize-handle" id="playlistResizeHandle"></div>
-            <div class="playlist-popup-header" id="playlistDragHandle">
-                <span class="playlist-popup-title">TRACK LIST</span>
-                <div class="playlist-popup-actions">
-                    <label class="playlist-eject-btn" title="Add files">
-                        <i class="fa fa-eject"></i>
-                        <input type="file" accept="audio/*" multiple
-                            style="display:none"
-                            onchange="playlistAddFiles(this)">
-                    </label>
-                    <button class="playlist-close-btn"
-                        onclick="closePlaylist()">✕</button>
+            <div id="playlistModal" class="playlist-popup">
+                <div class="playlist-resize-handle"
+                    id="playlistResizeHandle"></div>
+                <div class="playlist-popup-header" id="playlistDragHandle">
+                    <span class="playlist-popup-title">TRACK LIST</span>
+                    <div class="playlist-popup-actions">
+                        <label class="playlist-eject-btn" title="Add files">
+                            <i class="fa fa-eject"></i>
+                            <input type="file" accept="audio/*" multiple
+                                style="display:none"
+                                onchange="playlistAddFiles(this)">
+                        </label>
+                        <button class="playlist-close-btn"
+                            onclick="closePlaylist()">✕</button>
+                    </div>
+                </div>
+                <div id="playlist-items-container"></div>
+            </div>
+
+            <!-- Art popup draggable -->
+            <div id="artModal" class="draggable-popup">
+                <div class="draggable-popup-header" id="artDragHandle">
+                    <span class="draggable-popup-title">ALBUM ART</span>
+                    <button class="draggable-popup-close"
+                        onclick="document.getElementById('artModal').classList.remove('open')">✕</button>
+                </div>
+                <div class="art-popup-body">
+                    <div id="art-track-info" class="art-track-info">- - -</div>
+                    <img id="modalImg" src="img/art-Technics-cover.png">
+                    <img src="img/technics-logo-cover-footer.png"
+                        class="art-technics-logo">
                 </div>
             </div>
-            <div id="playlist-items-container"></div>
-        </div>
 
-        <!-- Art popup draggable -->
-        <div id="artModal" class="draggable-popup">
-            <div class="draggable-popup-header" id="artDragHandle">
-                <span class="draggable-popup-title">ALBUM ART</span>
-                <button class="draggable-popup-close"
-                    onclick="document.getElementById('artModal').classList.remove('open')">✕</button>
-            </div>
-            <div class="art-popup-body">
-                <div id="art-track-info" class="art-track-info">- - -</div>
-                <img id="modalImg" src="img/art-Technics-cover.png">
-                <img src="img/technics-logo-cover-footer.png"
-                    class="art-technics-logo">
-            </div>
-        </div>
-
-        <!-- Info popup draggable -->
-        <div id="infoModal" class="draggable-popup">
-            <div class="draggable-popup-header" id="infoDragHandle">
-                <span class="draggable-popup-title">ABOUT</span>
-                <button class="draggable-popup-close"
-                    onclick="document.getElementById('infoModal').classList.remove('open')">✕</button>
-            </div>
-            <div class="info-popup-body">
-                <img src="img/technics_brand.png" class="info-brand-logo">
-                <div class="info-text">
-                    <span>Technics HR Vintage Player</span>
-                    <span><a
-                            href="https://github.com/HDSoundSystem/Technics-Hi-Res-Audio-Player-Mini"
-                            class="color-link"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            GITHUB
-                        </a></span>
+            <!-- Info popup draggable -->
+            <div id="infoModal" class="draggable-popup">
+                <div class="draggable-popup-header" id="infoDragHandle">
+                    <span class="draggable-popup-title">ABOUT</span>
+                    <button class="draggable-popup-close"
+                        onclick="document.getElementById('infoModal').classList.remove('open')">✕</button>
+                </div>
+                <div class="info-popup-body">
+                    <img src="img/technics_brand.png" class="info-brand-logo">
+                    <div class="info-text">
+                        <span>Technics HR Vintage Player</span>
+                        <span><a
+                                href="https://github.com/HDSoundSystem/Technics-Hi-Res-Audio-Player-Mini"
+                                class="color-link"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                GITHUB
+                            </a></span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <audio id="audio" crossorigin="anonymous" playsinline></audio>
-        <script src="script.js"></script>
-    </body>
-</html>
+            <audio id="audio" crossorigin="anonymous" playsinline></audio>
+            <script src="script.js"></script>
+        </body>
+    </html>

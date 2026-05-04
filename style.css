@@ -1,28 +1,4 @@
-:root {
-    --vfd-main: #a3a3a3;
-    --vfd-red: #ff3c22;
-    --vfd-orange: #ff8800;
-    --vfd-glow: rgb(87, 87, 87);
-    --vfd-shadow-main: rgba(176, 254, 255, 0.35);
-    --vfd-shadow-red: rgba(255, 60, 34, 0.6);
-    --vfd-sep-line: #1a1a1a;
-    --bg-color: #535353;
-    --panel-color: #1e1e1e;
-    --panel-top: #2b2b2b;
-    --panel-bottom: #161616;
-    --text-color: #b0b0b0;
-    --header-text: #777;
-    --panel-border: #111;
-    --display-border: #0a0a0a;
-    --btn-bg: #252525;
-    --btn-border: #3a3a3a;
-    --btn-text: #949494;
-    --shuttle-bg: #0a0a0a;
-    --shuttle-thumb: #262626;
-    --shuttle-label: #a8a8a8;
-    --shadow-main: rgba(0, 0, 0, 0.95);
-    --accent-line: #c8a84b;
-}
+@import url('css/root.css');
 
 * {
     box-sizing: border-box;
@@ -1088,15 +1064,16 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-inner {
     display: flex;
+    align-items: center;
     flex-direction: column;
     gap: 5px;
-    width: 100%;
 }
 
 .tray-eq-row {
     display: flex;
+    align-items: center;
     flex-direction: column;
-    gap: 3px;
+    gap: 5px;
     border-bottom: 1px solid #2a2a2a;
     padding-bottom: 5px;
 }
@@ -1113,15 +1090,22 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-eq-buttons {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(9, 10fr);
     gap: 10px;
+}
+
+.btn-eq-custom{
+    margin-right: 20px;
+}
+
+.btn-eq-flat{
+    margin-left: 20px;
 }
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(12, auto);
+    grid-template-columns: repeat(8, 10fr);
     gap: 10px;
-    margin-bottom: -8px;
 }
 
 .tray-door {
@@ -1150,7 +1134,6 @@ input[type="range"]::-webkit-slider-thumb {
     height: 30px;
     background-color: rgb(117, 117, 117);
     opacity: 0.5;
-    margin: 5px 5px;
 }
 
 .spectrum-outer {
@@ -1315,7 +1298,6 @@ input[type="range"]::-webkit-slider-thumb {
     color: var(--vfd-red);
 }
 
-/* Art popup */
 .art-popup-body {
     display: flex;
     flex-direction: column;
@@ -1335,7 +1317,6 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
 }
 
-/* Info popup */
 .info-popup-body {
     display: flex;
     flex-direction: column;
@@ -1376,7 +1357,7 @@ input[type="range"]::-webkit-slider-thumb {
 .color-link:hover {
     opacity: 0.8;
 }
-/* ── VOLUME ROTARY KNOB ── */
+
 .volume-knob-wrap {
     display: flex;
     justify-content: center;
@@ -1396,22 +1377,18 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     transform: rotate(var(--knob-angle, -81deg));
     will-change: transform;
-    /* Rendu ultra-lisse et minimaliste */
-    background: conic-gradient(
-        from 0deg,
-        #212121 0deg,
-        #262626 90deg,
-        #212121 180deg,
-        #262626 270deg,
-        #212121 360deg
-    );
+    background: conic-gradient(from 0deg,
+            #212121 0deg,
+            #262626 90deg,
+            #212121 180deg,
+            #262626 270deg,
+            #212121 360deg);
     box-shadow:
         0 0 0 2px #1a1a1a,
         0 0 0 4px #2a2a2a,
-        0 8px 25px rgba(0,0,0,0.6),
-        0 2px 5px rgba(0,0,0,0.8),
-        /* Ombre diffuse interne pour le relief sans taches */
-        inset 0 0 15px rgba(0,0,0,0.5);
+        0 8px 25px rgba(0, 0, 0, 0.6),
+        0 2px 5px rgba(0, 0, 0, 0.8),
+        inset 0 0 15px rgba(0, 0, 0, 0.5);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -1420,14 +1397,16 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow:
         0 0 0 2px #181818,
         0 0 0 4px #2a2a2a,
-        0 4px 10px rgba(0,0,0,0.8),
-        inset 0 1px 1px rgba(255,255,255,0.05);
+        0 4px 10px rgba(0, 0, 0, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .knob-left-zone {
     position: absolute;
-    top: 0; left: 0;
-    width: 50%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
     border-radius: 150px 0 0 150px;
     cursor: w-resize;
     z-index: 10;
@@ -1435,8 +1414,10 @@ input[type="range"]::-webkit-slider-thumb {
 
 .knob-right-zone {
     position: absolute;
-    top: 0; right: 0;
-    width: 50%; height: 100%;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
     border-radius: 0 150px 150px 0;
     cursor: e-resize;
     z-index: 10;
@@ -1446,8 +1427,8 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow:
         0 0 0 2px #111,
         0 0 0 4px #333,
-        0 3px 10px rgba(0,0,0,0.8),
-        0 1px 2px rgba(0,0,0,0.9),
-        inset 0 1px 0 rgba(255,255,255,0.08),
-        inset 0 -1px 0 rgba(0,0,0,0.5);
+        0 3px 10px rgba(0, 0, 0, 0.8),
+        0 1px 2px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
