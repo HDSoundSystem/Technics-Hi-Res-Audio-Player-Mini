@@ -1119,7 +1119,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tray-hidden-buttons {
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(12, auto);
     gap: 10px;
     margin-bottom: -8px;
 }
@@ -1383,38 +1383,35 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: 20px;
 }
 
-.volume-knob {
+.volume-knob-container {
     position: relative;
     width: 150px;
     height: 150px;
+}
+
+.volume-knob {
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
     cursor: pointer;
-    /* Base de couleur #212121 avec reflets profonds */
-    background:
-        /* Reflet de lumière incident (haut-gauche) */
-        radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.12) 0%, transparent 50%),
-        /* Ombre portée interne (bas-droite) */
-        radial-gradient(ellipse at 70% 80%, rgba(0,0,0,0.5) 0%, transparent 50%),
-        /* Dégradé conique pour l'effet métal brossé sombre */
-        conic-gradient(
-            from 0deg,
-            #212121 0deg,
-            #2a2a2a 45deg,
-            #333333 90deg,
-            #2a2a2a 135deg,
-            #212121 180deg,
-            #2a2a2a 225deg,
-            #333333 270deg,
-            #2a2a2a 315deg,
-            #212121 360deg
-        );
+    transform: rotate(var(--knob-angle, -81deg));
+    will-change: transform;
+    /* Rendu ultra-lisse et minimaliste */
+    background: conic-gradient(
+        from 0deg,
+        #212121 0deg,
+        #262626 90deg,
+        #212121 180deg,
+        #262626 270deg,
+        #212121 360deg
+    );
     box-shadow:
-        0 0 0 2px #181818,          /* Bordure immédiate plus sombre */
-        0 0 0 4px #2a2a2a,          /* Anneau extérieur */
-        0 8px 25px rgba(0,0,0,0.7),  /* Ombre portée principale */
-        0 2px 5px rgba(0,0,0,0.8),   /* Ombre de contact */
-        inset 0 1px 1px rgba(255,255,255,0.08), /* Micro-reflet sur l'arête */
-        inset 0 -1px 2px rgba(0,0,0,0.6);      /* Profondeur basse */
+        0 0 0 2px #1a1a1a,
+        0 0 0 4px #2a2a2a,
+        0 8px 25px rgba(0,0,0,0.6),
+        0 2px 5px rgba(0,0,0,0.8),
+        /* Ombre diffuse interne pour le relief sans taches */
+        inset 0 0 15px rgba(0,0,0,0.5);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -1433,7 +1430,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 50%; height: 100%;
     border-radius: 150px 0 0 150px;
     cursor: w-resize;
-    z-index: 2;
+    z-index: 10;
 }
 
 .knob-right-zone {
@@ -1442,7 +1439,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 50%; height: 100%;
     border-radius: 0 150px 150px 0;
     cursor: e-resize;
-    z-index: 2;
+    z-index: 10;
 }
 
 .volume-knob:active {
