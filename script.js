@@ -767,7 +767,6 @@ function changeVolume(d) {
 }
 function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 10)}`); }
 
-// ── KNOB ROTATION ──────────────────────────────────────────────
 function _syncKnob() {
     const knob = document.getElementById('volumeKnob');
     if (!knob) return;
