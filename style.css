@@ -1139,22 +1139,41 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-door {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 50%, var(--panel-bottom) 100%);
+    background: linear-gradient(
+    180deg,
+    var(--panel-top) 0%,
+    var(--panel-top) 2%,
+    #171717 30%, 
+    var(--panel-bottom) 95%, 
+    var(--panel-bottom) 100%
+);
     border: 2px solid var(--panel-border);
-    border-bottom: 3px solid #080808;
+    border-bottom: 1px solid #080808;
     border-radius: 2px;
     transform: translateY(0);
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     cursor: pointer;
-}
-
-.tray-door:hover {
-    filter: brightness(0.95);
+    box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
 }
 
 .tray-door.tray-open {
     transform: translateY(95%);
+}
+
+.door-label {
+    font-size: 9px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--btn-text);
+    margin-left: 5px;
+    user-select: none;
+    text-shadow:
+        -1px -1px 0px rgba(0, 0, 0, 0.6),
+        1px 1px 1px rgba(255, 255, 255, 0.1);
 }
 
 .vertical-separator {
