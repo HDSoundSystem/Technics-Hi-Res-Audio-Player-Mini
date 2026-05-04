@@ -760,8 +760,59 @@ function updateTrackDisplay() {
     }
 }
 function skip(v) { audio.currentTime += v; }
-function changeVolume(d) { audio.volume = Math.min(1, Math.max(0, audio.volume + d)); showVolume(); }
-function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 10)}`); }
+function changeVolume(d) {
+    audio.volume = Math.min(1, Math.max(0, audio.volume + d));
+    showVolume();
+    _syncKnob();
+}
+function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 20)}`); }
+
+function _syncKnob() {
+    const knob = document.getElementById('volumeKnob');
+    if (!knob) return;
+    const angle = -135 + audio.volume * 270;
+    knob.style.setProperty('--knob-angle', angle.toFixed(2) + 'deg');
+}
+
+(function initKnob() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const knob  = document.getElementById('volumeKnob');
+        const zoneL = document.getElementById('knobLeft');
+        const zoneR = document.getElementById('knobRight');
+        if (!knob || !zoneL || !zoneR) return;
+
+        let holdInterval = null;
+        const STEP = 0.02;      // volume step per tick
+        const RATE = 30;        // ms per tick — smooth continuous rotation
+
+        function startHold(direction) {
+            stopHold();
+            changeVolume(direction * STEP); // immediate first tick
+            holdInterval = setInterval(() => changeVolume(direction * STEP), RATE);
+        }
+
+        function stopHold() {
+            if (holdInterval !== null) {
+                clearInterval(holdInterval);
+                holdInterval = null;
+            }
+        }
+
+        zoneL.addEventListener('mousedown', (e) => { e.preventDefault(); startHold(-1); });
+        zoneR.addEventListener('mousedown', (e) => { e.preventDefault(); startHold(+1); });
+
+        // Stop only on mouseup
+        document.addEventListener('mouseup', stopHold);
+
+        // Scroll wheel
+        knob.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            changeVolume(e.deltaY < 0 ? 0.05 : -0.05);
+        }, { passive: false });
+
+        _syncKnob();
+    });
+})();
 function changeBalance(d) {
     if (!pannerNode) return;
     balanceLevel = Math.min(1, Math.max(-1, Math.round((balanceLevel + d) * 10) / 10));
