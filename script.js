@@ -765,7 +765,7 @@ function changeVolume(d) {
     showVolume();
     _syncKnob();
 }
-function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 10)}`); }
+function showVolume() { showCenter(`VOL: ${Math.round(audio.volume * 20)}`); }
 
 function _syncKnob() {
     const knob = document.getElementById('volumeKnob');
