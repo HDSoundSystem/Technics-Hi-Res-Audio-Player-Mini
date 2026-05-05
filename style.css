@@ -1142,9 +1142,9 @@ input[type="range"]::-webkit-slider-thumb {
     background: linear-gradient(
     180deg,
     var(--panel-top) 0%,
-    var(--panel-top) 2%,
-    #171717 30%, 
-    var(--panel-bottom) 95%, 
+    var(--panel-top) 0%,
+    #171717 0%, 
+    var(--panel-bottom) 97%, 
     var(--panel-bottom) 100%
 );
     border: 2px solid var(--panel-border);
