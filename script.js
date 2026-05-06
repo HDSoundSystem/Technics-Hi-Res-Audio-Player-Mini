@@ -313,7 +313,19 @@ function prevTrack() { if (!playlist.length) return; currentIndex = (currentInde
 audio.onended = () => {
     clearTimeout(musicScanTimer);
     if (repeatMode === 1) { audio.currentTime = 0; audio.play(); }
-    else { nextTrack(); }
+    else if (repeatMode === 2) { nextTrack(); }
+    else {
+        // Pas de repeat : avancer seulement s'il reste des titres
+        if (currentIndex < playlist.length - 1) {
+            currentIndex++;
+            loadTrack(currentIndex);
+            handlePlay();
+        } else {
+            // Dernier titre : stopper proprement
+            audio.currentTime = 0;
+            updateStatusText();
+        }
+    }
 };
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
 
