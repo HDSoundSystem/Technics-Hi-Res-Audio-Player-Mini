@@ -309,7 +309,7 @@ function handlePlay() {
 function handlePause() { audio.pause(); updateStatusText(); if (audio.currentTime > 0) startPauseBlink(); }
 function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
-function prevTrack() { if (!playlist.length) return; currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); }
+function prevTrack() { if (!playlist.length) return; if (audio.currentTime > 3) { audio.currentTime = 0; if (audio.paused) handlePlay(); } else { currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); } }
 audio.onended = () => {
     clearTimeout(musicScanTimer);
     if (repeatMode === 1) { audio.currentTime = 0; audio.play(); }
