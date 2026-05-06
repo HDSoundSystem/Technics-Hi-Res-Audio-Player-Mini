@@ -427,5 +427,28 @@
 
             <audio id="audio" crossorigin="anonymous" playsinline></audio>
             <script src="script.js"></script>
+        <!-- EQ Custom popup -->
+        <div id="eqCustomModal" class="draggable-popup">
+            <div class="draggable-popup-header" id="eqCustomDragHandle">
+                <span class="draggable-popup-title">EQ CUSTOM</span>
+                <button class="draggable-popup-close" onclick="document.getElementById('eqCustomModal').classList.remove('open')">✕</button>
+            </div>
+            <div class="eq-custom-body">
+                <canvas id="eqCurveCanvas" class="eq-curve-canvas" width="440" height="90"></canvas>
+                <div class="eq-bands">
+                    <div class="eq-band" data-band="0"><span class="eq-band-val" id="eqVal0">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb0"></div></div></div><span class="eq-band-freq">32</span></div>
+                    <div class="eq-band" data-band="1"><span class="eq-band-val" id="eqVal1">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb1"></div></div></div><span class="eq-band-freq">64</span></div>
+                    <div class="eq-band" data-band="2"><span class="eq-band-val" id="eqVal2">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb2"></div></div></div><span class="eq-band-freq">125</span></div>
+                    <div class="eq-band" data-band="3"><span class="eq-band-val" id="eqVal3">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb3"></div></div></div><span class="eq-band-freq">250</span></div>
+                    <div class="eq-band" data-band="4"><span class="eq-band-val" id="eqVal4">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb4"></div></div></div><span class="eq-band-freq">500</span></div>
+                    <div class="eq-band" data-band="5"><span class="eq-band-val" id="eqVal5">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb5"></div></div></div><span class="eq-band-freq">1k</span></div>
+                    <div class="eq-band" data-band="6"><span class="eq-band-val" id="eqVal6">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb6"></div></div></div><span class="eq-band-freq">2k</span></div>
+                    <div class="eq-band" data-band="7"><span class="eq-band-val" id="eqVal7">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb7"></div></div></div><span class="eq-band-freq">4k</span></div>
+                    <div class="eq-band" data-band="8"><span class="eq-band-val" id="eqVal8">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb8"></div></div></div><span class="eq-band-freq">8k</span></div>
+                    <div class="eq-band" data-band="9"><span class="eq-band-val" id="eqVal9">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb9"></div></div></div><span class="eq-band-freq">16k</span></div>
+                </div>
+            </div>
+        </div>
+
         </body>
     </html>
