@@ -30,6 +30,7 @@ function getVFDColor(name) { return getComputedStyle(document.documentElement).g
 let isMuted = false;
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
+function updateEjectAnimation() { const btn = document.querySelector('.btn-open'); if (btn) btn.classList.toggle('no-track', playlist.length === 0); }
 
 // Cache covers per file name
 const coverCache = {};
@@ -109,6 +110,7 @@ function removeTrack(index) {
         audio.pause(); audio.src = '';
         currentIndex = 0;
         updateStatusText();
+        updateEjectAnimation();
         closePlaylist();
         return;
     }
@@ -148,6 +150,7 @@ function playlistAddFiles(input) {
         handlePlay();
         renderPlaylistItems();
     }
+    updateEjectAnimation();
     input.value = '';
 }
 
@@ -205,7 +208,7 @@ function playlistAddFiles(input) {
 function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; showCenter("SELECT: " + digitEntry, 1500); digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
-fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); } };
+fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); updateEjectAnimation(); } };
 
 function loadTrack(index) {
     const file = playlist[index];
@@ -1124,6 +1127,7 @@ updateTrackDisplay();
             loadTrack(0);
             handlePlay();
         }
+        updateEjectAnimation();
     });
 })();
 
@@ -1163,3 +1167,6 @@ updateTrackDisplay();
     });
     });
 })();
+
+// Init eject animation state on page load
+document.addEventListener('DOMContentLoaded', updateEjectAnimation);
