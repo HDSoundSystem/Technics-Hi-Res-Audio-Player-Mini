@@ -330,26 +330,17 @@ function toggleBypass() {
 
     if (isBypass) {
         document.getElementById('ind-bypass').classList.add('active');
-        // Sauvegarder l'état actuel
-        bypassSnapshot = { bass: bassLevel, treble: trebleLevel, loudness: loudnessOn };
-        // Couper bass
-        bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-        // Couper treble
-        trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-        // Couper loudness
+        bypassSnapshot = { gains: [...eqGains], loudness: loudnessOn };
+        eqFilters.forEach(f => f.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05));
         loudnessGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.05);
         document.getElementById('ind-loudness').classList.remove('active');
     } else {
-        // Restaurer depuis snapshot
         if (bypassSnapshot) {
-            bassFilter.gain.setTargetAtTime(bypassSnapshot.bass, audioCtx.currentTime, 0.05);
-            trebleFilter.gain.setTargetAtTime(bypassSnapshot.treble, audioCtx.currentTime, 0.05);
+            applyEQGains(bypassSnapshot.gains, true);
             if (bypassSnapshot.loudness) {
                 loudnessGain.gain.setTargetAtTime(1.5, audioCtx.currentTime, 0.05);
                 document.getElementById('ind-loudness').classList.add('active');
             }
-            bassLevel = bypassSnapshot.bass;
-            trebleLevel = bypassSnapshot.treble;
             loudnessOn = bypassSnapshot.loudness;
         }
         document.getElementById('ind-bypass').classList.remove('active');
@@ -380,11 +371,11 @@ function initAudio() {
     specAnalyser.smoothingTimeConstant = 0.75;
     specDataArray = new Uint8Array(specAnalyser.frequencyBinCount);
 
-    // EQ filters
-    bassFilter = audioCtx.createBiquadFilter();
-    bassFilter.type = 'lowshelf'; bassFilter.frequency.value = 250; bassFilter.gain.value = 0;
-    trebleFilter = audioCtx.createBiquadFilter();
-    trebleFilter.type = 'highshelf'; trebleFilter.frequency.value = 4000; trebleFilter.gain.value = 0;
+    // 10-band EQ filters
+    const filters = initEQFilters();
+    // Keep bassFilter/trebleFilter pointing to first/last for bypass compatibility
+    bassFilter   = filters[0];
+    trebleFilter = filters[9];
 
     // Loudness gain
     loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
@@ -395,10 +386,10 @@ function initAudio() {
     // Mono merger
     channelMerger = audioCtx.createChannelMerger(2);
 
-    // Signal chain
-    source.connect(bassFilter);
-    bassFilter.connect(trebleFilter);
-    trebleFilter.connect(loudnessGain);
+    // Signal chain: source → eq0 → eq1 → … → eq9 → loudness → panner → splitter
+    source.connect(filters[0]);
+    for (let i = 0; i < filters.length - 1; i++) filters[i].connect(filters[i+1]);
+    filters[filters.length-1].connect(loudnessGain);
     loudnessGain.connect(pannerNode);
     pannerNode.connect(splitter);
     splitter.connect(analyserL, 0);
@@ -666,10 +657,9 @@ function changeTreble(d) {
 function showTreble() { showCenter(`TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`); }
 
 function changeToneFlat() {
-    if (!bassFilter || !trebleFilter) return;
+    if (!eqFilters.length) return;
+    applyEQGains(new Array(10).fill(0), true);
     bassLevel = 0; trebleLevel = 0;
-    bassFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
-    trebleFilter.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
     currentPreset = null;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = '';
@@ -677,28 +667,203 @@ function changeToneFlat() {
     setTimeout(updateStatusText, 1500);
 }
 
+// ── 10-BAND EQ ──────────────────────────────────────────────────
+const EQ_FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+let eqFilters = [];      // 10 BiquadFilter nodes
+let eqGains   = new Array(10).fill(0); // current gains
+
+function initEQFilters() {
+    // Create 10 peaking filters (first=low-shelf, last=high-shelf)
+    eqFilters = EQ_FREQS.map((freq, i) => {
+        const f = audioCtx.createBiquadFilter();
+        if (i === 0) { f.type = 'lowshelf'; }
+        else if (i === 9) { f.type = 'highshelf'; }
+        else { f.type = 'peaking'; f.Q.value = 1.4; }
+        f.frequency.value = freq;
+        f.gain.value = 0;
+        return f;
+    });
+    // Chain: source → eq0 → eq1 → … → eq9 → loudnessGain
+    return eqFilters;
+}
+
+function applyEQGains(gains, smooth) {
+    if (!eqFilters.length) return;
+    const t = audioCtx ? audioCtx.currentTime : 0;
+    gains.forEach((g, i) => {
+        eqGains[i] = g;
+        if (smooth) eqFilters[i].gain.setTargetAtTime(g, t, 0.02);
+        else eqFilters[i].gain.value = g;
+    });
+    syncEQSliders();
+    drawEQCurve();
+}
+
+function gainToPercent(g) { return (g + 12) / 24; } // 0=bottom, 1=top
+function percentToGain(p) { return Math.round((p * 24 - 12) * 2) / 2; } // step 0.5
+
+function syncEQSliders() {
+    eqGains.forEach((g, i) => {
+        const vl = document.getElementById('eqVal' + i);
+        if (vl) vl.textContent = (g > 0 ? '+' : '') + parseFloat(g).toFixed(g % 1 === 0 ? 0 : 1);
+        setThumbPos(i, g);
+    });
+}
+
+function setThumbPos(band, gain) {
+    const thumb = document.getElementById('eqThumb' + band);
+    if (!thumb) return;
+    const track = thumb.parentElement;
+    const trackH = track.clientHeight || 160;
+    // gain +12 = top (0%), gain -12 = bottom (100%)
+    const pct = 1 - gainToPercent(gain);
+    thumb.style.bottom = ((1 - pct) * trackH) + 'px';
+}
+
+function onEQSlider(band, value) {
+    const g = parseFloat(value);
+    eqGains[band] = g;
+    if (eqFilters[band]) eqFilters[band].gain.setTargetAtTime(g, audioCtx.currentTime, 0.02);
+    const vl = document.getElementById('eqVal' + band);
+    if (vl) vl.textContent = (g > 0 ? '+' : '') + g;
+    currentPreset = null;
+    const ind = document.getElementById('eq-preset-ind');
+    if (ind) ind.textContent = 'EQ: CUSTOM';
+    setThumbPos(band, g);
+    drawEQCurve();
+}
+
+// Init custom vertical sliders
+(function initEQSliders() {
+    document.addEventListener('DOMContentLoaded', () => {
+        for (let i = 0; i < 10; i++) {
+            const thumb = document.getElementById('eqThumb' + i);
+            if (!thumb) continue;
+            const track = thumb.parentElement;
+            let dragging = false;
+
+            const onDown = (e) => {
+                dragging = true;
+                thumb.classList.add('dragging');
+                e.preventDefault();
+            };
+            const onMove = (e) => {
+                if (!dragging) return;
+                const rect = track.getBoundingClientRect();
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                let pct = (clientY - rect.top) / rect.height;
+                pct = Math.max(0, Math.min(1, pct));
+                const gain = percentToGain(1 - pct);
+                onEQSlider(i, gain);
+            };
+            const onUp = () => { dragging = false; thumb.classList.remove('dragging'); };
+
+            thumb.addEventListener('mousedown', onDown);
+            track.addEventListener('mousedown', (e) => { onDown(e); onMove(e); });
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+            thumb.addEventListener('touchstart', onDown, { passive: false });
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onUp);
+        }
+        syncEQSliders();
+    });
+})();
+
+function drawEQCurve() {
+    const canvas = document.getElementById('eqCurveCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid lines at 0dB and ±6dB
+    ctx.strokeStyle = '#1c1c1c';
+    ctx.lineWidth = 1;
+    [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+        const y = t * H;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    });
+
+    // 0dB center line
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, H/2); ctx.lineTo(W, H/2); ctx.stroke();
+
+    // Curve
+    const bandX = eqGains.map((_, i) => (i / (eqGains.length - 1)) * W);
+    const bandY = eqGains.map(g => H/2 - (g / 12) * (H/2 - 6));
+
+    // Filled area
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, 'rgba(200,168,75,0.35)');
+    grad.addColorStop(0.5, 'rgba(200,168,75,0.08)');
+    grad.addColorStop(1, 'rgba(200,168,75,0.02)');
+
+    ctx.beginPath();
+    ctx.moveTo(bandX[0], H/2);
+    ctx.lineTo(bandX[0], bandY[0]);
+    for (let i = 0; i < bandX.length - 1; i++) {
+        const cpx = (bandX[i] + bandX[i+1]) / 2;
+        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i+1], bandX[i+1], bandY[i+1]);
+    }
+    ctx.lineTo(bandX[bandX.length-1], H/2);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(bandX[0], bandY[0]);
+    for (let i = 0; i < bandX.length - 1; i++) {
+        const cpx = (bandX[i] + bandX[i+1]) / 2;
+        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i+1], bandX[i+1], bandY[i+1]);
+    }
+    ctx.strokeStyle = '#c8a84b';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(200,168,75,0.6)';
+    ctx.shadowBlur = 6;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Dots at each band
+    bandX.forEach((x, i) => {
+        ctx.beginPath();
+        ctx.arc(x, bandY[i], 3, 0, Math.PI*2);
+        ctx.fillStyle = '#c8a84b';
+        ctx.fill();
+    });
+}
+
+function EQCustom() {
+    const modal = document.getElementById('eqCustomModal');
+    modal.classList.toggle('open');
+    syncEQSliders();
+    setTimeout(drawEQCurve, 50);
+}
+
+// 10-band presets [32,64,125,250,500,1k,2k,4k,8k,16k]
 const EQ_PRESETS = {
-    rock: { bass: 8, treble: 6 },
-    pop: { bass: 3, treble: 5 },
-    dance: { bass: 10, treble: 3 },
-    jazz: { bass: 4, treble: -3 },
-    classic: { bass: -3, treble: 4 },
-    live: { bass: -3, treble: 6 },
-    vocal: { bass: -5, treble: 7 },
-    flat: { bass: 0, treble: 0 },
+    rock:    [5,  4,  3,  1,  0, -1,  2,  4,  5,  4],
+    pop:     [2,  1,  0,  2,  4,  3,  2,  1,  2,  2],
+    dance:   [8,  7,  5,  2, -1, -2,  0,  2,  3,  4],
+    jazz:    [3,  2,  1, -1,  2,  3,  2,  1, -1, -2],
+    classic: [-2,-1,  0,  0,  0,  0,  1,  2,  3,  2],
+    live:    [-2, 0,  2,  3,  3,  2,  2,  3,  3,  2],
+    vocal:   [-4,-3, -2,  1,  5,  5,  4,  2,  1,  0],
+    flat:    [ 0, 0,  0,  0,  0,  0,  0,  0,  0,  0],
 };
 
 let currentPreset = null;
 
 function applyEQPreset(name) {
-    if (!bassFilter || !trebleFilter) return;
-    const p = EQ_PRESETS[name];
-    if (!p) return;
-    bassLevel = p.bass; trebleLevel = p.treble;
-    bassFilter.frequency.value = 80;
-    trebleFilter.frequency.value = 8000;
-    bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.02);
-    trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.02);
+    if (!eqFilters.length) return;
+    const gains = EQ_PRESETS[name];
+    if (!gains) return;
+    applyEQGains(gains, true);
+    // Also sync bass/treble knob values for bypass restore
+    bassLevel   = gains[0];
+    trebleLevel = gains[9];
     currentPreset = name === 'flat' ? null : name;
     const ind = document.getElementById('eq-preset-ind');
     if (ind) ind.textContent = currentPreset ? `EQ: ${currentPreset.toUpperCase()}` : '';
@@ -950,14 +1115,17 @@ updateTrackDisplay();
     });
 })();
 
-// ── DRAG pour Art et Info popups ──
+// ── DRAG pour Art, Info et EQ Custom popups ──
 (function initGenericDrag() {
+    document.addEventListener('DOMContentLoaded', () => {
     [
-        { modal: 'artModal',  handle: 'artDragHandle'  },
-        { modal: 'infoModal', handle: 'infoDragHandle' },
+        { modal: 'artModal',      handle: 'artDragHandle'      },
+        { modal: 'infoModal',     handle: 'infoDragHandle'     },
+        { modal: 'eqCustomModal', handle: 'eqCustomDragHandle' },
     ].forEach(({ modal: modalId, handle: handleId }) => {
         const modal  = document.getElementById(modalId);
         const handle = document.getElementById(handleId);
+        if (!modal || !handle) return;
         let dragging = false, ox = 0, oy = 0;
 
         handle.addEventListener('mousedown', (e) => {
@@ -980,5 +1148,6 @@ updateTrackDisplay();
         });
 
         document.addEventListener('mouseup', () => { dragging = false; });
+    });
     });
 })();

@@ -31,6 +31,7 @@
             <div class="drop-overlay-inner">
                 <i class="fa fa-music"></i>
                 <span>DROP AUDIO FILES</span>
+                <span>MP3 M4A WAV FLAC WMA OPUS OGG</span>
                 <img src="img/technics_brand.png" alt="Technics"
                     class="brand-logo-img">
             </div>
@@ -46,7 +47,6 @@
 
             <div class="main-body">
 
-                <!-- POWER button left of VFD -->
                 <div class="power-col">
                     <span class="btn-label-power">POWER</span>
                     <button class="btn-power" onclick="confirmRestart()">
@@ -58,7 +58,6 @@
                     </button>
                 </div>
 
-                <!-- LEFT : VFD + numpad -->
                 <div class="left-section">
                     <div class="display-panel">
                         <div class="status-line"><span id="status-function">NO
@@ -111,8 +110,7 @@
                                     Scan</div>
                             </div>
                         </div>
-                        <div id="file-info-line" onclick="openArtModal()">- - -
-                            - - -</div>
+                        <div id="file-info-line" onclick="openArtModal()">** TECHNICS HIGH RESOLUTION AUDIO PLAYER - Click on load or drag files **</div>
                         <div id="track-grid" class="track-grid"
                             onclick="openPlaylist()"></div>
                         <div class="vu-outer">
@@ -158,20 +156,21 @@
 
                     <div class="transport-bar">
                         <div class="btn-labeled"><span
-                                class="btn-label-power">Play</span><button
-                                class="btn-transport btn-play"
-                                onclick="handlePlay()"><i
-                                    class="fa-solid fa-play"></i></button></div>
+                                class="btn-label-power">Stop</span><button
+                                class="btn-transport btn-stop"
+                                onclick="handleStop()"><i
+                                    class="fa-solid fa-stop"></i></button></div>
                         <div class="btn-labeled"><span
                                 class="btn-label-power">Pause</span><button
                                 class="btn-transport btn-pause"
                                 onclick="handlePause()"><i
                                     class="fa-solid fa-pause"></i></button></div>
-                        <div class="btn-labeled"><span
-                                class="btn-label-power">Stop</span><button
-                                class="btn-transport btn-stop"
-                                onclick="handleStop()"><i
-                                    class="fa-solid fa-stop"></i></button></div>
+                        
+                                    <div class="btn-labeled"><span
+                                class="btn-label-power">Play</span><button
+                                class="btn-transport btn-play"
+                                onclick="handlePlay()"><i
+                                    class="fa-solid fa-play"></i></button></div>
                         <div class="btn-labeled"><span
                                 class="btn-label-power">Prev</span><button
                                 class="btn-transport" onclick="prevTrack()"><i
@@ -205,7 +204,7 @@
                                         PRESETS</span>
                                     <div class="tray-eq-buttons">
                                         <button
-                                            class="btn-eq-custom" title="SOON !"
+                                            class="btn-eq-custom"
                                             onclick="EQCustom()">EQ
                                             CUSTOM</button>
                                         <button
@@ -357,6 +356,7 @@
 
             <div id="restartModal" class="modal">
                 <div class="modal-confirm" onclick="event.stopPropagation()">
+                    <img src="img/technics_brand.png" class="info-brand-logo">
                     <div class="confirm-icon"><i
                             class="fa-solid fa-power-off"></i></div>
                     <div class="confirm-title">Restart the application ?</div>
@@ -427,5 +427,28 @@
 
             <audio id="audio" crossorigin="anonymous" playsinline></audio>
             <script src="script.js"></script>
+        <!-- EQ Custom popup -->
+        <div id="eqCustomModal" class="draggable-popup">
+            <div class="draggable-popup-header" id="eqCustomDragHandle">
+                <span class="draggable-popup-title">EQ CUSTOM</span>
+                <button class="draggable-popup-close" onclick="document.getElementById('eqCustomModal').classList.remove('open')">✕</button>
+            </div>
+            <div class="eq-custom-body">
+                <canvas id="eqCurveCanvas" class="eq-curve-canvas" width="440" height="90"></canvas>
+                <div class="eq-bands">
+                    <div class="eq-band" data-band="0"><span class="eq-band-val" id="eqVal0">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb0"></div></div></div><span class="eq-band-freq">32</span></div>
+                    <div class="eq-band" data-band="1"><span class="eq-band-val" id="eqVal1">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb1"></div></div></div><span class="eq-band-freq">64</span></div>
+                    <div class="eq-band" data-band="2"><span class="eq-band-val" id="eqVal2">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb2"></div></div></div><span class="eq-band-freq">125</span></div>
+                    <div class="eq-band" data-band="3"><span class="eq-band-val" id="eqVal3">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb3"></div></div></div><span class="eq-band-freq">250</span></div>
+                    <div class="eq-band" data-band="4"><span class="eq-band-val" id="eqVal4">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb4"></div></div></div><span class="eq-band-freq">500</span></div>
+                    <div class="eq-band" data-band="5"><span class="eq-band-val" id="eqVal5">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb5"></div></div></div><span class="eq-band-freq">1k</span></div>
+                    <div class="eq-band" data-band="6"><span class="eq-band-val" id="eqVal6">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb6"></div></div></div><span class="eq-band-freq">2k</span></div>
+                    <div class="eq-band" data-band="7"><span class="eq-band-val" id="eqVal7">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb7"></div></div></div><span class="eq-band-freq">4k</span></div>
+                    <div class="eq-band" data-band="8"><span class="eq-band-val" id="eqVal8">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb8"></div></div></div><span class="eq-band-freq">8k</span></div>
+                    <div class="eq-band" data-band="9"><span class="eq-band-val" id="eqVal9">0</span><div class="eq-slider-wrap"><div class="eq-track"><div class="eq-thumb" id="eqThumb9"></div></div></div><span class="eq-band-freq">16k</span></div>
+                </div>
+            </div>
+        </div>
+
         </body>
     </html>
