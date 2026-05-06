@@ -1256,7 +1256,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .info-brand-logo {
-     width: 110px;
+    width: 110px;
     height: auto;
 }
 
@@ -1453,20 +1453,21 @@ input[type="range"]::-webkit-slider-thumb {
     width: 30px;
     height: 15px;
     background: #c8a84b;
-    box-shadow: 0 0 8px rgba(200,168,75,0.6);
+    box-shadow: 0 0 8px rgba(200, 168, 75, 0.6);
     cursor: ns-resize;
     bottom: 50%;
     transition: box-shadow 0.1s;
 }
 
 .eq-thumb:hover, .eq-thumb.dragging {
-    box-shadow: 0 0 14px rgba(200,168,75,0.9);
+    box-shadow: 0 0 14px rgba(200, 168, 75, 0.9);
 }
 
-.eq-brand-logo{
+.eq-brand-logo {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 5px;
     width: 110px;
     height: auto;
 }
@@ -1487,20 +1488,12 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     justify-content: center;
     padding: 5px 12px 4px;
-    
-    /* 1. Un léger dégradé empêche le fond de paraître trop "plat" */
     background: linear-gradient(180deg, #1c1c1c 0%, #141414 100%);
-    
     border-top: 1.5px solid rgb(255, 170, 120);
     border-radius: 2px;
-
-    /* 2. Superposition d'ombres pour la profondeur */
-    box-shadow: 
-        /* Ta lueur diffuse initiale (ajustée en couleur pour cohérence) */
+    box-shadow:
         inset 0 20px 20px -15px rgba(255, 170, 120, 0.2),
-        /* Ombre interne sombre en bas pour l'effet de renfoncement */
         inset 0 -8px 12px rgba(0, 0, 0, 0.5),
-        /* Ombre portée externe pour détacher le panneau du fond */
         0 4px 10px rgba(0, 0, 0, 0.8);
 }
 
@@ -1565,14 +1558,12 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-door {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-    180deg,
-    var(--panel-top) 0%,
-    var(--panel-top) 0%,
-    #171717 0%, 
-    var(--panel-bottom) 97%, 
-    var(--panel-bottom) 100%
-);
+    background: linear-gradient(180deg,
+            var(--panel-top) 0%,
+            var(--panel-top) 0%,
+            #171717 0%,
+            var(--panel-bottom) 97%,
+            var(--panel-bottom) 100%);
     border: 2px solid var(--panel-border);
     border-bottom: 1px solid #080808;
     border-radius: 2px;
@@ -1580,9 +1571,9 @@ input[type="range"]::-webkit-slider-thumb {
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     cursor: pointer;
-    box-shadow: 
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.5);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .tray-door.tray-open {
@@ -1601,4 +1592,3 @@ input[type="range"]::-webkit-slider-thumb {
         -1px -1px 0px rgba(0, 0, 0, 0.6),
         1px 1px 1px rgba(255, 255, 255, 0.1);
 }
-
