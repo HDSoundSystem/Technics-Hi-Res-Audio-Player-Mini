@@ -1449,14 +1449,33 @@ input[type="range"]::-webkit-slider-thumb {
 .eq-thumb {
     position: absolute;
     left: 50%;
+    bottom: 50%;
     transform: translate(-50%, 50%);
     width: 30px;
     height: 15px;
     background: #c8a84b;
     box-shadow: 0 0 8px rgba(200, 168, 75, 0.6);
     cursor: ns-resize;
-    bottom: 50%;
     transition: box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(to bottom,
+            
+            #fcf6ba 25%,
+            #b38728 50%,
+            #fbf5b7 75%,
+            #aa771c);
+}
+
+.eq-thumb::after {
+    content: "";
+    width: 80%;
+    height: 2px;
+    background: var(--panel-color);
+    border-radius: 3px;
 }
 
 .eq-thumb:hover, .eq-thumb.dragging {
