@@ -7,7 +7,6 @@ function showCenter(msg, delay = 1800) {
     statusCenterTimer = setTimeout(() => { statusCenter.textContent = ''; }, delay);
 }
 
-// Dessine les pixels éteints dès le chargement
 (function initVUOff() {
     ctx.clearRect(0, 0, 800, 70);
     ctx.font = "500 14px 'Inter', sans-serif"; ctx.textBaseline = "middle";
@@ -74,17 +73,14 @@ function renderPlaylistItems() {
             getFileCover(file, (url) => { if (url) cover.src = url; });
         }
 
-        // Number
         const num = document.createElement('span');
         num.className = 'playlist-item-num';
         num.textContent = String(index + 1).padStart(2, '0');
 
-        // Name
         const name = document.createElement('span');
         name.className = 'playlist-item-name';
         name.textContent = file.name.replace(/\.[^.]+$/, '').toUpperCase();
 
-        // Remove button
         const removeBtn = document.createElement('button');
         removeBtn.className = 'playlist-item-remove';
         removeBtn.innerHTML = '✕';
@@ -232,7 +228,6 @@ function loadTrack(index) {
     if (audio.src) URL.revokeObjectURL(audio.src);
     audio.src = URL.createObjectURL(file);
     formatInfo.innerText = file.name.split('.').pop().toUpperCase();
-    // Refresh playlist active state if open
     if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
     if (window.jsmediatags) {
         window.jsmediatags.read(file, {
@@ -320,7 +315,6 @@ function handlePlay() {
         if (!audioCtx) initAudio();
         stopPauseBlink();
         if (musicScanActive) {
-            // Désactiver Music Scan et continuer la lecture normalement
             musicScanActive = false;
             clearTimeout(musicScanTimer);
             document.getElementById('ind-musicscan').classList.remove('active');
@@ -337,13 +331,11 @@ audio.onended = () => {
     if (repeatMode === 1) { audio.currentTime = 0; audio.play(); }
     else if (repeatMode === 2) { nextTrack(); }
     else {
-        // Pas de repeat : avancer seulement s'il reste des titres
         if (currentIndex < playlist.length - 1) {
             currentIndex++;
             loadTrack(currentIndex);
             handlePlay();
         } else {
-            // Dernier titre : stopper proprement
             audio.currentTime = 0;
             updateStatusText();
         }
@@ -393,7 +385,6 @@ function initAudio() {
     // Splitter stereo
     splitter = audioCtx.createChannelSplitter(2);
 
-    // Analyseurs L et R
     analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 64;
     analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 64;
     dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
@@ -432,7 +423,6 @@ function initAudio() {
     splitter.connect(channelMerger, 1, 1);
     channelMerger.connect(audioCtx.destination);
 
-    // Spectrum tap (post-EQ)
     loudnessGain.connect(specAnalyser);
 
     analyser = analyserL;
@@ -451,7 +441,6 @@ function drawSpectrum() {
     specCtx.clearRect(0, 0, W, H);
 
     if (!specAnalyser || !spectrumVisible) {
-        // Off-state: draw dim LED grid
         const barCount = 28;
         const barW = Math.floor(W / barCount) - 2;
         const barGap = Math.floor(W / barCount) - barW;
@@ -482,13 +471,11 @@ function drawSpectrum() {
     const ledStep = ledH + ledGap;
     const ledCount = Math.floor(H / ledStep);
 
-    // Init peak arrays on first call
     if (!drawSpectrum.peaks) {
         drawSpectrum.peaks = new Array(barCount).fill(0);
         drawSpectrum.peakTimers = new Array(barCount).fill(0);
     }
 
-    // Parse color once
     let cr = 176, cg = 254, cb = 255;
     const hex = mainColor.replace('#', '');
     if (hex.length === 6) {
@@ -508,7 +495,6 @@ function drawSpectrum() {
         const activeLeds = Math.round((val / 255) * ledCount);
         const x = i * (barW + barGap);
 
-        // Peak hold logic
         if (activeLeds >= drawSpectrum.peaks[i]) {
             drawSpectrum.peaks[i] = activeLeds;
             drawSpectrum.peakTimers[i] = 45;
@@ -586,24 +572,20 @@ function drawVU() {
     ctx.fillText("L", 18, 17);
     ctx.fillText("R", 18, 52);
 
-    // Parse mainColor to RGB for gradient LEDs
     let cr = 176, cg = 254, cb = 255;
     const hexC = mainColor.replace(/\s/g, '').replace('#', '');
     if (hexC.length === 6) { cr = parseInt(hexC.slice(0, 2), 16); cg = parseInt(hexC.slice(2, 4), 16); cb = parseInt(hexC.slice(4, 6), 16); }
     else if (hexC === 'ffffff' || mainColor.toLowerCase().includes('white')) { cr = cg = cb = 255; }
 
-    const segCount = 25; // segments per row
+    const segCount = 25;
     const segW = 25, segH = 18, segSpacing = 28;
-    // Each segment = 3 mini-LEDs of 4px + 2px gap = 18px total
-    const ledH = 18, ledGap = 0, ledStep = 18; // LED pleine
-    const ledsPerSeg = Math.floor(segH / ledStep); // 3 LEDs
+    const ledH = 18, ledGap = 0, ledStep = 18;
+    const ledsPerSeg = Math.floor(segH / ledStep);
 
     for (let i = 0; i < segCount; i++) {
         const threshL = (i / segCount) * 255;
         const threshR = (i / segCount) * 255;
         const xPos = 60 + i * segSpacing;
-
-        // Determine zone ratio for this segment (0=bass, 1=treble)
         const ratio = i / (segCount - 1);
 
         for (let row = 0; row < 2; row++) {
@@ -617,19 +599,19 @@ function drawVU() {
             for (let l = 0; l < ledsPerSeg; l++) {
                 const yLed = yBase + l * ledStep;
                 if (isPeak) {
-                    // Peak = rouge
+
                     ctx.fillStyle = `rgba(255,60,34,0.9)`;
                 } else if (active) {
                     if (i > 21) {
-                        // Zone rouge : dégradé rouge
+
                         const a = 0.5 + ratio * 0.5;
                         ctx.fillStyle = `rgba(255,60,34,${a})`;
                     } else if (i > 15) {
-                        // Zone orange
+
                         const a = 0.4 + ratio * 0.6;
                         ctx.fillStyle = `rgba(255,136,0,${a})`;
                     } else {
-                        // Zone cyan/blanc : dégradé ratio
+
                         const a = 0.25 + ratio * 0.75;
                         ctx.fillStyle = `rgba(${cr},${cg},${cb},${a})`;
                     }
@@ -701,13 +683,12 @@ function changeToneFlat() {
     setTimeout(updateStatusText, 1500);
 }
 
-// ── 10-BAND EQ ──────────────────────────────────────────────────
+// ── 10-BAND EQ
 const EQ_FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 let eqFilters = [];      // 10 BiquadFilter nodes
 let eqGains = new Array(10).fill(0); // current gains
 
 function initEQFilters() {
-    // Create 10 peaking filters (first=low-shelf, last=high-shelf)
     eqFilters = EQ_FREQS.map((freq, i) => {
         const f = audioCtx.createBiquadFilter();
         if (i === 0) { f.type = 'lowshelf'; }
@@ -717,7 +698,7 @@ function initEQFilters() {
         f.gain.value = 0;
         return f;
     });
-    // Chain: source → eq0 → eq1 → … → eq9 → loudnessGain
+
     return eqFilters;
 }
 
@@ -767,7 +748,6 @@ function onEQSlider(band, value) {
     drawEQCurve();
 }
 
-// Init custom vertical sliders
 (function initEQSliders() {
     document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 10; i++) {
@@ -810,8 +790,6 @@ function drawEQCurve() {
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
-
-    // Grid lines at 0dB and ±6dB
     ctx.strokeStyle = '#1c1c1c';
     ctx.lineWidth = 1;
     [0, 0.25, 0.5, 0.75, 1].forEach(t => {
@@ -819,7 +797,6 @@ function drawEQCurve() {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
     });
 
-    // 0dB center line
     ctx.strokeStyle = '#2a2a2a';
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
@@ -828,7 +805,6 @@ function drawEQCurve() {
     const bandX = eqGains.map((_, i) => (i / (eqGains.length - 1)) * W);
     const bandY = eqGains.map(g => H / 2 - (g / 12) * (H / 2 - 6));
 
-    // Filled area
     const grad = ctx.createLinearGradient(0, 0, 0, H);
     grad.addColorStop(0, 'rgba(200,168,75,0.35)');
     grad.addColorStop(0.5, 'rgba(200,168,75,0.08)');
@@ -860,7 +836,6 @@ function drawEQCurve() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Dots at each band
     bandX.forEach((x, i) => {
         ctx.beginPath();
         ctx.arc(x, bandY[i], 3, 0, Math.PI * 2);
@@ -931,7 +906,6 @@ function updateTrackDisplay() {
     const displayLimit = 20;
     const tracksToShow = playlist.slice(0, displayLimit);
 
-    // Always show 20 slots (dim if no track, lit if exists)
     for (let i = 0; i < displayLimit; i++) {
         const s = document.createElement('span');
         if (i < tracksToShow.length) {
@@ -944,14 +918,12 @@ function updateTrackDisplay() {
         grid.appendChild(s);
     }
 
-    // Arrow if playlist exceeds 20
     if (playlist.length > displayLimit) {
         const more = document.createElement('span');
         more.className = 'track-more';
         more.innerHTML = '<i class="fa-solid fa-caret-right"></i>';
         grid.appendChild(more);
     } else {
-        // Always show dim arrow
         const more = document.createElement('span');
         more.className = 'track-more track-more-off';
         more.innerHTML = '<i class="fa-solid fa-caret-right"></i>';
@@ -1100,12 +1072,11 @@ function changeVUGain(d) {
     setTimeout(updateStatusText, 1200);
 }
 
-// Start spectrum loop after DOM is fully parsed
 const specCanvas = document.getElementById('spectrum-canvas');
 if (specCanvas) { specCtx = specCanvas.getContext('2d'); drawSpectrum(); }
 updateTrackDisplay();
 
-// ── DRAG & DROP ──────────────────────────────────────────────────
+// ── DRAG & DROP
 (function initDragDrop() {
     const overlay = document.getElementById('drop-overlay');
     let dragCounter = 0;
@@ -1150,7 +1121,6 @@ updateTrackDisplay();
     });
 })();
 
-// ── DRAG pour Art, Info et EQ Custom popups ──
 (function initGenericDrag() {
     document.addEventListener('DOMContentLoaded', () => {
         [
