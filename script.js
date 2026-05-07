@@ -142,6 +142,7 @@ function playlistAddFiles(input) {
         playlist.push(...files);
         showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
         setTimeout(updateStatusText, 1500);
+        updateTrackDisplay();
     } else {
         playlist = files;
         currentIndex = 0;
@@ -214,6 +215,7 @@ fileIn.onchange = (e) => {
         playlist.push(...files);
         showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
         setTimeout(updateStatusText, 1500);
+        updateTrackDisplay();
     } else {
         playlist = files;
         currentIndex = 0;
@@ -1134,6 +1136,7 @@ updateTrackDisplay();
             playlist.push(...files);
             showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
             setTimeout(updateStatusText, 1500);
+            updateTrackDisplay();
         } else {
             playlist = files;
             currentIndex = 0;
