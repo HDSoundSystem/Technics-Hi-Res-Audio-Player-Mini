@@ -142,14 +142,13 @@ function playlistAddFiles(input) {
         playlist.push(...files);
         showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
         setTimeout(updateStatusText, 1500);
-        renderPlaylistItems();
     } else {
         playlist = files;
         currentIndex = 0;
         loadTrack(0);
         handlePlay();
-        renderPlaylistItems();
     }
+    renderPlaylistItems();
     updateEjectAnimation();
     input.value = '';
 }
@@ -208,7 +207,23 @@ function playlistAddFiles(input) {
 function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; showCenter("SELECT: " + digitEntry, 1500); digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
-fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); updateEjectAnimation(); } };
+fileIn.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    if (playlist.length > 0) {
+        playlist.push(...files);
+        showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
+        setTimeout(updateStatusText, 1500);
+    } else {
+        playlist = files;
+        currentIndex = 0;
+        loadTrack(0);
+        handlePlay();
+    }
+    renderPlaylistItems();
+    updateEjectAnimation();
+    e.target.value = '';
+};
 
 function loadTrack(index) {
     const file = playlist[index];
@@ -1116,17 +1131,16 @@ updateTrackDisplay();
         if (!files.length) return;
 
         if (playlist.length > 0) {
-            // Ajouter à la playlist existante
-            const startIndex = playlist.length;
             playlist.push(...files);
-            loadTrack(startIndex);
-            handlePlay();
+            showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
+            setTimeout(updateStatusText, 1500);
         } else {
             playlist = files;
             currentIndex = 0;
             loadTrack(0);
             handlePlay();
         }
+        renderPlaylistItems();
         updateEjectAnimation();
     });
 })();

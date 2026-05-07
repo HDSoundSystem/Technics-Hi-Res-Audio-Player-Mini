@@ -848,6 +848,23 @@ input[type="range"]::-webkit-slider-thumb {
     opacity: 0.8;
 }
 
+.playlist-popup-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0 8px;
+    border-top: 1px solid #1a1a1a;
+    background: #0a0a0a;
+    flex-shrink: 0;
+}
+
+.playlist-footer-logo {
+    width: 110px;
+    height: auto;
+    opacity: 0.75;
+    display: block;
+}
+
 .playlist-title {
     display: none;
 }
