@@ -618,8 +618,14 @@ button i {
 }
 
 @keyframes ejectBlink {
-    0%, 100% { color: inherit; }
-    50%       { color: #ffffff; filter: brightness(2); }
+    0%, 100% {
+        color: inherit;
+    }
+
+    50% {
+        color: #ffffff;
+        filter: brightness(2);
+    }
 }
 
 .btn-open.no-track .fa-eject {
@@ -1488,7 +1494,7 @@ input[type="range"]::-webkit-slider-thumb {
     border: 2px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(to bottom,
-            
+
             #fcf6ba 25%,
             #b38728 50%,
             #fbf5b7 75%,
