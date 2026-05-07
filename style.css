@@ -618,8 +618,14 @@ button i {
 }
 
 @keyframes ejectBlink {
-    0%, 100% { color: inherit; }
-    50%       { color: #ffffff; filter: brightness(2); }
+    0%, 100% {
+        color: inherit;
+    }
+
+    50% {
+        color: #ffffff;
+        filter: brightness(2);
+    }
 }
 
 .btn-open.no-track .fa-eject {
@@ -846,6 +852,23 @@ input[type="range"]::-webkit-slider-thumb {
 #playlist-items-container::-webkit-scrollbar-thumb:hover {
     background: var(--vfd-main);
     opacity: 0.8;
+}
+
+.playlist-popup-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0 8px;
+    border-top: 1px solid #1a1a1a;
+    background: #0a0a0a;
+    flex-shrink: 0;
+}
+
+.playlist-footer-logo {
+    width: 110px;
+    height: auto;
+    opacity: 0.75;
+    display: block;
 }
 
 .playlist-title {
@@ -1471,7 +1494,7 @@ input[type="range"]::-webkit-slider-thumb {
     border: 2px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(to bottom,
-            
+
             #fcf6ba 25%,
             #b38728 50%,
             #fbf5b7 75%,

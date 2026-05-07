@@ -53,7 +53,7 @@ function getFileCover(file, callback) {
             },
             onError: () => { coverCache[file.name] = null; callback(null); }
         });
-    } catch(e) { callback(null); }
+    } catch (e) { callback(null); }
 }
 
 function renderPlaylistItems() {
@@ -142,14 +142,14 @@ function playlistAddFiles(input) {
         playlist.push(...files);
         showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
         setTimeout(updateStatusText, 1500);
-        renderPlaylistItems();
+        updateTrackDisplay();
     } else {
         playlist = files;
         currentIndex = 0;
         loadTrack(0);
         handlePlay();
-        renderPlaylistItems();
     }
+    renderPlaylistItems();
     updateEjectAnimation();
     input.value = '';
 }
@@ -208,7 +208,24 @@ function playlistAddFiles(input) {
 function pressDigit(num) { clearTimeout(digitTimeout); digitEntry += num; showCenter("SELECT: " + digitEntry, 1500); digitTimeout = setTimeout(() => { playDirect(parseInt(digitEntry) - 1); }, 1200); }
 function playDirect(index) { digitEntry = ""; if (playlist.length > index && index >= 0) { currentIndex = index; loadTrack(currentIndex); handlePlay(); } else { statusFunc.innerText = "EMPTY"; setTimeout(updateStatusText, 1000); } }
 
-fileIn.onchange = (e) => { playlist = Array.from(e.target.files); if (playlist.length) { currentIndex = 0; loadTrack(0); handlePlay(); updateEjectAnimation(); } };
+fileIn.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    if (playlist.length > 0) {
+        playlist.push(...files);
+        showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
+        setTimeout(updateStatusText, 1500);
+        updateTrackDisplay();
+    } else {
+        playlist = files;
+        currentIndex = 0;
+        loadTrack(0);
+        handlePlay();
+    }
+    renderPlaylistItems();
+    updateEjectAnimation();
+    e.target.value = '';
+};
 
 function loadTrack(index) {
     const file = playlist[index];
@@ -228,15 +245,17 @@ function loadTrack(index) {
                     modalImg.src = `data:${format};base64,${window.btoa(base64)}`;
                 } else { modalImg.src = "img/art-Technics-cover.png"; }
                 updateMediaSession({
-    title: t.title || file.name,
-    artist: t.artist || 'Unknown Artist',
-    album: t.album || 'Unknown Album'
-});
-            }, onError: () => { fileInfoLine.innerText = file.name.toUpperCase();updateMediaSession({
-    title: file.name,
-    artist: 'Unknown Artist',
-    album: 'Unknown Album'
-}); }
+                    title: t.title || file.name,
+                    artist: t.artist || 'Unknown Artist',
+                    album: t.album || 'Unknown Album'
+                });
+            }, onError: () => {
+                fileInfoLine.innerText = file.name.toUpperCase(); updateMediaSession({
+                    title: file.name,
+                    artist: 'Unknown Artist',
+                    album: 'Unknown Album'
+                });
+            }
         });
     }
     updateTrackDisplay(); audio.load();
@@ -251,7 +270,7 @@ function updateMediaSession(metadata = {}) {
         album: metadata.album || fileInfoLine.innerText.split(' - ')[1] || 'Unknown Album',
         artwork: [
             {
-                src: modalImg.src || 'img/art-Technics-cover.png',
+                src: modalImg.src || 'img/technics_cover.png',
                 sizes: '512x512',
                 type: 'image/png'
             }
@@ -389,7 +408,7 @@ function initAudio() {
     // 10-band EQ filters
     const filters = initEQFilters();
     // Keep bassFilter/trebleFilter pointing to first/last for bypass compatibility
-    bassFilter   = filters[0];
+    bassFilter = filters[0];
     trebleFilter = filters[9];
 
     // Loudness gain
@@ -403,8 +422,8 @@ function initAudio() {
 
     // Signal chain: source → eq0 → eq1 → … → eq9 → loudness → panner → splitter
     source.connect(filters[0]);
-    for (let i = 0; i < filters.length - 1; i++) filters[i].connect(filters[i+1]);
-    filters[filters.length-1].connect(loudnessGain);
+    for (let i = 0; i < filters.length - 1; i++) filters[i].connect(filters[i + 1]);
+    filters[filters.length - 1].connect(loudnessGain);
     loudnessGain.connect(pannerNode);
     pannerNode.connect(splitter);
     splitter.connect(analyserL, 0);
@@ -685,7 +704,7 @@ function changeToneFlat() {
 // ── 10-BAND EQ ──────────────────────────────────────────────────
 const EQ_FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 let eqFilters = [];      // 10 BiquadFilter nodes
-let eqGains   = new Array(10).fill(0); // current gains
+let eqGains = new Array(10).fill(0); // current gains
 
 function initEQFilters() {
     // Create 10 peaking filters (first=low-shelf, last=high-shelf)
@@ -803,11 +822,11 @@ function drawEQCurve() {
     // 0dB center line
     ctx.strokeStyle = '#2a2a2a';
     ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, H/2); ctx.lineTo(W, H/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
 
     // Curve
     const bandX = eqGains.map((_, i) => (i / (eqGains.length - 1)) * W);
-    const bandY = eqGains.map(g => H/2 - (g / 12) * (H/2 - 6));
+    const bandY = eqGains.map(g => H / 2 - (g / 12) * (H / 2 - 6));
 
     // Filled area
     const grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -816,13 +835,13 @@ function drawEQCurve() {
     grad.addColorStop(1, 'rgba(200,168,75,0.02)');
 
     ctx.beginPath();
-    ctx.moveTo(bandX[0], H/2);
+    ctx.moveTo(bandX[0], H / 2);
     ctx.lineTo(bandX[0], bandY[0]);
     for (let i = 0; i < bandX.length - 1; i++) {
-        const cpx = (bandX[i] + bandX[i+1]) / 2;
-        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i+1], bandX[i+1], bandY[i+1]);
+        const cpx = (bandX[i] + bandX[i + 1]) / 2;
+        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i + 1], bandX[i + 1], bandY[i + 1]);
     }
-    ctx.lineTo(bandX[bandX.length-1], H/2);
+    ctx.lineTo(bandX[bandX.length - 1], H / 2);
     ctx.closePath();
     ctx.fillStyle = grad;
     ctx.fill();
@@ -831,8 +850,8 @@ function drawEQCurve() {
     ctx.beginPath();
     ctx.moveTo(bandX[0], bandY[0]);
     for (let i = 0; i < bandX.length - 1; i++) {
-        const cpx = (bandX[i] + bandX[i+1]) / 2;
-        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i+1], bandX[i+1], bandY[i+1]);
+        const cpx = (bandX[i] + bandX[i + 1]) / 2;
+        ctx.bezierCurveTo(cpx, bandY[i], cpx, bandY[i + 1], bandX[i + 1], bandY[i + 1]);
     }
     ctx.strokeStyle = '#c8a84b';
     ctx.lineWidth = 2;
@@ -844,7 +863,7 @@ function drawEQCurve() {
     // Dots at each band
     bandX.forEach((x, i) => {
         ctx.beginPath();
-        ctx.arc(x, bandY[i], 3, 0, Math.PI*2);
+        ctx.arc(x, bandY[i], 3, 0, Math.PI * 2);
         ctx.fillStyle = '#c8a84b';
         ctx.fill();
     });
@@ -859,14 +878,14 @@ function EQCustom() {
 
 // 10-band presets [32,64,125,250,500,1k,2k,4k,8k,16k]
 const EQ_PRESETS = {
-    rock:    [5,  4,  3,  1,  0, -1,  2,  4,  5,  4],
-    pop:     [2,  1,  0,  2,  4,  3,  2,  1,  2,  2],
-    dance:   [8,  7,  5,  2, -1, -2,  0,  2,  3,  4],
-    jazz:    [3,  2,  1, -1,  2,  3,  2,  1, -1, -2],
-    classic: [-2,-1,  0,  0,  0,  0,  1,  2,  3,  2],
-    live:    [-2, 0,  2,  3,  3,  2,  2,  3,  3,  2],
-    vocal:   [-4,-3, -2,  1,  5,  5,  4,  2,  1,  0],
-    flat:    [ 0, 0,  0,  0,  0,  0,  0,  0,  0,  0],
+    rock: [5, 4, 3, 1, 0, -1, 2, 4, 5, 4],
+    pop: [2, 1, 0, 2, 4, 3, 2, 1, 2, 2],
+    dance: [8, 7, 5, 2, -1, -2, 0, 2, 3, 4],
+    jazz: [3, 2, 1, -1, 2, 3, 2, 1, -1, -2],
+    classic: [-2, -1, 0, 0, 0, 0, 1, 2, 3, 2],
+    live: [-2, 0, 2, 3, 3, 2, 2, 3, 3, 2],
+    vocal: [-4, -3, -2, 1, 5, 5, 4, 2, 1, 0],
+    flat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 };
 
 let currentPreset = null;
@@ -877,7 +896,7 @@ function applyEQPreset(name) {
     if (!gains) return;
     applyEQGains(gains, true);
     // Also sync bass/treble knob values for bypass restore
-    bassLevel   = gains[0];
+    bassLevel = gains[0];
     trebleLevel = gains[9];
     currentPreset = name === 'flat' ? null : name;
     const ind = document.getElementById('eq-preset-ind');
@@ -956,7 +975,7 @@ function _syncKnob() {
 
 (function initKnob() {
     document.addEventListener('DOMContentLoaded', () => {
-        const knob  = document.getElementById('volumeKnob');
+        const knob = document.getElementById('volumeKnob');
         const zoneL = document.getElementById('knobLeft');
         const zoneR = document.getElementById('knobRight');
         if (!knob || !zoneL || !zoneR) return;
@@ -1116,17 +1135,17 @@ updateTrackDisplay();
         if (!files.length) return;
 
         if (playlist.length > 0) {
-            // Ajouter à la playlist existante
-            const startIndex = playlist.length;
             playlist.push(...files);
-            loadTrack(startIndex);
-            handlePlay();
+            showCenter(`+${files.length} TRACK${files.length > 1 ? 'S' : ''}`);
+            setTimeout(updateStatusText, 1500);
+            updateTrackDisplay();
         } else {
             playlist = files;
             currentIndex = 0;
             loadTrack(0);
             handlePlay();
         }
+        renderPlaylistItems();
         updateEjectAnimation();
     });
 })();
@@ -1134,37 +1153,37 @@ updateTrackDisplay();
 // ── DRAG pour Art, Info et EQ Custom popups ──
 (function initGenericDrag() {
     document.addEventListener('DOMContentLoaded', () => {
-    [
-        { modal: 'artModal',      handle: 'artDragHandle'      },
-        { modal: 'infoModal',     handle: 'infoDragHandle'     },
-        { modal: 'eqCustomModal', handle: 'eqCustomDragHandle' },
-    ].forEach(({ modal: modalId, handle: handleId }) => {
-        const modal  = document.getElementById(modalId);
-        const handle = document.getElementById(handleId);
-        if (!modal || !handle) return;
-        let dragging = false, ox = 0, oy = 0;
+        [
+            { modal: 'artModal', handle: 'artDragHandle' },
+            { modal: 'infoModal', handle: 'infoDragHandle' },
+            { modal: 'eqCustomModal', handle: 'eqCustomDragHandle' },
+        ].forEach(({ modal: modalId, handle: handleId }) => {
+            const modal = document.getElementById(modalId);
+            const handle = document.getElementById(handleId);
+            if (!modal || !handle) return;
+            let dragging = false, ox = 0, oy = 0;
 
-        handle.addEventListener('mousedown', (e) => {
-            dragging = true;
-            const rect = modal.getBoundingClientRect();
-            modal.style.left      = rect.left + 'px';
-            modal.style.top       = rect.top  + 'px';
-            modal.style.transform = 'none';
-            ox = e.clientX - rect.left;
-            oy = e.clientY - rect.top;
-            e.preventDefault();
+            handle.addEventListener('mousedown', (e) => {
+                dragging = true;
+                const rect = modal.getBoundingClientRect();
+                modal.style.left = rect.left + 'px';
+                modal.style.top = rect.top + 'px';
+                modal.style.transform = 'none';
+                ox = e.clientX - rect.left;
+                oy = e.clientY - rect.top;
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                let x = Math.max(0, Math.min(window.innerWidth - modal.offsetWidth, e.clientX - ox));
+                let y = Math.max(0, Math.min(window.innerHeight - modal.offsetHeight, e.clientY - oy));
+                modal.style.left = x + 'px';
+                modal.style.top = y + 'px';
+            });
+
+            document.addEventListener('mouseup', () => { dragging = false; });
         });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!dragging) return;
-            let x = Math.max(0, Math.min(window.innerWidth  - modal.offsetWidth,  e.clientX - ox));
-            let y = Math.max(0, Math.min(window.innerHeight - modal.offsetHeight, e.clientY - oy));
-            modal.style.left = x + 'px';
-            modal.style.top  = y + 'px';
-        });
-
-        document.addEventListener('mouseup', () => { dragging = false; });
-    });
     });
 })();
 
