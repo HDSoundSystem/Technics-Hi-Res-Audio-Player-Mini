@@ -1,21 +1,44 @@
-const CACHE_NAME = 'Technics Mini';
+const CACHE_NAME = 'Technics-Mini-v1';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './script.js',
   './img/technics_brand.png',
-  './img/technics-logo-cover-footer.png',
-  './img/art-Technics-cover.png',
+  './img/technics_cover.png',
   './img/classAA.png',
   './img/favicon.png'
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('Caching assets');
+      return cache.addAll(ASSETS);
+    })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            console.log('Removing old cache:', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+  e.respondWith(
+    caches.match(e.request).then(res => {
+      return res || fetch(e.request);
+    })
+  );
 });
-
