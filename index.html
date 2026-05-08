@@ -39,7 +39,7 @@
 
             <div class="header-line">
                 <img src="img/technics_brand.png" alt="Technics"
-                    class="brand-logo-img">
+                    class="brand-logo-img" id="header-brand-logo">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
                 <img src="img/classAA.png" alt="ClassAA" class="classaa-logo">
             </div>
@@ -532,9 +532,11 @@
                         e.preventDefault();
                         const link = document.getElementById('main-stylesheet');
                         const btn  = document.getElementById('light-toggle-link');
+                        const logo = document.getElementById('header-brand-logo');
                         isDark = !isDark;
                         link.href  = isDark ? LIGHT : DARK;
                         btn.textContent = isDark ? 'Dark Version' : 'Light Version';
+                        if (logo) logo.src = isDark ? 'img/technics_brand_2.png' : 'img/technics_brand.png';
                     };
                 })();
             </script>
