@@ -39,35 +39,39 @@ body {
 
 .player-container {
     /* La base couleur Champagne avec effet brossé horizontal */
-    background: 
+    background:
         /* Couche 1 : Le brossage métallique (micro-rayures) */
-        repeating-linear-gradient(
-            0deg,
+        repeating-linear-gradient(0deg,
             rgba(255, 255, 255, 0.05) 0px,
             rgba(255, 255, 255, 0.05) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         /* Couche 2 : Le dégradé de teinte champagne (alu anodisé) */
-        linear-gradient(
-            180deg, 
-            #e2d7bf 0%,   /* Champagne clair en haut */
-            #d4c4a8 45%,  /* Teinte moyenne */
-            #c5b395 55%,  /* Teinte légèrement plus sombre */
-            #dcd0ba 100%  /* Reflet de bordure en bas */
+        linear-gradient(180deg,
+            #e2d7bf 0%,
+            /* Champagne clair en haut */
+            #d4c4a8 45%,
+            /* Teinte moyenne */
+            #c5b395 55%,
+            /* Teinte légèrement plus sombre */
+            #dcd0ba 100%
+            /* Reflet de bordure en bas */
         );
 
     width: 100%;
     max-width: 1650px;
-    
+
     /* Bordure type aluminium usiné */
     border: 1px solid #b5a385;
-    border-bottom: 3px solid #1a1a1a; /* Simule l'épaisseur du châssis */
-    
+    border-bottom: 3px solid #1a1a1a;
+    /* Simule l'épaisseur du châssis */
+
     /* Ombre interne pour l'effet biseauté et ombres portées */
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.4) inset, /* Reflet brillant sur l'arête haute */
-        0 -1px 1px rgba(0, 0, 0, 0.1) inset,    /* Ombre légère en bas */
+        0 1px 0 rgba(255, 255, 255, 0.4) inset,
+        /* Reflet brillant sur l'arête haute */
+        0 -1px 1px rgba(0, 0, 0, 0.1) inset,
+        /* Ombre légère en bas */
         0 60px 120px var(--shadow-main),
         0 0 0 1px rgba(255, 255, 255, 0.03);
 
@@ -471,27 +475,24 @@ body {
 
 .btn-balance {
     /* On reprend exactement la texture et le dégradé des num-pad-buttons */
-    background: 
-        repeating-linear-gradient(
-            90deg, 
+    background:
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #eaddca 0%, 
-            #d4c4a8 40%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #eaddca 0%,
+            #d4c4a8 40%,
+            #c5b395 100%);
 
     /* Bordures et structure identiques */
     border: 1px solid #b5a385;
     border-bottom: 4px solid #8e7d5e;
-    
+
     /* Couleur du texte "Sérigraphie" foncée */
     color: #4a4031;
-    
+
     padding: 9px 4px;
     font-size: 0.90rem;
     font-weight: 700;
@@ -503,10 +504,11 @@ body {
     justify-content: center;
     transition: all 0.1s ease;
     outline: none;
-    border-radius: 3px; /* Alignement sur le rayon des pads */
-    
+    border-radius: 3px;
+    /* Alignement sur le rayon des pads */
+
     /* Ombre de bouton massif avec éclat sur l'arête */
-    box-shadow: 
+    box-shadow:
         0 4px 8px rgba(0, 0, 0, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
@@ -515,54 +517,51 @@ body {
 .btn-balance:active {
     transform: translateY(3px);
     border-bottom-width: 1px;
-    box-shadow: 
+    box-shadow:
         0 2px 3px rgba(0, 0, 0, 0.2),
         inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Effet de survol harmonisé */
 .btn-balance:hover {
-    background: 
-        repeating-linear-gradient(
-            90deg, 
+    background:
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.05) 0px,
             rgba(255, 255, 255, 0.05) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #f5eee0 0%, 
-            #dcd0ba 40%, 
-            #d4c4a8 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #f5eee0 0%,
+            #dcd0ba 40%,
+            #d4c4a8 100%);
 }
+
 .num-pad-button {
     /* Texture métal brossé champagne */
-    background: 
-        repeating-linear-gradient(
-            90deg, /* Brossage vertical sur les boutons pour varier */
+    background:
+        repeating-linear-gradient(90deg,
+            /* Brossage vertical sur les boutons pour varier */
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #eaddca 0%, 
-            #d4c4a8 40%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #eaddca 0%,
+            #d4c4a8 40%,
+            #c5b395 100%);
 
     /* Bordure métallique plus fine */
     border: 1px solid #b5a385;
     /* La base du bouton (l'épaisseur mécanique) */
     border-bottom: 3px solid #8e7d5e;
-    
+
     /* Texte : on passe sur un gris anthracite ou bronze foncé pour le contraste */
     color: #4a4031;
-    
+
     padding: 9px 4px;
     font-size: 0.80rem;
-    font-weight: 500; /* Un peu plus gras pour l'aspect sérigraphie */
+    font-weight: 500;
+    /* Un peu plus gras pour l'aspect sérigraphie */
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
@@ -571,11 +570,12 @@ body {
     justify-content: center;
     transition: all 0.1s ease;
     outline: none;
-    border-radius: 2px; /* Rayon plus faible pour un look plus "usinage" */
+    border-radius: 2px;
+    /* Rayon plus faible pour un look plus "usinage" */
     letter-spacing: 0.5px;
 
     /* Effet de profondeur */
-    box-shadow: 
+    box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
@@ -650,31 +650,29 @@ body {
 
 button {
     /* Texture métal brossé champagne identique aux pads */
-    background: 
-        repeating-linear-gradient(
-            90deg, 
+    background:
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #eaddca 0%, 
-            #d4c4a8 40%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #eaddca 0%,
+            #d4c4a8 40%,
+            #c5b395 100%);
 
     /* Bordure métallique cohérente */
     border: 1px solid #b5a385;
     /* Épaisseur mécanique du bouton */
     border-bottom: 3px solid #8e7d5e;
-    
+
     /* Couleur du texte "Sérigraphie" foncée des pads */
     color: #4a4031;
-    
+
     padding: 9px 4px;
     font-size: 0.6rem;
-    font-weight: 500; /* Légèrement plus gras pour correspondre au style pad */
+    font-weight: 500;
+    /* Légèrement plus gras pour correspondre au style pad */
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
@@ -687,7 +685,7 @@ button {
     letter-spacing: 0.8px;
 
     /* Profondeur et éclat sur l'arête (0.5 d'opacité comme les pads) */
-    box-shadow: 
+    box-shadow:
         0 1px 3px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
@@ -695,18 +693,15 @@ button {
 /* Survol : reflet champagne plus chaud + légère dorure */
 button:hover {
     background:
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.06) 0px,
             rgba(255, 255, 255, 0.06) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg,
             #f5edd8 0%,
             #e2d4b0 40%,
-            #d4c08a 100%
-        );
+            #d4c08a 100%);
     border-color: #c8a84b;
     color: #3a3020;
     box-shadow:
@@ -719,18 +714,15 @@ button:active {
     transform: translateY(2px);
     border-bottom-width: 1px;
     background:
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             rgba(0, 0, 0, 0.03) 0px,
             rgba(0, 0, 0, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg,
             #c9b88a 0%,
             #b8a472 40%,
-            #a8935e 100%
-        );
+            #a8935e 100%);
     border-color: #a07830;
     color: #2a2010;
     box-shadow:
@@ -765,13 +757,11 @@ button i {
     width: 55px;
     height: 40px;
     background:
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg, #eaddca 0%, #d4c4a8 40%, #c5b395 100%);
     border: 1px solid #b5a385;
     border-bottom: 3px solid #8e7d5e;
@@ -807,21 +797,19 @@ button i {
 /* ── SHUTTLE ── */
 .shuttle-zone {
     /* Texture métal brossé champagne identique au châssis/boutons */
-    background: 
-        repeating-linear-gradient(
-            0deg, /* Brossage horizontal pour cette zone large */
+    background:
+        repeating-linear-gradient(0deg,
+            /* Brossage horizontal pour cette zone large */
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #d4c4a8 0%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #d4c4a8 0%,
+            #c5b395 100%);
 
     padding: 10px 12px;
-    
+
     /* Bordure assortie au métal champagne */
     border: 1px solid #b5a385;
     border-radius: 2px;
@@ -829,8 +817,10 @@ button i {
 
     /* Effet de profondeur (Ombre interne pour l'aspect "encastré") */
     box-shadow:
-        inset 0 2px 4px rgba(0, 0, 0, 0.15), /* Ombre interne en haut */
-        0 1px 0 rgba(255, 255, 255, 0.4);     /* Petit reflet sur le bord inférieur */
+        inset 0 2px 4px rgba(0, 0, 0, 0.15),
+        /* Ombre interne en haut */
+        0 1px 0 rgba(255, 255, 255, 0.4);
+    /* Petit reflet sur le bord inférieur */
 }
 
 .shuttle-label {
@@ -846,7 +836,8 @@ button i {
 input[type="range"] {
     width: 100%;
     height: 3px;
-    background: #1a1a1a; /* Rail sombre pour bien faire ressortir le champagne */
+    background: #1a1a1a;
+    /* Rail sombre pour bien faire ressortir le champagne */
     -webkit-appearance: none;
     outline: none;
     cursor: pointer;
@@ -858,59 +849,54 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 36px;
     height: 14px;
-    
+
     /* Texture métal brossé champagne identique aux pads */
-    background: 
-        repeating-linear-gradient(
-            90deg, 
+    background:
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.04) 0px,
             rgba(255, 255, 255, 0.04) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #eaddca 0%, 
-            #d4c4a8 40%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #eaddca 0%,
+            #d4c4a8 40%,
+            #c5b395 100%);
 
     /* Bordure et finition métallique */
     border: 1px solid #b5a385;
     border-radius: 1px;
-    
+
     /* Effet de relief pour que le curseur semble "posé" sur le rail */
-    box-shadow: 
+    box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    
+
     cursor: grab;
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
     cursor: grabbing;
-    filter: brightness(1.1); /* Brille légèrement quand on le manipule */
+    filter: brightness(1.1);
+    /* Brille légèrement quand on le manipule */
 }
 
 /* Version Firefox */
 input[type="range"]::-moz-range-thumb {
     width: 36px;
     height: 14px;
-    background: 
-        repeating-linear-gradient(
-            90deg, 
+    background:
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.04) 0px,
             rgba(255, 255, 255, 0.04) 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        linear-gradient(180deg, 
-            #eaddca 0%, 
-            #d4c4a8 40%, 
-            #c5b395 100%
-        );
+            transparent 2px),
+        linear-gradient(180deg,
+            #eaddca 0%,
+            #d4c4a8 40%,
+            #c5b395 100%);
     border: 1px solid #b5a385;
     border-radius: 1px;
-    box-shadow: 
+    box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
     cursor: grab;
@@ -1230,13 +1216,11 @@ input[type="range"]::-moz-range-thumb {
     width: 55px;
     height: 40px;
     background:
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.03) 0px,
             rgba(255, 255, 255, 0.03) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg, #eaddca 0%, #d4c4a8 40%, #c5b395 100%);
     border: 1px solid #b5a385;
     border-bottom: 3px solid #8e7d5e;
@@ -1257,13 +1241,11 @@ input[type="range"]::-moz-range-thumb {
 
 .btn-power:hover {
     background:
-        repeating-linear-gradient(
-            90deg,
+        repeating-linear-gradient(90deg,
             rgba(255, 255, 255, 0.06) 0px,
             rgba(255, 255, 255, 0.06) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg, #f5edd8 0%, #e2d4b0 40%, #d4c08a 100%);
     border-color: #c8a84b;
     color: #cc2211;
@@ -1882,37 +1864,44 @@ input[type="range"]::-moz-range-thumb {
 .tray-door {
     position: absolute;
     inset: 0;
-    
+
     /* Effet Aluminium Champagne Brossé Premium */
-    background: 
-        repeating-linear-gradient(
-            0deg,
+    background:
+        repeating-linear-gradient(0deg,
             rgba(255, 255, 255, 0.04) 0px,
             rgba(255, 255, 255, 0.04) 1px,
             transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         linear-gradient(180deg,
-            #e2d7bf 0%,   /* Arête haute éclairée */
-            #d4c4a8 10%,  /* Couleur principale */
-            #c5b395 90%,  /* Ombre naturelle vers le bas */
-            #b5a385 100%  /* Bordure inférieure */
+            #e2d7bf 0%,
+            /* Arête haute éclairée */
+            #d4c4a8 10%,
+            /* Couleur principale */
+            #c5b395 90%,
+            /* Ombre naturelle vers le bas */
+            #b5a385 100%
+            /* Bordure inférieure */
         );
 
     /* Bordures assorties au métal */
     border: 1px solid #b5a385;
-    border-bottom: 2px solid #332d24; /* Ombre de séparation du tiroir */
-    border-radius: 1px; /* Angles plus vifs, typique du métal usiné */
-    
+    border-bottom: 2px solid #332d24;
+    /* Ombre de séparation du tiroir */
+    border-radius: 1px;
+    /* Angles plus vifs, typique du métal usiné */
+
     transform: translateY(0);
     z-index: 10;
     cursor: pointer;
-    
+
     /* Ombres pour le relief (Effet 3D) */
     box-shadow:
-        inset 0 1px 1px rgba(255, 255, 255, 0.6), /* Éclat métallique sur le haut */
-        inset 1px 0 0 rgba(255, 255, 255, 0.2),    /* Reflet latéral gauche */
-        0 4px 10px rgba(0, 0, 0, 0.3);             /* Ombre portée sur le châssis */
+        inset 0 1px 1px rgba(255, 255, 255, 0.6),
+        /* Éclat métallique sur le haut */
+        inset 1px 0 0 rgba(255, 255, 255, 0.2),
+        /* Reflet latéral gauche */
+        0 4px 10px rgba(0, 0, 0, 0.3);
+    /* Ombre portée sur le châssis */
 
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
