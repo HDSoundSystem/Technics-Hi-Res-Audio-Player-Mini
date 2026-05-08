@@ -8,7 +8,7 @@
             content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
         <meta name="author" content="Yohann Zaoui HDSoundSystem">
         <link rel="manifest" href="manifest.json">
-        <link rel="stylesheet" href="style.css">
+        <link id="main-stylesheet" rel="stylesheet" href="style.css">
         <link rel="icon" type="image/png" href="img/favicon.png">
         <link rel="apple-touch-icon" href="img/favicon.png">
         <script
@@ -39,7 +39,7 @@
 
             <div class="header-line">
                 <img src="img/technics_brand.png" alt="Technics"
-                    class="brand-logo-img">
+                    class="brand-logo-img" id="header-brand-logo">
                 <span class="model-text">HIGH RESOLUTION AUDIO PLAYER</span>
                 <img src="img/classAA.png" alt="ClassAA" class="classaa-logo">
             </div>
@@ -432,11 +432,11 @@
                                 GITHUB
                             </a></span>
                             <span><a
-                                href="https://hdsoundsystem.github.io/Technics-Hi-Res-Audio-Player-Mini-Gold/"
+                                href="#"
+                                id="light-toggle-link"
                                 class="color-link"
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Gold Version
+                                onclick="toggleLightVersion(event)">
+                                LIGHT VERSION
                             </a></span>
                     </div>
                 </div>
@@ -522,5 +522,23 @@
                     class="eq-brand-logo">
             </div>
 
+            <script>
+                (function() {
+                    const DARK = 'style.css';
+                    const LIGHT = 'style-light.css';
+                    let isDark  = false;
+
+                    window.toggleLightVersion = function(e) {
+                        e.preventDefault();
+                        const link = document.getElementById('main-stylesheet');
+                        const btn  = document.getElementById('light-toggle-link');
+                        const logo = document.getElementById('header-brand-logo');
+                        isDark = !isDark;
+                        link.href  = isDark ? LIGHT : DARK;
+                        btn.textContent = isDark ? 'Dark Version' : 'Light Version';
+                        if (logo) logo.src = isDark ? 'img/technics_brand_2.png' : 'img/technics_brand.png';
+                    };
+                })();
+            </script>
         </body>
     </html>

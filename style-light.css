@@ -6,7 +6,7 @@
     --vfd-shadow-main: rgba(176, 254, 255, 0.35);
     --vfd-shadow-red: rgba(255, 60, 34, 0.6);
     --vfd-sep-line: #1a1a1a;
-    --bg-color: #535353;
+    --bg-color: #777777;
     --panel-color: #1e1e1e;
     --panel-top: #2b2b2b;
     --panel-bottom: #161616;
@@ -17,9 +17,6 @@
     --btn-bg: #252525;
     --btn-border: #3a3a3a;
     --btn-text: #949494;
-    --shuttle-bg: #0a0a0a;
-    --shuttle-thumb: #262626;
-    --shuttle-label: #a8a8a8;
     --shadow-main: rgba(0, 0, 0, 0.95);
     --accent-line: #c8a84b;
 }
@@ -41,15 +38,39 @@ body {
 }
 
 .player-container {
-    background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-color) 40%, var(--panel-bottom) 100%);
+    /* La base couleur Champagne avec effet brossé horizontal */
+    background: 
+        /* Couche 1 : Le brossage métallique (micro-rayures) */
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.05) 0px,
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        /* Couche 2 : Le dégradé de teinte champagne (alu anodisé) */
+        linear-gradient(
+            180deg, 
+            #e2d7bf 0%,   /* Champagne clair en haut */
+            #d4c4a8 45%,  /* Teinte moyenne */
+            #c5b395 55%,  /* Teinte légèrement plus sombre */
+            #dcd0ba 100%  /* Reflet de bordure en bas */
+        );
+
     width: 100%;
     max-width: 1650px;
-    border: 1px solid var(--panel-border);
-    border-bottom: 3px solid #000000;
+    
+    /* Bordure type aluminium usiné */
+    border: 1px solid #b5a385;
+    border-bottom: 3px solid #1a1a1a; /* Simule l'épaisseur du châssis */
+    
+    /* Ombre interne pour l'effet biseauté et ombres portées */
     box-shadow:
-        0 2px 0 rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.4) inset, /* Reflet brillant sur l'arête haute */
+        0 -1px 1px rgba(0, 0, 0, 0.1) inset,    /* Ombre légère en bas */
         0 60px 120px var(--shadow-main),
         0 0 0 1px rgba(255, 255, 255, 0.03);
+
     position: relative;
     overflow: visible;
     margin: 0 40px;
@@ -99,7 +120,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 22px 8px;
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(122, 122, 122, 0.25);
     margin-left: 0px;
     margin-right: 0px;
     position: relative;
@@ -130,15 +151,13 @@ body {
 
 .model-text {
     font-size: 0.65rem;
-    color: var(--header-text);
+    color: black;
     font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
     opacity: 0.8;
     margin-right: 1150px;
-    text-shadow:
-        -1px -1px 0px rgba(0, 0, 0, 0.6),
-        1px 1px 1px rgba(255, 255, 255, 0.1);
+    margin-top: 7px;
 }
 
 .btn-label-power {
@@ -146,7 +165,8 @@ body {
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--btn-text);
+    color: black;
+    opacity: 0.9;
     padding-bottom: 3px;
 }
 
@@ -449,43 +469,128 @@ body {
     margin-top: 7px;
 }
 
-.btn-volume, .btn-balance {
-    background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
-    border: 1px solid var(--btn-border);
-    border-bottom: 4px solid #101010;
-    color: var(--btn-text);
+.btn-balance {
+    /* On reprend exactement la texture et le dégradé des num-pad-buttons */
+    background: 
+        repeating-linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #eaddca 0%, 
+            #d4c4a8 40%, 
+            #c5b395 100%
+        );
+
+    /* Bordures et structure identiques */
+    border: 1px solid #b5a385;
+    border-bottom: 4px solid #8e7d5e;
+    
+    /* Couleur du texte "Sérigraphie" foncée */
+    color: #4a4031;
+    
     padding: 9px 4px;
     font-size: 0.90rem;
-    font-weight: 500;
+    font-weight: 700;
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.08s ease;
+    transition: all 0.1s ease;
     outline: none;
-    border-radius: 3px;
+    border-radius: 3px; /* Alignement sur le rayon des pads */
+    
+    /* Ombre de bouton massif avec éclat sur l'arête */
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+/* État actif : enfoncement mécanique */
+.btn-balance:active {
+    transform: translateY(3px);
+    border-bottom-width: 1px;
+    box-shadow: 
+        0 2px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Effet de survol harmonisé */
+.btn-balance:hover {
+    background: 
+        repeating-linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0.05) 0px,
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #f5eee0 0%, 
+            #dcd0ba 40%, 
+            #d4c4a8 100%
+        );
+}
 .num-pad-button {
-    background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
-    border: 1px solid var(--btn-border);
-    border-bottom: 4px solid #101010;
-    color: var(--btn-text);
+    /* Texture métal brossé champagne */
+    background: 
+        repeating-linear-gradient(
+            90deg, /* Brossage vertical sur les boutons pour varier */
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #eaddca 0%, 
+            #d4c4a8 40%, 
+            #c5b395 100%
+        );
+
+    /* Bordure métallique plus fine */
+    border: 1px solid #b5a385;
+    /* La base du bouton (l'épaisseur mécanique) */
+    border-bottom: 3px solid #8e7d5e;
+    
+    /* Texte : on passe sur un gris anthracite ou bronze foncé pour le contraste */
+    color: #4a4031;
+    
     padding: 9px 4px;
     font-size: 0.80rem;
-    font-weight: 500;
+    font-weight: 500; /* Un peu plus gras pour l'aspect sérigraphie */
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.08s ease;
+    transition: all 0.1s ease;
     outline: none;
-    border-radius: 3px;
+    border-radius: 2px; /* Rayon plus faible pour un look plus "usinage" */
     letter-spacing: 0.5px;
+
+    /* Effet de profondeur */
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Effet au clic (pression mécanique) */
+.num-pad-button:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    background:
+        linear-gradient(180deg, #c9b88a 0%, #b8a472 40%, #a8935e 100%);
+    border-color: #a07830;
+    color: #2a2010;
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.25),
+        inset 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .transport-bar {
@@ -528,12 +633,13 @@ body {
 .ctrl-group-label {
     font-size: 9px;
     font-weight: normal;
-    color: var(--btn-text);
+    color: black;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 2px;
     text-align: center;
     padding-bottom: 3px;
+    opacity: 0.9;
 }
 
 .ctrl-row {
@@ -543,36 +649,93 @@ body {
 }
 
 button {
-    background: linear-gradient(180deg, #2e2e2e 0%, #1e1e1e 100%);
-    border: 1px solid var(--btn-border);
-    border-bottom: 4px solid #101010;
-    color: var(--btn-text);
+    /* Texture métal brossé champagne identique aux pads */
+    background: 
+        repeating-linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #eaddca 0%, 
+            #d4c4a8 40%, 
+            #c5b395 100%
+        );
+
+    /* Bordure métallique cohérente */
+    border: 1px solid #b5a385;
+    /* Épaisseur mécanique du bouton */
+    border-bottom: 3px solid #8e7d5e;
+    
+    /* Couleur du texte "Sérigraphie" foncée des pads */
+    color: #4a4031;
+    
     padding: 9px 4px;
     font-size: 0.6rem;
-    font-weight: 500;
+    font-weight: 500; /* Légèrement plus gras pour correspondre au style pad */
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.08s ease;
+    transition: all 0.1s ease;
     outline: none;
-    border-radius: 3px;
-    letter-spacing: 0.5px;
+    border-radius: 2px;
+    letter-spacing: 0.8px;
+
+    /* Profondeur et éclat sur l'arête (0.5 d'opacité comme les pads) */
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+/* Survol : reflet champagne plus chaud + légère dorure */
 button:hover {
-    background: linear-gradient(180deg, #363636 0%, #262626 100%);
-    color: #ffffff;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.06) 0px,
+            rgba(255, 255, 255, 0.06) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg,
+            #f5edd8 0%,
+            #e2d4b0 40%,
+            #d4c08a 100%
+        );
+    border-color: #c8a84b;
+    color: #3a3020;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
+/* Pression mécanique avec teinte dorée pressée */
 button:active {
-    transform: translateY(1px);
+    transform: translateY(2px);
     border-bottom-width: 1px;
-    box-shadow: inset 0 0 8px rgba(176, 254, 255, 0.1);
-    color: var(--vfd-main);
-    background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.03) 0px,
+            rgba(0, 0, 0, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg,
+            #c9b88a 0%,
+            #b8a472 40%,
+            #a8935e 100%
+        );
+    border-color: #a07830;
+    color: #2a2010;
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.25),
+        inset 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 button i {
@@ -601,10 +764,18 @@ button i {
 .btn-open {
     width: 55px;
     height: 40px;
-    background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
-    border: 2px solid #3a3a3a;
-    border-bottom: 3px solid #090909;
-    color: var(--btn-text);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, #eaddca 0%, #d4c4a8 40%, #c5b395 100%);
+    border: 1px solid #b5a385;
+    border-bottom: 3px solid #8e7d5e;
+    color: #4a4031;
     font-size: 1rem;
     cursor: pointer;
     display: flex;
@@ -613,6 +784,9 @@ button i {
     transition: all 0.1s ease;
     outline: none;
     padding: 0;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 @keyframes ejectBlink {
@@ -621,7 +795,7 @@ button i {
     }
 
     50% {
-        color: #ffffff;
+        color: #969696;
         filter: brightness(2);
     }
 }
@@ -632,21 +806,37 @@ button i {
 
 /* ── SHUTTLE ── */
 .shuttle-zone {
-    background: var(--shuttle-bg);
+    /* Texture métal brossé champagne identique au châssis/boutons */
+    background: 
+        repeating-linear-gradient(
+            0deg, /* Brossage horizontal pour cette zone large */
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #d4c4a8 0%, 
+            #c5b395 100%
+        );
+
     padding: 10px 12px;
-    border: 1px solid var(--btn-border);
+    
+    /* Bordure assortie au métal champagne */
+    border: 1px solid #b5a385;
     border-radius: 2px;
     margin-top: auto;
 
-    /* Effet de profondeur */
+    /* Effet de profondeur (Ombre interne pour l'aspect "encastré") */
     box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.2),
-        0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        inset 0 2px 4px rgba(0, 0, 0, 0.15), /* Ombre interne en haut */
+        0 1px 0 rgba(255, 255, 255, 0.4);     /* Petit reflet sur le bord inférieur */
 }
 
 .shuttle-label {
     font-size: 0.52rem;
-    color: var(--shuttle-label);
+    color: black;
+    opacity: 0.9;
     text-align: center;
     margin-bottom: 7px;
     text-transform: uppercase;
@@ -656,19 +846,74 @@ button i {
 input[type="range"] {
     width: 100%;
     height: 3px;
-    background: #222;
+    background: #1a1a1a; /* Rail sombre pour bien faire ressortir le champagne */
     -webkit-appearance: none;
     outline: none;
     cursor: pointer;
+    border-radius: 2px;
 }
 
+/* Version Webkit (Chrome, Safari, Edge, Opera) */
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 36px;
     height: 14px;
-    background: var(--shuttle-thumb);
-    border: 2px solid var(--btn-border);
-    border-radius: 2px;
+    
+    /* Texture métal brossé champagne identique aux pads */
+    background: 
+        repeating-linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #eaddca 0%, 
+            #d4c4a8 40%, 
+            #c5b395 100%
+        );
+
+    /* Bordure et finition métallique */
+    border: 1px solid #b5a385;
+    border-radius: 1px;
+    
+    /* Effet de relief pour que le curseur semble "posé" sur le rail */
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    cursor: grab;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    filter: brightness(1.1); /* Brille légèrement quand on le manipule */
+}
+
+/* Version Firefox */
+input[type="range"]::-moz-range-thumb {
+    width: 36px;
+    height: 14px;
+    background: 
+        repeating-linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, 
+            #eaddca 0%, 
+            #d4c4a8 40%, 
+            #c5b395 100%
+        );
+    border: 1px solid #b5a385;
+    border-radius: 1px;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    cursor: grab;
 }
 
 .modal {
@@ -984,10 +1229,18 @@ input[type="range"]::-webkit-slider-thumb {
 .btn-power {
     width: 55px;
     height: 40px;
-    background: linear-gradient(180deg, #2a2a2a 0%, #181818 100%);
-    border: 2px solid #3a3a3a;
-    border-bottom: 3px solid #090909;
-    color: var(--btn-text);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, #eaddca 0%, #d4c4a8 40%, #c5b395 100%);
+    border: 1px solid #b5a385;
+    border-bottom: 3px solid #8e7d5e;
+    color: #4a4031;
     font-size: 1rem;
     cursor: pointer;
     display: flex;
@@ -997,17 +1250,39 @@ input[type="range"]::-webkit-slider-thumb {
     outline: none;
     padding: 0;
     margin-bottom: 12px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .btn-power:hover {
-    color: #ff4433;
-    border-color: #cc3322;
-    box-shadow: 0 0 18px rgba(200, 50, 30, 0.4);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.06) 0px,
+            rgba(255, 255, 255, 0.06) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg, #f5edd8 0%, #e2d4b0 40%, #d4c08a 100%);
+    border-color: #c8a84b;
+    color: #cc2211;
+    box-shadow:
+        0 0 12px rgba(200, 50, 30, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .btn-power:active {
-    transform: translateY(1px);
-    border-bottom-width: 2px;
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    background:
+        linear-gradient(180deg, #c9b88a 0%, #b8a472 40%, #a8935e 100%);
+    border-color: #a07830;
+    color: #cc2211;
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.25),
+        inset 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .modal-confirm {
@@ -1333,27 +1608,29 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 50%;
     transform: rotate(var(--knob-angle, -81deg));
     will-change: transform;
-    background-color: #262626;
+    background-color: #d4c4a8;
     border: 3px solid transparent;
     background-origin: border-box;
     background-clip: padding-box, border-box;
     background-image:
-        linear-gradient(#262626, #262626),
+        linear-gradient(135deg, #e2d7bf 0%, #d4c4a8 40%, #c5b395 70%, #dcd0ba 100%),
         linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
     box-shadow:
-        0 0 30px 5px rgba(0, 0, 0, 0.8),
-        0 0 10px 2px rgba(0, 0, 0, 0.9),
-        inset 0 0 20px rgba(0, 0, 0, 0.6);
+        0 0 30px 5px rgba(0, 0, 0, 0.5),
+        0 0 10px 2px rgba(0, 0, 0, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.45),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .volume-knob:active {
-    transform: scale(1);
+    transform: scale(0.98);
     box-shadow:
-        0 0 0 2px #181818,
-        0 0 0 4px #2a2a2a,
-        0 4px 10px rgba(0, 0, 0, 0.8),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        0 0 0 2px #b5a385,
+        0 0 0 4px #c8a84b,
+        0 4px 10px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 .knob-left-zone {
@@ -1380,12 +1657,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 .volume-knob:active {
     box-shadow:
-        0 0 0 2px #111,
-        0 0 0 4px #333,
-        0 3px 10px rgba(0, 0, 0, 0.8),
-        0 1px 2px rgba(0, 0, 0, 0.9),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+        0 0 0 2px #b5a385,
+        0 0 0 4px #c8a84b,
+        0 3px 10px rgba(0, 0, 0, 0.4),
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .eq-custom-body {
@@ -1523,7 +1800,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-assembly {
     position: relative;
     width: 100%;
-    margin-top: 75px;
+    margin-top: 70px;
     height: 115px;
     overflow: hidden;
     border-radius: 2px;
@@ -1536,13 +1813,11 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     justify-content: center;
     padding: 5px 12px 4px;
-    background: linear-gradient(180deg, #1c1c1c 0%, #141414 100%);
-    border-top: 1.5px solid rgb(255, 170, 120);
+    background: #cab68f;
     border-radius: 2px;
-    box-shadow:
-        inset 0 20px 20px -15px rgba(255, 170, 120, 0.2),
-        inset 0 -8px 12px rgba(0, 0, 0, 0.5),
-        0 4px 10px rgba(0, 0, 0, 0.8);
+    /* Effet de creux */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tray-inner {
@@ -1556,14 +1831,15 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     flex-direction: column;
     gap: 5px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #6b6b6b;
     padding-bottom: 5px;
 }
 
 .tray-row-label {
     font-size: 9px;
     font-weight: normal;
-    color: var(--btn-text);
+    color: black;
+    opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: -8px;
@@ -1606,23 +1882,39 @@ input[type="range"]::-webkit-slider-thumb {
 .tray-door {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg,
-            var(--panel-top) 0%,
-            var(--panel-top) 0%,
-            #171717 0%,
-            var(--panel-bottom) 97%,
-            var(--panel-bottom) 100%);
-    border: 2px solid var(--panel-border);
-    border-bottom: 1px solid #080808;
-    border-radius: 2px;
+    
+    /* Effet Aluminium Champagne Brossé Premium */
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        linear-gradient(180deg,
+            #e2d7bf 0%,   /* Arête haute éclairée */
+            #d4c4a8 10%,  /* Couleur principale */
+            #c5b395 90%,  /* Ombre naturelle vers le bas */
+            #b5a385 100%  /* Bordure inférieure */
+        );
+
+    /* Bordures assorties au métal */
+    border: 1px solid #b5a385;
+    border-bottom: 2px solid #332d24; /* Ombre de séparation du tiroir */
+    border-radius: 1px; /* Angles plus vifs, typique du métal usiné */
+    
     transform: translateY(0);
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     cursor: pointer;
+    
+    /* Ombres pour le relief (Effet 3D) */
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
-    transition: transform 0.8s ease-in-out;
+        inset 0 1px 1px rgba(255, 255, 255, 0.6), /* Éclat métallique sur le haut */
+        inset 1px 0 0 rgba(255, 255, 255, 0.2),    /* Reflet latéral gauche */
+        0 4px 10px rgba(0, 0, 0, 0.3);             /* Ombre portée sur le châssis */
+
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tray-door.tray-open {
@@ -1634,10 +1926,8 @@ input[type="range"]::-webkit-slider-thumb {
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--btn-text);
+    color: black;
+    opacity: 0.9;
     margin-left: 5px;
     user-select: none;
-    text-shadow:
-        -1px -1px 0px rgba(0, 0, 0, 0.6),
-        1px 1px 1px rgba(255, 255, 255, 0.1);
 }
