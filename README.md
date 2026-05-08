@@ -7,6 +7,8 @@ A high-fidelity web application emulating the aesthetics and user experience of 
 <img width="1880" height="831" alt="1" src="https://github.com/user-attachments/assets/878353bb-805e-466c-ad6c-78fb88e96b2e" />
 --
 <img width="1878" height="835" alt="2" src="https://github.com/user-attachments/assets/d3e3a50b-ab1b-4ad5-8e01-39f918fbb229" />
+--
+<img width="1850" height="800" alt="3" src="https://github.com/user-attachments/assets/2bc2ad5e-9bb7-494d-ac2c-fc1cfdd94c4e" />
 
 ## 📱 Overview
 
