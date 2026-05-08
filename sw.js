@@ -1,14 +1,14 @@
-const CACHE_NAME = 'Technics-Mini-v2';
+const CACHE_NAME = 'Technics-Mini-v3';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './css/style-light.css',
   './script.js',
-  './img/technics_brand.png',
-  './img/technics_brand_2.png',
+  './img/technics_brand_1.png',
+  './img/technics_brand_2_2.png',
   './img/technics_cover.png',
-  './img/classAA.png',
+  './img/classAA_1.png',
   './img/favicon.png'
 ];
 
