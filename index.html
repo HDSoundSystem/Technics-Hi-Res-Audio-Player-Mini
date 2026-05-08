@@ -8,7 +8,7 @@
             content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
         <meta name="author" content="Yohann Zaoui HDSoundSystem">
         <link rel="manifest" href="manifest.json">
-        <link rel="stylesheet" href="style.css">
+        <link id="main-stylesheet" rel="stylesheet" href="style.css">
         <link rel="icon" type="image/png" href="img/favicon.png">
         <link rel="apple-touch-icon" href="img/favicon.png">
         <script
@@ -432,11 +432,11 @@
                                 GITHUB
                             </a></span>
                             <span><a
-                                href="https://hdsoundsystem.github.io/Technics-Hi-Res-Audio-Player-Mini-Gold/"
+                                href="#"
+                                id="dark-toggle-link"
                                 class="color-link"
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Gold Version
+                                onclick="toggleDarkVersion(event)">
+                                Light Version
                             </a></span>
                     </div>
                 </div>
@@ -522,5 +522,21 @@
                     class="eq-brand-logo">
             </div>
 
+            <script>
+                (function() {
+                    const LIGHT = 'style.css';
+                    const DARK  = 'style-dark.css';
+                    let isDark  = false;
+
+                    window.toggleDarkVersion = function(e) {
+                        e.preventDefault();
+                        const link = document.getElementById('main-stylesheet');
+                        const btn  = document.getElementById('dark-toggle-link');
+                        isDark = !isDark;
+                        link.href  = isDark ? LIGHT : DARK;
+                        btn.textContent = isDark ? 'Light Version' : 'Dark Version';
+                    };
+                })();
+            </script>
         </body>
     </html>
