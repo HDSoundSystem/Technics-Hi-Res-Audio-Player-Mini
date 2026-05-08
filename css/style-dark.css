@@ -760,8 +760,8 @@ input[type="range"]:active::-webkit-slider-thumb {
 }
 
 .art-technics-logo {
-    height: 24px;
-    width: auto;
+    height: auto;
+    width: 110px;
 }
 
 .playlist-popup {
