@@ -433,10 +433,10 @@
                             </a></span>
                             <span><a
                                 href="#"
-                                id="dark-toggle-link"
+                                id="light-toggle-link"
                                 class="color-link"
-                                onclick="toggleDarkVersion(event)">
-                                Light Version
+                                onclick="toggleLightVersion(event)">
+                                LIGHT VERSION
                             </a></span>
                     </div>
                 </div>
@@ -524,17 +524,17 @@
 
             <script>
                 (function() {
-                    const LIGHT = 'style.css';
-                    const DARK  = 'style-dark.css';
+                    const DARK = 'style.css';
+                    const LIGHT = 'style-light.css';
                     let isDark  = false;
 
-                    window.toggleDarkVersion = function(e) {
+                    window.toggleLightVersion = function(e) {
                         e.preventDefault();
                         const link = document.getElementById('main-stylesheet');
-                        const btn  = document.getElementById('dark-toggle-link');
+                        const btn  = document.getElementById('light-toggle-link');
                         isDark = !isDark;
                         link.href  = isDark ? LIGHT : DARK;
-                        btn.textContent = isDark ? 'Light Version' : 'Dark Version';
+                        btn.textContent = isDark ? 'Dark Version' : 'Light Version';
                     };
                 })();
             </script>
