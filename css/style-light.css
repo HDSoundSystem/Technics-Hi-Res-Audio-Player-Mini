@@ -1137,12 +1137,28 @@ input[type="range"]::-moz-range-thumb {
     border: 1px solid #222;
 }
 
+.playlist-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.playlist-item-row-top {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    overflow: hidden;
+}
+
 .playlist-item-num {
     opacity: 0.45;
     font-family: 'DS-Digital';
     font-size: 1rem;
-    min-width: 20px;
     flex-shrink: 0;
+    min-width: 20px;
 }
 
 .playlist-item-name {
@@ -1150,6 +1166,33 @@ input[type="range"]::-moz-range-thumb {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.playlist-item-album {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.62rem;
+    opacity: 0.65;
+    letter-spacing: 0.03em;
+}
+
+.playlist-item-artist {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.60rem;
+    opacity: 0.45;
+    letter-spacing: 0.04em;
+    font-style: italic;
+}
+
+.playlist-item.active .playlist-item-album,
+.playlist-item.active .playlist-item-artist {
+    color: var(--vfd-red);
 }
 
 .playlist-item-remove {

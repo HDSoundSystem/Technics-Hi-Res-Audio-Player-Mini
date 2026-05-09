@@ -31,15 +31,26 @@ function updateStatusText() { if (digitEntry !== "") return; if (playlist.length
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 function updateEjectAnimation() { const btn = document.querySelector('.btn-open'); if (btn) btn.classList.toggle('no-track', playlist.length === 0); }
 
-// Cache covers per file name
+// Cache covers and metadata per file name
 const coverCache = {};
+const metaCache = {}; // { filename: { title, album, artist } }
 
 function getFileCover(file, callback) {
-    if (coverCache[file.name]) { callback(coverCache[file.name]); return; }
+    if (coverCache[file.name] !== undefined) { callback(coverCache[file.name]); return; }
     try {
         jsmediatags.read(file, {
             onSuccess: (tag) => {
-                const pic = tag.tags.picture;
+                const t = tag.tags;
+                const pic = t.picture;
+                // Cache metadata alongside cover
+                if (!metaCache[file.name]) {
+                    metaCache[file.name] = {
+                        title: t.title || file.name.replace(/\.[^.]+$/, ''),
+                        album: t.album || '',
+                        artist: t.artist || '',
+                        track: t.track || ''
+                    };
+                }
                 if (pic) {
                     const blob = new Blob([new Uint8Array(pic.data)], { type: pic.format });
                     const url = URL.createObjectURL(blob);
@@ -73,17 +84,55 @@ function renderPlaylistItems() {
             getFileCover(file, (url) => { if (url) cover.src = url; });
         }
 
+        // Info block
+        const info = document.createElement('div');
+        info.className = 'playlist-item-info';
+
+        // Row top: num + title
+        const rowTop = document.createElement('div');
+        rowTop.className = 'playlist-item-row-top';
+
         const num = document.createElement('span');
         num.className = 'playlist-item-num';
         num.textContent = String(index + 1).padStart(2, '0');
 
-        const name = document.createElement('span');
-        name.className = 'playlist-item-name';
-        name.textContent = file.name.replace(/\.[^.]+$/, '').toUpperCase();
+        const titleEl = document.createElement('span');
+        titleEl.className = 'playlist-item-name';
+        const meta = metaCache[file.name];
+        titleEl.textContent = (meta ? meta.title : file.name.replace(/\.[^.]+$/, '')).toUpperCase();
+
+        rowTop.appendChild(num);
+        rowTop.appendChild(titleEl);
+
+        // Album row
+        const albumEl = document.createElement('span');
+        albumEl.className = 'playlist-item-album';
+        albumEl.textContent = (meta && meta.album ? meta.album : '\u2014').toUpperCase();
+
+        // Artist row
+        const artistEl = document.createElement('span');
+        artistEl.className = 'playlist-item-artist';
+        artistEl.textContent = (meta && meta.artist ? meta.artist : '\u2014').toUpperCase();
+
+        // If meta not yet cached, trigger read and update when available
+        if (!meta) {
+            getFileCover(file, () => {
+                const m = metaCache[file.name];
+                if (m) {
+                    titleEl.textContent = m.title.toUpperCase();
+                    albumEl.textContent = (m.album || '\u2014').toUpperCase();
+                    artistEl.textContent = (m.artist || '\u2014').toUpperCase();
+                }
+            });
+        }
+
+        info.appendChild(rowTop);
+        info.appendChild(albumEl);
+        info.appendChild(artistEl);
 
         const removeBtn = document.createElement('button');
         removeBtn.className = 'playlist-item-remove';
-        removeBtn.innerHTML = '✕';
+        removeBtn.innerHTML = '\u2715';
         removeBtn.title = 'Remove';
         removeBtn.onclick = (e) => {
             e.stopPropagation();
@@ -91,8 +140,7 @@ function renderPlaylistItems() {
         };
 
         item.appendChild(cover);
-        item.appendChild(num);
-        item.appendChild(name);
+        item.appendChild(info);
         item.appendChild(removeBtn);
         item.onclick = () => { playDirect(index); };
         container.appendChild(item);
@@ -233,6 +281,14 @@ function loadTrack(index) {
         window.jsmediatags.read(file, {
             onSuccess: (tag) => {
                 const t = tag.tags;
+                // Update metaCache for playlist display
+                metaCache[file.name] = {
+                    title: t.title || file.name.replace(/\.[^.]+$/, ''),
+                    album: t.album || '',
+                    artist: t.artist || '',
+                    track: t.track || ''
+                };
+                if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
                 fileInfoLine.innerText = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"} - ${t.title || file.name}`.toUpperCase();
                 if (t.picture) {
                     const { data, format } = t.picture; let base64 = "";
