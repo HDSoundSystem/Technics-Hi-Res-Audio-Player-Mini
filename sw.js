@@ -10,7 +10,8 @@ const ASSETS = [
   './img/technics_brand_2.png',
   './img/technics_cover.png',
   './img/classAA.png',
-  './img/favicon.png'
+  './img/favicon.png',
+  './img/wood3.png'
 ];
 
 self.addEventListener('install', (e) => {
