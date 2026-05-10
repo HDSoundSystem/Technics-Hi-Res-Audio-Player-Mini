@@ -935,23 +935,6 @@ function applyEQPreset(name) {
     setTimeout(updateStatusText, 1500);
 }
 
-let vfdWhite = true;
-function toggleVFDColor() {
-    vfdWhite = !vfdWhite;
-    const root = document.documentElement;
-    if (vfdWhite) {
-        root.style.setProperty('--vfd-main', '#ffffff');
-        root.style.setProperty('--vfd-shadow-main', 'rgba(255, 255, 255, 0.35)');
-        root.style.setProperty('--vfd-glow', 'rgba(255, 255, 255, 0.2)');
-    } else {
-        root.style.setProperty('--vfd-main', '#B0FEFF');
-        root.style.setProperty('--vfd-shadow-main', 'rgba(176, 254, 255, 0.35)');
-        root.style.setProperty('--vfd-glow', 'rgba(0, 255, 255, 0.2)');
-    }
-    setTimeout(updateStatusText, 1200);
-}
-
-
 
 function doShuttle(v) { if (v != 0) { audio.currentTime += v * 0.5; showCenter(v > 0 ? "SEARCH >>" : "<< SEARCH", 600); } }
 function resetShuttle() { document.getElementById('shuttle').value = 0; updateStatusText(); }
