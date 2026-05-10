@@ -47,36 +47,33 @@ body {
     top: -1px;
     bottom: -3px;
     width: 70px;
-    background-blend-mode: soft-light;
-    z-index: -1;
+    /* On passe le z-index à 1 pour être sûr de voir l'image au début */
+    z-index: 1; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* On retire le blend-mode temporairement pour vérifier si l'image charge */
 }
 
 .player-container::before {
     left: -70px;
     border-radius: 8px 0 0 8px;
     border-right: 1px solid rgba(0, 0, 0, 0.5);
-    background:
-        linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2)),
-        repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
-        radial-gradient(ellipse at 20% 50%, #7a5230 0%, #4d331f 100%);
-    box-shadow:
-        inset 1px 0 2px rgba(255, 255, 255, 0.1),
-        inset -1px 0 2px rgba(0, 0, 0, 0.4),
-        -3px 5px 15px rgba(0, 0, 0, 0.5);
+    /* Vérifie bien ce chemin dans ton explorateur de fichiers */
+    background-image: 
+        linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 100%),
+        url('../img/wood3.png'); 
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), -3px 5px 15px rgba(0,0,0,0.5);
 }
 
 .player-container::after {
     right: -70px;
     border-radius: 0 8px 8px 0;
     border-left: 1px solid rgba(0, 0, 0, 0.5);
-    background:
-        linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.2)),
-        repeating-linear-gradient(90deg, #5d3f28 0px, #5d3f28 1px, #6b4423 2px, #5d3f28 3px),
-        radial-gradient(ellipse at 80% 50%, #7a5230 0%, #4d331f 100%);
-    box-shadow:
-        inset -1px 0 2px rgba(255, 255, 255, 0.1),
-        inset 1px 0 2px rgba(0, 0, 0, 0.4),
-        3px 5px 15px rgba(0, 0, 0, 0.5);
+    background-image: 
+        linear-gradient(-90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 100%),
+        url('../img/wood3.png');
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 3px 5px 15px rgba(0,0,0,0.5);
 }
 
 .brand-logo-img {
