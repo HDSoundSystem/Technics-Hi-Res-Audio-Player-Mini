@@ -4,11 +4,11 @@ A high-fidelity web application emulating the aesthetics and user experience of 
 
 <img width="1257" height="197" alt="Technics_cover" src="https://github.com/user-attachments/assets/4cbd644c-e987-4431-b7e1-9cbaeafd9f76" />
 --
-<img width="1880" height="831" alt="1" src="https://github.com/user-attachments/assets/878353bb-805e-466c-ad6c-78fb88e96b2e" />
---
-<img width="1878" height="835" alt="2" src="https://github.com/user-attachments/assets/d3e3a50b-ab1b-4ad5-8e01-39f918fbb229" />
---
-<img width="1850" height="800" alt="3" src="https://github.com/user-attachments/assets/2bc2ad5e-9bb7-494d-ac2c-fc1cfdd94c4e" />
+<img width="1866" height="821" alt="1" src="https://github.com/user-attachments/assets/257b0c46-7c81-4334-8b02-b30e8b278430" />
+.
+<img width="1856" height="809" alt="2" src="https://github.com/user-attachments/assets/e94527da-5fe2-4930-ab89-fb7d1148209c" />
+.
+<img width="1858" height="821" alt="3" src="https://github.com/user-attachments/assets/42541688-61b0-4b0a-b849-6f38c65ac080" />
 
 ## 📱 Overview
 
