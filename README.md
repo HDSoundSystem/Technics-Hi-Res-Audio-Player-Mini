@@ -3,11 +3,11 @@
 A high-fidelity web application emulating the aesthetics and user experience of the iconic Technics CD player from the 1990s.
 
 <img width="1257" height="197" alt="Technics_cover" src="https://github.com/user-attachments/assets/4cbd644c-e987-4431-b7e1-9cbaeafd9f76" />
- 
+.
 <img width="1866" height="821" alt="1" src="https://github.com/user-attachments/assets/257b0c46-7c81-4334-8b02-b30e8b278430" />
- 
+.
 <img width="1856" height="809" alt="2" src="https://github.com/user-attachments/assets/e94527da-5fe2-4930-ab89-fb7d1148209c" />
- 
+.
 <img width="1858" height="821" alt="3" src="https://github.com/user-attachments/assets/42541688-61b0-4b0a-b849-6f38c65ac080" />
 
 ## 📱 Overview
