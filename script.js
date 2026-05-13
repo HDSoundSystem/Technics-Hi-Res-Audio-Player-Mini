@@ -24,7 +24,14 @@ function showCenter(msg, delay = 1800) {
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null, musicScanActive = false, musicScanTimer = null;
 
+// ── Cached CSS variables (invalidated on theme change)
+let _vfdColorCache = {};
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function invalidateColorCache() { _vfdColorCache = {}; }
+function getVFDColorCached(name) {
+    if (_vfdColorCache[name] === undefined) _vfdColorCache[name] = getVFDColor(name);
+    return _vfdColorCache[name];
+}
 
 let isMuted = false;
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
@@ -68,6 +75,14 @@ function getFileCover(file, callback) {
 
 function renderPlaylistItems() {
     const container = document.getElementById('playlist-items-container');
+    // Smart update: if item count matches, just update active class
+    const existing = container.querySelectorAll('.playlist-item');
+    if (existing.length === playlist.length) {
+        existing.forEach((el, i) => {
+            el.classList.toggle('active', i === currentIndex);
+        });
+        return;
+    }
     container.innerHTML = '';
     playlist.forEach((file, index) => {
         const item = document.createElement('div');
@@ -77,9 +92,9 @@ function renderPlaylistItems() {
         // Cover
         const cover = document.createElement('img');
         cover.className = 'playlist-item-cover';
-        cover.src = 'img/art-Technics-cover.png';
+        cover.src = 'img/technics_cover.webp';
         if (coverCache[file.name]) {
-            cover.src = coverCache[file.name] || 'img/art-Technics-cover.png';
+            cover.src = coverCache[file.name] || 'img/technics_cover.webp';
         } else {
             getFileCover(file, (url) => { if (url) cover.src = url; });
         }
@@ -147,12 +162,19 @@ function renderPlaylistItems() {
     });
 }
 
+// ── Revoke all cached cover ObjectURLs to free memory
+function revokeCoverCache() {
+    Object.values(coverCache).forEach(url => { if (url && url.startsWith('blob:')) URL.revokeObjectURL(url); });
+    for (const k in coverCache) delete coverCache[k];
+    for (const k in metaCache) delete metaCache[k];
+}
 function removeTrack(index) {
     const wasPlaying = !audio.paused;
     playlist.splice(index, 1);
     if (playlist.length === 0) {
         audio.pause(); audio.src = '';
         currentIndex = 0;
+        revokeCoverCache();
         updateStatusText();
         updateEjectAnimation();
         closePlaylist();
@@ -277,35 +299,39 @@ function loadTrack(index) {
     audio.src = URL.createObjectURL(file);
     formatInfo.innerText = file.name.split('.').pop().toUpperCase();
     if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
-    if (window.jsmediatags) {
+    const _applyMeta = (meta, picture) => {
+        metaCache[file.name] = meta;
+        if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
+        fileInfoLine.innerText = `${meta.artist || "UNKNOWN"} - ${meta.album || "UNKNOWN"} - ${meta.title || file.name}`.toUpperCase();
+        if (picture) {
+            const { data, format } = picture; let base64 = "";
+            for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]);
+            modalImg.src = `data:${format};base64,${window.btoa(base64)}`;
+            coverCache[file.name] = modalImg.src;
+        } else { modalImg.src = "img/technics_cover.webp"; }
+        updateMediaSession({ title: meta.title || file.name, artist: meta.artist || 'Unknown Artist', album: meta.album || 'Unknown Album' });
+    };
+
+    if (metaCache[file.name]) {
+        // Use cached metadata — skip jsmediatags read
+        const meta = metaCache[file.name];
+        fileInfoLine.innerText = `${meta.artist || "UNKNOWN"} - ${meta.album || "UNKNOWN"} - ${meta.title}`.toUpperCase();
+        if (coverCache[file.name]) modalImg.src = coverCache[file.name];
+        updateMediaSession({ title: meta.title, artist: meta.artist || 'Unknown Artist', album: meta.album || 'Unknown Album' });
+    } else if (window.jsmediatags) {
         window.jsmediatags.read(file, {
             onSuccess: (tag) => {
                 const t = tag.tags;
-                // Update metaCache for playlist display
-                metaCache[file.name] = {
+                _applyMeta({
                     title: t.title || file.name.replace(/\.[^.]+$/, ''),
                     album: t.album || '',
                     artist: t.artist || '',
                     track: t.track || ''
-                };
-                if (document.getElementById('playlistModal').classList.contains('open')) renderPlaylistItems();
-                fileInfoLine.innerText = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"} - ${t.title || file.name}`.toUpperCase();
-                if (t.picture) {
-                    const { data, format } = t.picture; let base64 = "";
-                    for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]);
-                    modalImg.src = `data:${format};base64,${window.btoa(base64)}`;
-                } else { modalImg.src = "img/art-Technics-cover.png"; }
-                updateMediaSession({
-                    title: t.title || file.name,
-                    artist: t.artist || 'Unknown Artist',
-                    album: t.album || 'Unknown Album'
-                });
-            }, onError: () => {
-                fileInfoLine.innerText = file.name.toUpperCase(); updateMediaSession({
-                    title: file.name,
-                    artist: 'Unknown Artist',
-                    album: 'Unknown Album'
-                });
+                }, t.picture || null);
+            },
+            onError: () => {
+                fileInfoLine.innerText = file.name.toUpperCase();
+                updateMediaSession({ title: file.name, artist: 'Unknown Artist', album: 'Unknown Album' });
             }
         });
     }
@@ -321,7 +347,7 @@ function updateMediaSession(metadata = {}) {
         album: metadata.album || fileInfoLine.innerText.split(' - ')[1] || 'Unknown Album',
         artwork: [
             {
-                src: modalImg.src || 'img/technics_cover.png',
+                src: modalImg.src || 'img/technics_cover.webp',
                 sizes: '512x512',
                 type: 'image/png'
             }
@@ -457,6 +483,10 @@ function initAudio() {
     // Keep bassFilter/trebleFilter pointing to first/last for bypass compatibility
     bassFilter = filters[0];
     trebleFilter = filters[9];
+    // Override frequencies for bass/treble tone controls to audible ranges
+    // (EQ band 0 = 32Hz lowshelf is inaudible on most speakers)
+    bassFilter.frequency.value = 200;    // standard hi-fi bass shelf
+    trebleFilter.frequency.value = 10000; // standard hi-fi treble shelf
 
     // Loudness gain
     loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
@@ -483,16 +513,30 @@ function initAudio() {
 
     analyser = analyserL;
     dataArray = dataArrayL;
-    drawVU();
+    startDrawLoop();
+}
+
+// ── Central animation loop (replaces individual rAF in drawVU/drawSpectrum)
+let _drawLoopRunning = false;
+function startDrawLoop() {
+    if (_drawLoopRunning) return;
+    _drawLoopRunning = true;
+    (function loop() {
+        requestAnimationFrame(loop);
+        if (!analyserL) return;
+        if (vuVisible) drawVU(); else drawVUOff();
+        if (spectrumVisible && specCtx) drawSpectrum();
+    })();
 }
 
 function drawSpectrum() {
-    requestAnimationFrame(drawSpectrum);
     const specCanvas = document.getElementById('spectrum-canvas');
     if (!specCanvas || !specCtx) return;
 
-    const W = specCanvas.width = specCanvas.offsetWidth || 200;
-    const H = specCanvas.height = specCanvas.offsetHeight || 80;
+    const W = specCanvas.offsetWidth || 200;
+    const H = specCanvas.offsetHeight || 80;
+    if (specCanvas.width !== W) specCanvas.width = W;
+    if (specCanvas.height !== H) specCanvas.height = H;
 
     specCtx.clearRect(0, 0, W, H);
 
@@ -514,7 +558,7 @@ function drawSpectrum() {
     }
 
     specAnalyser.getByteFrequencyData(specDataArray);
-    const mainColor = getVFDColor('--vfd-main');
+    const mainColor = getVFDColorCached('--vfd-main');
     const barCount = 28;
     const usefulBins = 30;
     const step = usefulBins / barCount;
@@ -596,7 +640,6 @@ function drawVUOff() {
 }
 
 function drawVU() {
-    requestAnimationFrame(drawVU);
     if (!analyserL) return;
 
     if (!vuVisible) { drawVUOff(); return; }
@@ -619,7 +662,7 @@ function drawVU() {
     if (lastVolR >= peakR) { peakR = lastVolR; peakTimerR = 25; }
     else if (peakTimerR > 0) { peakTimerR--; } else { peakR = Math.max(0, peakR - 1.5); }
 
-    const mainColor = getVFDColor('--vfd-main'), redColor = getVFDColor('--vfd-red'), orangeColor = getVFDColor('--vfd-orange') || '#ff8800';
+    const mainColor = getVFDColorCached('--vfd-main'), redColor = getVFDColorCached('--vfd-red'), orangeColor = getVFDColorCached('--vfd-orange') || '#ff8800';
     ctx.clearRect(0, 0, 800, 70);
     ctx.font = "500 14px 'Inter', sans-serif";
     ctx.textBaseline = "middle";
@@ -716,6 +759,8 @@ function changeBass(d) {
     if (!bassFilter || isBypass) return;
     bassLevel = Math.min(12, Math.max(-12, bassLevel + d));
     bassFilter.gain.setTargetAtTime(bassLevel, audioCtx.currentTime, 0.05);
+    eqGains[0] = bassLevel;
+    drawEQCurve();
     showBass();
 }
 function showBass() { showCenter(`BASS: ${bassLevel > 0 ? '+' : ''}${bassLevel} dB`); }
@@ -724,6 +769,8 @@ function changeTreble(d) {
     if (!trebleFilter || isBypass) return;
     trebleLevel = Math.min(12, Math.max(-12, trebleLevel + d));
     trebleFilter.gain.setTargetAtTime(trebleLevel, audioCtx.currentTime, 0.05);
+    eqGains[9] = trebleLevel;
+    drawEQCurve();
     showTreble();
 }
 function showTreble() { showCenter(`TREBLE: ${trebleLevel > 0 ? '+' : ''}${trebleLevel} dB`); }
