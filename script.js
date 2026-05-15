@@ -1243,5 +1243,11 @@ updateTrackDisplay();
     });
 })();
 
-// Init eject animation state on page load
+
+window.addEventListener('beforeunload', (e) => {
+    if (!audio.paused) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 document.addEventListener('DOMContentLoaded', updateEjectAnimation);
