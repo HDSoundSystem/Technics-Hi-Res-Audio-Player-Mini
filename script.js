@@ -463,21 +463,17 @@ let specAnalyser, specDataArray, specCtx;
 function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const source = audioCtx.createMediaElementSource(audio);
-
     // Splitter stereo
     splitter = audioCtx.createChannelSplitter(2);
-
     analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 64;
     analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 64;
     dataArrayL = new Uint8Array(analyserL.frequencyBinCount);
     dataArrayR = new Uint8Array(analyserR.frequencyBinCount);
-
     // Spectrum analyser (higher resolution, pre-EQ for accuracy)
     specAnalyser = audioCtx.createAnalyser();
     specAnalyser.fftSize = 256;
     specAnalyser.smoothingTimeConstant = 0.75;
     specDataArray = new Uint8Array(specAnalyser.frequencyBinCount);
-
     // 10-band EQ filters
     const filters = initEQFilters();
     // Keep bassFilter/trebleFilter pointing to first/last for bypass compatibility
@@ -487,16 +483,12 @@ function initAudio() {
     // (EQ band 0 = 32Hz lowshelf is inaudible on most speakers)
     bassFilter.frequency.value = 200;    // standard hi-fi bass shelf
     trebleFilter.frequency.value = 10000; // standard hi-fi treble shelf
-
     // Loudness gain
     loudnessGain = audioCtx.createGain(); loudnessGain.gain.value = 1;
-
     // Balance panner
     pannerNode = audioCtx.createStereoPanner(); pannerNode.pan.value = 0;
-
     // Mono merger
     channelMerger = audioCtx.createChannelMerger(2);
-
     // Signal chain: source → eq0 → eq1 → … → eq9 → loudness → panner → splitter
     source.connect(filters[0]);
     for (let i = 0; i < filters.length - 1; i++) filters[i].connect(filters[i + 1]);
@@ -516,7 +508,6 @@ function initAudio() {
     startDrawLoop();
 }
 
-// ── Central animation loop (replaces individual rAF in drawVU/drawSpectrum)
 let _drawLoopRunning = false;
 function startDrawLoop() {
     if (_drawLoopRunning) return;
@@ -786,7 +777,6 @@ function changeToneFlat() {
     setTimeout(updateStatusText, 1500);
 }
 
-// ── 10-BAND EQ
 const EQ_FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 let eqFilters = [];      // 10 BiquadFilter nodes
 let eqGains = new Array(10).fill(0); // current gains
@@ -954,7 +944,6 @@ function EQCustom() {
     setTimeout(drawEQCurve, 50);
 }
 
-// 10-band presets [32,64,125,250,500,1k,2k,4k,8k,16k]
 const EQ_PRESETS = {
     rock: [5, 4, 3, 1, 0, -1, 2, 4, 5, 4],
     pop: [2, 1, 0, 2, 4, 3, 2, 1, 2, 2],
@@ -1057,8 +1046,6 @@ function _syncKnob() {
 
         zoneL.addEventListener('mousedown', (e) => { e.preventDefault(); startHold(-1); });
         zoneR.addEventListener('mousedown', (e) => { e.preventDefault(); startHold(+1); });
-
-        // Stop only on mouseup
         document.addEventListener('mouseup', stopHold);
 
         // Scroll wheel
@@ -1084,7 +1071,26 @@ function showBalance() {
 function toggleTime() { timeMode = (timeMode === 'elapsed' ? 'remaining' : 'elapsed'); }
 function toggleVUMode() { vuVisible = !vuVisible; }
 let spectrumVisible = true;
-function toggleSpectrum() { spectrumVisible = !spectrumVisible; }
+function toggleSpectrum() {
+    spectrumVisible = !spectrumVisible;
+    if (!spectrumVisible && specCtx) {
+        const specCanvas = document.getElementById('spectrum-canvas');
+        const W = specCanvas.offsetWidth || 200;
+        const H = specCanvas.offsetHeight || 80;
+        specCtx.clearRect(0, 0, W, H);
+        const barCount = 28;
+        const barW = Math.floor(W / barCount) - 2;
+        const barGap = Math.floor(W / barCount) - barW;
+        const ledH = 3, ledStep = 5, ledCount = Math.floor(H / ledStep);
+        for (let i = 0; i < barCount; i++) {
+            const x = i * (barW + barGap);
+            for (let l = 0; l < ledCount; l++) {
+                specCtx.fillStyle = '#111';
+                specCtx.fillRect(x, H - (l + 1) * ledStep, barW, ledH);
+            }
+        }
+    }
+}
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
 function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
