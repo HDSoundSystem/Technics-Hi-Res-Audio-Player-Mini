@@ -24,7 +24,6 @@ function showCenter(msg, delay = 1800) {
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null, musicScanActive = false, musicScanTimer = null;
 
-// ── Cached CSS variables (invalidated on theme change)
 let _vfdColorCache = {};
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function invalidateColorCache() { _vfdColorCache = {}; }
@@ -37,8 +36,6 @@ let isMuted = false;
 function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 function updateEjectAnimation() { const btn = document.querySelector('.btn-open'); if (btn) btn.classList.toggle('no-track', playlist.length === 0); }
-
-// Cache covers and metadata per file name
 const coverCache = {};
 const metaCache = {}; // { filename: { title, album, artist } }
 
@@ -49,7 +46,7 @@ function getFileCover(file, callback) {
             onSuccess: (tag) => {
                 const t = tag.tags;
                 const pic = t.picture;
-                // Cache metadata alongside cover
+                
                 if (!metaCache[file.name]) {
                     metaCache[file.name] = {
                         title: t.title || file.name.replace(/\.[^.]+$/, ''),
@@ -89,7 +86,6 @@ function renderPlaylistItems() {
         item.className = 'playlist-item' + (index === currentIndex ? ' active' : '');
         item.dataset.index = index;
 
-        // Cover
         const cover = document.createElement('img');
         cover.className = 'playlist-item-cover';
         cover.src = 'img/technics_cover.webp';
@@ -99,11 +95,9 @@ function renderPlaylistItems() {
             getFileCover(file, (url) => { if (url) cover.src = url; });
         }
 
-        // Info block
         const info = document.createElement('div');
         info.className = 'playlist-item-info';
 
-        // Row top: num + title
         const rowTop = document.createElement('div');
         rowTop.className = 'playlist-item-row-top';
 
@@ -119,17 +113,14 @@ function renderPlaylistItems() {
         rowTop.appendChild(num);
         rowTop.appendChild(titleEl);
 
-        // Album row
         const albumEl = document.createElement('span');
         albumEl.className = 'playlist-item-album';
         albumEl.textContent = (meta && meta.album ? meta.album : '\u2014').toUpperCase();
 
-        // Artist row
         const artistEl = document.createElement('span');
         artistEl.className = 'playlist-item-artist';
         artistEl.textContent = (meta && meta.artist ? meta.artist : '\u2014').toUpperCase();
 
-        // If meta not yet cached, trigger read and update when available
         if (!meta) {
             getFileCover(file, () => {
                 const m = metaCache[file.name];
@@ -162,7 +153,6 @@ function renderPlaylistItems() {
     });
 }
 
-// ── Revoke all cached cover ObjectURLs to free memory
 function revokeCoverCache() {
     Object.values(coverCache).forEach(url => { if (url && url.startsWith('blob:')) URL.revokeObjectURL(url); });
     for (const k in coverCache) delete coverCache[k];
@@ -227,7 +217,6 @@ function playlistAddFiles(input) {
     const resizeHandle = document.getElementById('playlistResizeHandle');
     let dragging = false, resizing = false, ox = 0, oy = 0, startW = 0, startX = 0;
 
-    // ── DRAG ──
     handle.addEventListener('mousedown', (e) => {
         dragging = true;
         const rect = modal.getBoundingClientRect();
@@ -239,7 +228,6 @@ function playlistAddFiles(input) {
         e.preventDefault();
     });
 
-    // ── RESIZE ──
     resizeHandle.addEventListener('mousedown', (e) => {
         resizing = true;
         const rect = modal.getBoundingClientRect();
