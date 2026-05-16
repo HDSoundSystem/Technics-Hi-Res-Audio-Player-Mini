@@ -77,13 +77,7 @@
                                         class="digit">-</span>
                                 </div>
                                 <div class="format-group">
-                                    <div id="format-info">---</div>
-                                    <div id="ind-loudness"
-                                        class="ind-inline">LOUDNESS</div>
-                                    <div id="ind-bypass"
-                                        class="ind-inline">BYPASS</div>
-                                    <div id="ind-mono"
-                                        class="ind-inline">MONO</div>
+                                    <div id="format-info">----</div>
                                 </div>
                             </div>
                             <div class="spectrum-outer">
@@ -100,20 +94,12 @@
                                     class="spectrum-canvas" width="200"
                                     height="80"></canvas>
                             </div>
-                            <div class="side-indicators">
-                                <div id="ind-ab" class="ind">A-B</div>
-                                <div id="ind-shuffle" class="ind">RANDOM</div>
-                                <div id="ind-repeat1" class="ind">Repeat 1</div>
-                                <div id="ind-repeatAll" class="ind">Repeat
-                                    All</div>
-                                <div id="ind-musicscan" class="ind">Music
-                                    Scan</div>
-                            </div>
                         </div>
                         <div id="file-info-line" onclick="openArtModal()">**
                             TECHNICS HIGH RESOLUTION AUDIO PLAYER **</div>
                         <div id="track-grid" class="track-grid"
                             onclick="openPlaylist()"></div>
+                        <div class="vu-row">
                         <div class="vu-outer">
                             <div class="vu-wrap"><canvas id="vu-meter"
                                     width="800"
@@ -130,8 +116,22 @@
                                     style="left:calc(732/800*100%)">0</span>
                             </div>
                         </div>
+                        <div class="bottom-indicators">
+                            <div class="bottom-ind-col">
+                                <div id="ind-mono" class="ind-inline">MONO</div>
+                                <div id="ind-loudness" class="ind-inline">LOUDNESS</div>
+                                <div id="ind-bypass" class="ind-inline">BYPASS</div>
+                                <div id="ind-musicscan" class="ind">MUSIC SCAN</div>
+                            </div>
+                            <div class="bottom-ind-col">
+                                <div id="ind-ab" class="ind">A-B</div>
+                                <div id="ind-shuffle" class="ind">RANDOM</div>
+                                <div id="ind-repeat1" class="ind">REPEAT 1</div>
+                                <div id="ind-repeatAll" class="ind">REPEAT All</div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
-
                     <div class="num-pad">
                         <button class="num-pad-button"
                             onclick="pressDigit(1)">1</button>

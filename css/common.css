@@ -1,6 +1,6 @@
 :root {
     /*--vfd-main: #a3a3a3;*/
-    --vfd-main: #00FFEE;
+    --vfd-main: #5ce2d9;
     --vfd-red: #ff3c22;
     --vfd-orange: #ff8800;
     --vfd-glow: #02a79c;
@@ -244,6 +244,29 @@ body {
     opacity: 0.08;
     pointer-events: none;
     text-align: center;
+}
+
+.vu-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.bottom-indicators {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0;
+    padding-left: 10px;
+}
+
+.bottom-ind-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
 }
 
 .side-indicators {
@@ -941,7 +964,8 @@ button i {
 
 .vu-outer {
     width: 50%;
-    margin-left: 0;;
+    flex-shrink: 0;
+    margin-left: 0;
     position: relative;
 }
 
