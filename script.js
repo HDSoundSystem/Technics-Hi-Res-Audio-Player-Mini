@@ -24,6 +24,9 @@ function showCenter(msg, delay = 1800) {
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null, musicScanActive = false, musicScanTimer = null;
 
+const durationCache = new Map(); // key: file.name+'|'+file.size → duration in seconds
+function fileKey(f) { return f.name + '|' + f.size; }
+
 let _vfdColorCache = {};
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function invalidateColorCache() { _vfdColorCache = {}; }
@@ -167,6 +170,7 @@ function removeTrack(index) {
         revokeCoverCache();
         updateStatusText();
         updateEjectAnimation();
+        updateTotalTime();
         closePlaylist();
         return;
     }
@@ -178,6 +182,7 @@ function removeTrack(index) {
         if (wasPlaying) handlePlay();
     }
     renderPlaylistItems();
+    updateTotalTime();
 }
 
 function openPlaylist() {
@@ -189,6 +194,28 @@ function openPlaylist() {
 
 function closePlaylist() {
     document.getElementById('playlistModal').classList.remove('open');
+}
+
+function cacheDurations(files, callback) {
+    let pending = files.length;
+    if (!pending) { if (callback) callback(); return; }
+    files.forEach(f => {
+        const key = fileKey(f);
+        if (durationCache.has(key)) { if (--pending === 0 && callback) callback(); return; }
+        const tmp = new Audio();
+        const url = URL.createObjectURL(f);
+        tmp.onloadedmetadata = () => {
+            durationCache.set(key, isFinite(tmp.duration) ? tmp.duration : 0);
+            URL.revokeObjectURL(url); tmp.src = '';
+            if (--pending === 0 && callback) callback();
+        };
+        tmp.onerror = () => {
+            durationCache.set(key, 0);
+            URL.revokeObjectURL(url); tmp.src = '';
+            if (--pending === 0 && callback) callback();
+        };
+        tmp.src = url;
+    });
 }
 
 function playlistAddFiles(input) {
@@ -205,6 +232,7 @@ function playlistAddFiles(input) {
         loadTrack(0);
         handlePlay();
     }
+    cacheDurations(files, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     input.value = '';
@@ -276,6 +304,7 @@ fileIn.onchange = (e) => {
         loadTrack(0);
         handlePlay();
     }
+    cacheDurations(files, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     e.target.value = '';
@@ -411,7 +440,53 @@ audio.onended = () => {
         }
     }
 };
-audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
+audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; updateTotalTimeRemaining(); };
+
+function getTotalPlaylistDuration() {
+    return playlist.reduce((sum, f) => sum + (durationCache.get(fileKey(f)) || 0), 0);
+}
+
+function formatTotalTime(secs) {
+    const s = Math.floor(Math.max(0, secs));
+    const mm = Math.floor(s / 60).toString().padStart(2, '0');
+    const ss = (s % 60).toString().padStart(2, '0');
+    return { mm, ss };
+}
+
+function setTotalDisplay(prefix, mm, ss) {
+    const el = (id) => document.getElementById(id);
+    if (!el(prefix + 'm1')) return;
+    const digits = (mm + ss).split('');
+    // mm has variable length, always show at least 2 digits for mm
+    const m = mm.padStart(2, '0');
+    const s = ss.padStart(2, '0');
+    el(prefix + 'm1').innerText = m[0];
+    el(prefix + 'm2').innerText = m[1];
+    el(prefix + 's1').innerText = s[0];
+    el(prefix + 's2').innerText = s[1];
+}
+
+function updateTotalTime() {
+    const total = getTotalPlaylistDuration();
+    const { mm, ss } = formatTotalTime(total);
+    setTotalDisplay('tt-', mm, ss);
+    updateTotalTimeRemaining();
+}
+
+function updateTotalTimeRemaining() {
+    const total = getTotalPlaylistDuration();
+    const elapsed = playlist.slice(0, currentIndex).reduce((s, f) => s + (durationCache.get(fileKey(f)) || 0), 0) + (audio.currentTime || 0);
+    const rem = Math.max(0, total - elapsed);
+    const { mm, ss } = formatTotalTime(rem);
+    const el = (id) => document.getElementById(id);
+    if (!el('tt-rem-m1')) return;
+    el('tt-rem-sign').innerText = '-';
+    el('tt-rem-m1').innerText = mm[0];
+    el('tt-rem-m2').innerText = mm[1];
+    el('tt-rem-s1').innerText = ss[0];
+    el('tt-rem-s2').innerText = ss[1];
+}
+
 
 let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter, pannerNode;
 let balanceLevel = 0;
@@ -1197,6 +1272,7 @@ updateTrackDisplay();
             handlePlay();
         }
         renderPlaylistItems();
+        cacheDurations(files, updateTotalTime);
         updateEjectAnimation();
     });
 })();

@@ -252,6 +252,100 @@ body {
     width: 100%;
 }
 
+.total-time-block {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.total-time-unit {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-start;
+}
+
+.total-time-label {
+    font-size: 0.52rem;
+    font-weight: 600;
+    color: var(--vfd-main);
+    text-shadow: 0 0 6px var(--vfd-shadow-main);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.total-time-display {
+    font-family: 'DS-Digital', sans-serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--vfd-main);
+    text-shadow: 0 0 10px var(--vfd-shadow-main);
+    display: flex;
+    align-items: baseline;
+    gap: 1px;
+    line-height: 1;
+    position: relative;
+}
+
+.tt-digit {
+    width: 0.6em;
+    text-align: center;
+    position: relative;
+}
+
+.tt-digit::before {
+    content: "8";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
+}
+
+.tt-sep {
+    margin: 0 1px;
+    position: relative;
+}
+
+.tt-sep::before {
+    content: ":";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
+}
+
+.tt-sign {
+    width: 0.4em;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+}
+
+.tt-sign::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    color: var(--vfd-main);
+    opacity: 0.08;
+    pointer-events: none;
+    text-align: center;
+}
+
 .bottom-indicators {
     display: flex;
     gap: 10px;
