@@ -11,8 +11,7 @@
             #e2d7bf 0%,
             #d4c4a8 45%,
             #c5b395 55%,
-            #dcd0ba 100%
-        );
+            #dcd0ba 100%);
     width: 100%;
     max-width: 1650px;
     border: 1px solid #b5a385;
@@ -514,8 +513,7 @@ input[type="range"]::-moz-range-thumb {
             #e2d7bf 0%,
             #d4c4a8 10%,
             #c5b395 90%,
-            #b5a385 100%
-        );
+            #b5a385 100%);
     border: 1px solid #b5a385;
     border-bottom: 2px solid #332d24;
     border-radius: 1px;
