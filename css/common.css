@@ -372,7 +372,6 @@ body {
 .vu-wrap {
     height: 55px;
     margin-top: 1px;
-    border-top: 1px solid var(--vfd-sep-line);
     padding-top: 1px;
 }
 
@@ -929,6 +928,22 @@ button i {
     line-height: 1;
     white-space: nowrap;
     overflow: visible;
+}
+
+.vu-outer {
+    width: 50%;
+    margin-left: 0;
+    position: relative;
+}
+
+.vu-outer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 1px;
+    background: var(--vfd-sep-line);
 }
 
 .vu-outer .vu-wrap {
