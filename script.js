@@ -24,6 +24,9 @@ function showCenter(msg, delay = 1800) {
 audio.volume = 0.2;
 let playlist = [], currentIndex = 0, audioCtx, analyser, dataArray, timeMode = 'elapsed', vuVisible = true, repeatMode = 0, isShuffle = false, pointA = null, pointB = null, lastVolume = 0, digitEntry = "", digitTimeout = null, musicScanActive = false, musicScanTimer = null;
 
+const durationCache = new Map(); // key: file.name+'|'+file.size → duration in seconds
+function fileKey(f) { return f.name + '|' + f.size; }
+
 let _vfdColorCache = {};
 function getVFDColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function invalidateColorCache() { _vfdColorCache = {}; }
@@ -167,6 +170,7 @@ function removeTrack(index) {
         revokeCoverCache();
         updateStatusText();
         updateEjectAnimation();
+        updateTotalTime();
         closePlaylist();
         return;
     }
@@ -178,6 +182,7 @@ function removeTrack(index) {
         if (wasPlaying) handlePlay();
     }
     renderPlaylistItems();
+    updateTotalTime();
 }
 
 function openPlaylist() {
@@ -189,6 +194,42 @@ function openPlaylist() {
 
 function closePlaylist() {
     document.getElementById('playlistModal').classList.remove('open');
+}
+
+function cacheDurations(files, callback) {
+    let pending = files.length;
+    if (!pending) { if (callback) callback(); return; }
+    files.forEach(f => {
+        const key = fileKey(f);
+        if (durationCache.has(key)) {
+            if (--pending === 0 && callback) callback();
+            return;
+        }
+        const tmp = new Audio();
+        const url = URL.createObjectURL(f);
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            const dur = isFinite(tmp.duration) && tmp.duration > 0 ? tmp.duration : 0;
+            durationCache.set(key, dur);
+            tmp.src = '';
+            URL.revokeObjectURL(url);
+            if (--pending === 0 && callback) callback();
+        };
+        tmp.ondurationchange = finish;
+        tmp.onloadedmetadata = finish;
+        tmp.onerror = () => {
+            if (done) return;
+            done = true;
+            durationCache.set(key, 0);
+            tmp.src = '';
+            URL.revokeObjectURL(url);
+            if (--pending === 0 && callback) callback();
+        };
+        tmp.preload = 'metadata';
+        tmp.src = url;
+    });
 }
 
 function playlistAddFiles(input) {
@@ -205,6 +246,7 @@ function playlistAddFiles(input) {
         loadTrack(0);
         handlePlay();
     }
+    cacheDurations(playlist, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     input.value = '';
@@ -276,6 +318,7 @@ fileIn.onchange = (e) => {
         loadTrack(0);
         handlePlay();
     }
+    cacheDurations(playlist, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     e.target.value = '';
@@ -393,7 +436,7 @@ function handlePlay() {
     }
 }
 function handlePause() { audio.pause(); updateStatusText(); if (audio.currentTime > 0) startPauseBlink(); }
-function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
+function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active', 'ab-waiting', 'ab-active'); }
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 function prevTrack() { if (!playlist.length) return; if (audio.currentTime > 3) { audio.currentTime = 0; if (audio.paused) handlePlay(); } else { currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); } }
 audio.onended = () => {
@@ -411,7 +454,68 @@ audio.onended = () => {
         }
     }
 };
-audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; };
+audio.onloadedmetadata = () => {
+    if (playlist[currentIndex] && isFinite(audio.duration) && audio.duration > 0) {
+        durationCache.set(fileKey(playlist[currentIndex]), audio.duration);
+        updateTotalTime();
+    }
+};
+
+audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; updateTotalTimeRemaining(); };
+
+function getTotalPlaylistDuration() {
+    return playlist.reduce((sum, f, i) => {
+        let d = durationCache.get(fileKey(f)) || 0;
+        if (d === 0 && i === currentIndex && audio.duration && isFinite(audio.duration)) {
+            d = audio.duration;
+        }
+        return sum + d;
+    }, 0);
+}
+
+function formatHMS(secs) {
+    const s = Math.floor(Math.max(0, secs));
+    const hh = Math.floor(s / 3600).toString().padStart(2, '0');
+    const mm = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const ss = (s % 60).toString().padStart(2, '0');
+    return { hh, mm, ss };
+}
+
+function setTotalDisplay(ids, hh, mm, ss) {
+    const el = (id) => document.getElementById(id);
+    if (!el(ids.h1)) return;
+    el(ids.h1).innerText = hh[0];
+    el(ids.h2).innerText = hh[1];
+    el(ids.m1).innerText = mm[0];
+    el(ids.m2).innerText = mm[1];
+    el(ids.s1).innerText = ss[0];
+    el(ids.s2).innerText = ss[1];
+}
+
+function updateTotalTime() {
+    const total = getTotalPlaylistDuration();
+    const { hh, mm, ss } = formatHMS(total);
+    setTotalDisplay(
+        { h1: 'tt-h1', h2: 'tt-h2', m1: 'tt-m1', m2: 'tt-m2', s1: 'tt-s1', s2: 'tt-s2' },
+        hh, mm, ss
+    );
+    updateTotalTimeRemaining();
+}
+
+function updateTotalTimeRemaining() {
+    const total = getTotalPlaylistDuration();
+    const elapsed = playlist.slice(0, currentIndex).reduce((s, f) => s + (durationCache.get(fileKey(f)) || 0), 0) + (audio.currentTime || 0);
+    const rem = Math.max(0, total - elapsed);
+    const { hh, mm, ss } = formatHMS(rem);
+    const el = (id) => document.getElementById(id);
+    if (!el('tt-rem-h1')) return;
+    el('tt-rem-sign').innerText = '-';
+    setTotalDisplay(
+        { h1: 'tt-rem-h1', h2: 'tt-rem-h2', m1: 'tt-rem-m1', m2: 'tt-rem-m2', s1: 'tt-rem-s1', s2: 'tt-rem-s2' },
+        hh, mm, ss
+    );
+}
+
 
 let analyserL, analyserR, dataArrayL, dataArrayR, bassFilter, trebleFilter, loudnessGain, channelMerger, splitter, pannerNode;
 let balanceLevel = 0;
@@ -1080,7 +1184,21 @@ function toggleSpectrum() {
     }
 }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
-function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
+function handleAB() {
+    const ind = document.getElementById('ind-ab');
+    if (pointA === null) {
+        pointA = audio.currentTime;
+        ind.classList.remove('active', 'ab-active');
+        ind.classList.add('ab-waiting');
+    } else if (pointB === null) {
+        pointB = audio.currentTime;
+        ind.classList.remove('ab-waiting', 'active');
+        ind.classList.add('ab-active');
+    } else {
+        pointA = pointB = null;
+        ind.classList.remove('active', 'ab-waiting', 'ab-active');
+    }
+}
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 
 function toggleMusicScan() {
@@ -1145,7 +1263,7 @@ function toggleTray() {
     }
 }
 
-let vuGain = 1;
+let vuGain = 1.8;
 function changeVUGain(d) {
     vuGain = Math.min(3, Math.max(0.1, Math.round((vuGain + d) * 10) / 10));
     showCenter(`VU GAIN: ${Math.round(vuGain * 100)}%`);
@@ -1197,6 +1315,7 @@ updateTrackDisplay();
             handlePlay();
         }
         renderPlaylistItems();
+        cacheDurations(playlist, updateTotalTime);
         updateEjectAnimation();
     });
 })();
