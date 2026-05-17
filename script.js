@@ -461,15 +461,22 @@ audio.onloadedmetadata = () => {
     }
 };
 
-audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; updateTotalTimeRemaining(); updateTrackRemaining(); };
+audio.ontimeupdate = () => {
+    if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA;
+    const t = audio.currentTime;
+    const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0');
+    const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0');
+    m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1];
+    document.getElementById('time-sign').innerText = '\u00a0';
+    updateTotalTimeRemaining(); updateTrackRemaining();
+};
 
 function updateTrackRemaining() {
     const rem = audio.duration && isFinite(audio.duration) ? Math.max(0, audio.duration - audio.currentTime) : 0;
-    const { hh, mm, ss } = formatHMS(rem);
+    const mm = Math.floor(rem / 60).toString().padStart(2, '0');
+    const ss = Math.floor(rem % 60).toString().padStart(2, '0');
     const el = (id) => document.getElementById(id);
-    if (!el('tr-h1')) return;
-    el('tr-h1').innerText = hh[0];
-    el('tr-h2').innerText = hh[1];
+    if (!el('tr-m1')) return;
     el('tr-m1').innerText = mm[0];
     el('tr-m2').innerText = mm[1];
     el('tr-s1').innerText = ss[0];
