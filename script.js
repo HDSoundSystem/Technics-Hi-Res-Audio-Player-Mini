@@ -246,7 +246,7 @@ function playlistAddFiles(input) {
         loadTrack(0);
         handlePlay();
     }
-    cacheDurations(files, updateTotalTime);
+    cacheDurations(playlist, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     input.value = '';
@@ -318,7 +318,7 @@ fileIn.onchange = (e) => {
         loadTrack(0);
         handlePlay();
     }
-    cacheDurations(files, updateTotalTime);
+    cacheDurations(playlist, updateTotalTime);
     renderPlaylistItems();
     updateEjectAnimation();
     e.target.value = '';
@@ -466,7 +466,6 @@ audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.cur
 function getTotalPlaylistDuration() {
     return playlist.reduce((sum, f, i) => {
         let d = durationCache.get(fileKey(f)) || 0;
-        // fallback: use audio.duration for the currently playing track
         if (d === 0 && i === currentIndex && audio.duration && isFinite(audio.duration)) {
             d = audio.duration;
         }
@@ -474,30 +473,32 @@ function getTotalPlaylistDuration() {
     }, 0);
 }
 
-function formatTotalTime(secs) {
+function formatHMS(secs) {
     const s = Math.floor(Math.max(0, secs));
-    const mm = Math.floor(s / 60).toString().padStart(2, '0');
+    const hh = Math.floor(s / 3600).toString().padStart(2, '0');
+    const mm = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
     const ss = (s % 60).toString().padStart(2, '0');
-    return { mm, ss };
+    return { hh, mm, ss };
 }
 
-function setTotalDisplay(prefix, mm, ss) {
+function setTotalDisplay(ids, hh, mm, ss) {
     const el = (id) => document.getElementById(id);
-    if (!el(prefix + 'm1')) return;
-    const digits = (mm + ss).split('');
-    // mm has variable length, always show at least 2 digits for mm
-    const m = mm.padStart(2, '0');
-    const s = ss.padStart(2, '0');
-    el(prefix + 'm1').innerText = m[0];
-    el(prefix + 'm2').innerText = m[1];
-    el(prefix + 's1').innerText = s[0];
-    el(prefix + 's2').innerText = s[1];
+    if (!el(ids.h1)) return;
+    el(ids.h1).innerText = hh[0];
+    el(ids.h2).innerText = hh[1];
+    el(ids.m1).innerText = mm[0];
+    el(ids.m2).innerText = mm[1];
+    el(ids.s1).innerText = ss[0];
+    el(ids.s2).innerText = ss[1];
 }
 
 function updateTotalTime() {
     const total = getTotalPlaylistDuration();
-    const { mm, ss } = formatTotalTime(total);
-    setTotalDisplay('tt-', mm, ss);
+    const { hh, mm, ss } = formatHMS(total);
+    setTotalDisplay(
+        { h1: 'tt-h1', h2: 'tt-h2', m1: 'tt-m1', m2: 'tt-m2', s1: 'tt-s1', s2: 'tt-s2' },
+        hh, mm, ss
+    );
     updateTotalTimeRemaining();
 }
 
@@ -505,14 +506,14 @@ function updateTotalTimeRemaining() {
     const total = getTotalPlaylistDuration();
     const elapsed = playlist.slice(0, currentIndex).reduce((s, f) => s + (durationCache.get(fileKey(f)) || 0), 0) + (audio.currentTime || 0);
     const rem = Math.max(0, total - elapsed);
-    const { mm, ss } = formatTotalTime(rem);
+    const { hh, mm, ss } = formatHMS(rem);
     const el = (id) => document.getElementById(id);
-    if (!el('tt-rem-m1')) return;
+    if (!el('tt-rem-h1')) return;
     el('tt-rem-sign').innerText = '-';
-    el('tt-rem-m1').innerText = mm[0];
-    el('tt-rem-m2').innerText = mm[1];
-    el('tt-rem-s1').innerText = ss[0];
-    el('tt-rem-s2').innerText = ss[1];
+    setTotalDisplay(
+        { h1: 'tt-rem-h1', h2: 'tt-rem-h2', m1: 'tt-rem-m1', m2: 'tt-rem-m2', s1: 'tt-rem-s1', s2: 'tt-rem-s2' },
+        hh, mm, ss
+    );
 }
 
 
@@ -1300,7 +1301,7 @@ updateTrackDisplay();
             handlePlay();
         }
         renderPlaylistItems();
-        cacheDurations(files, updateTotalTime);
+        cacheDurations(playlist, updateTotalTime);
         updateEjectAnimation();
     });
 })();
