@@ -36,7 +36,7 @@ function getVFDColorCached(name) {
 }
 
 let isMuted = false;
-function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "■ STOP" : "‖ PAUSE") : "▶ PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 function updateEjectAnimation() { const btn = document.querySelector('.btn-open'); if (btn) btn.classList.toggle('no-track', playlist.length === 0); }
 const coverCache = {};
