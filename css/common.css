@@ -150,7 +150,6 @@ body {
     letter-spacing: 1.5px;
     color: var(--vfd-main);
     text-shadow: 0 0 8px var(--vfd-shadow-main);
-    opacity: 0.85;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
