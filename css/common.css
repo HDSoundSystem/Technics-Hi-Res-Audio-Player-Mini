@@ -255,7 +255,7 @@ body {
 .total-time-block {
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: 45px;
     flex: 1;
     justify-content: center;
     align-items: center;
@@ -500,7 +500,7 @@ body {
 .vu-wrap {
     height: 55px;
     margin-top: 1px;
-    padding-top: 1px;
+    padding-top: 10px;
 }
 
 .num-pad {
