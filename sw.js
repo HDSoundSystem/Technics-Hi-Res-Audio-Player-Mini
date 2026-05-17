@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Technics-Mini-v5';
+const CACHE_NAME = 'Technics-Mini-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,8 @@ const ASSETS = [
   './img/technics_cover.webp',
   './img/classAA.webp',
   './img/favicon.png',
-  './img/wood3.webp'
+  './img/woodL.webp',
+  './img/woodR.webp'
 ];
 
 self.addEventListener('install', (e) => {

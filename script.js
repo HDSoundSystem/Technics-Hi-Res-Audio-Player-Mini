@@ -36,7 +36,7 @@ function getVFDColorCached(name) {
 }
 
 let isMuted = false;
-function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "STOP" : "PAUSE") : "PLAY"; }
+function updateStatusText() { if (digitEntry !== "") return; if (playlist.length === 0) { statusFunc.innerText = "NO TRACK"; return; } if (isMuted) { statusFunc.innerText = "MUTE"; return; } statusFunc.innerText = audio.paused ? (audio.currentTime === 0 ? "■ STOP" : "‖ PAUSE") : "▶ PLAY"; }
 function toggleMute() { isMuted = !isMuted; audio.muted = isMuted; updateStatusText(); }
 function updateEjectAnimation() { const btn = document.querySelector('.btn-open'); if (btn) btn.classList.toggle('no-track', playlist.length === 0); }
 const coverCache = {};
@@ -461,7 +461,27 @@ audio.onloadedmetadata = () => {
     }
 };
 
-audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; updateTotalTimeRemaining(); };
+audio.ontimeupdate = () => {
+    if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA;
+    const t = audio.currentTime;
+    const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0');
+    const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0');
+    m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1];
+    document.getElementById('time-sign').innerText = '\u00a0';
+    updateTotalTimeRemaining(); updateTrackRemaining();
+};
+
+function updateTrackRemaining() {
+    const rem = audio.duration && isFinite(audio.duration) ? Math.max(0, audio.duration - audio.currentTime) : 0;
+    const mm = Math.floor(rem / 60).toString().padStart(2, '0');
+    const ss = Math.floor(rem % 60).toString().padStart(2, '0');
+    const el = (id) => document.getElementById(id);
+    if (!el('tr-m1')) return;
+    el('tr-m1').innerText = mm[0];
+    el('tr-m2').innerText = mm[1];
+    el('tr-s1').innerText = ss[0];
+    el('tr-s2').innerText = ss[1];
+}
 
 function getTotalPlaylistDuration() {
     return playlist.reduce((sum, f, i) => {
