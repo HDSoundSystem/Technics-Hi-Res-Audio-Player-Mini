@@ -392,6 +392,24 @@ body {
     text-shadow: 0 0 8px var(--vfd-shadow-main);
 }
 
+@keyframes ind-ab-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+#ind-ab.ab-waiting {
+    color: var(--vfd-red) !important;
+    text-shadow: 0 0 8px rgba(255,60,34,0.7);
+    animation: ind-ab-blink 0.6s step-end infinite;
+}
+
+#ind-ab.ab-active {
+    color: var(--vfd-red) !important;
+    text-shadow: 0 0 8px rgba(255,60,34,0.7);
+    animation: none;
+    opacity: 1;
+}
+
 #format-info {
     color: var(--vfd-red);
     font-weight: 700;

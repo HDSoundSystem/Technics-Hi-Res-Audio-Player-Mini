@@ -436,7 +436,7 @@ function handlePlay() {
     }
 }
 function handlePause() { audio.pause(); updateStatusText(); if (audio.currentTime > 0) startPauseBlink(); }
-function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active'); }
+function handleStop() { audio.pause(); audio.currentTime = 0; updateStatusText(); stopPauseBlink(); pointA = pointB = null; document.getElementById('ind-ab').classList.remove('active', 'ab-waiting', 'ab-active'); }
 function nextTrack() { if (!playlist.length) return; currentIndex = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIndex + 1) % playlist.length; loadTrack(currentIndex); handlePlay(); }
 function prevTrack() { if (!playlist.length) return; if (audio.currentTime > 3) { audio.currentTime = 0; if (audio.paused) handlePlay(); } else { currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); handlePlay(); } }
 audio.onended = () => {
@@ -1184,7 +1184,21 @@ function toggleSpectrum() {
     }
 }
 function toggleRepeat() { repeatMode = (repeatMode + 1) % 3; document.getElementById('ind-repeat1').classList.toggle('active', repeatMode === 1); document.getElementById('ind-repeatAll').classList.toggle('active', repeatMode === 2); }
-function handleAB() { const ind = document.getElementById('ind-ab'); if (pointA === null) { pointA = audio.currentTime; ind.classList.add('active'); } else if (pointB === null) { pointB = audio.currentTime; } else { pointA = pointB = null; ind.classList.remove('active'); } }
+function handleAB() {
+    const ind = document.getElementById('ind-ab');
+    if (pointA === null) {
+        pointA = audio.currentTime;
+        ind.classList.remove('active', 'ab-active');
+        ind.classList.add('ab-waiting');
+    } else if (pointB === null) {
+        pointB = audio.currentTime;
+        ind.classList.remove('ab-waiting', 'active');
+        ind.classList.add('ab-active');
+    } else {
+        pointA = pointB = null;
+        ind.classList.remove('active', 'ab-waiting', 'ab-active');
+    }
+}
 function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('ind-shuffle').classList.toggle('active', isShuffle); }
 
 function toggleMusicScan() {
