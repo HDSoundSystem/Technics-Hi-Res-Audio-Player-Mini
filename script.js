@@ -201,19 +201,33 @@ function cacheDurations(files, callback) {
     if (!pending) { if (callback) callback(); return; }
     files.forEach(f => {
         const key = fileKey(f);
-        if (durationCache.has(key)) { if (--pending === 0 && callback) callback(); return; }
+        if (durationCache.has(key)) {
+            if (--pending === 0 && callback) callback();
+            return;
+        }
         const tmp = new Audio();
         const url = URL.createObjectURL(f);
-        tmp.onloadedmetadata = () => {
-            durationCache.set(key, isFinite(tmp.duration) ? tmp.duration : 0);
-            URL.revokeObjectURL(url); tmp.src = '';
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            const dur = isFinite(tmp.duration) && tmp.duration > 0 ? tmp.duration : 0;
+            durationCache.set(key, dur);
+            tmp.src = '';
+            URL.revokeObjectURL(url);
             if (--pending === 0 && callback) callback();
         };
+        tmp.ondurationchange = finish;
+        tmp.onloadedmetadata = finish;
         tmp.onerror = () => {
+            if (done) return;
+            done = true;
             durationCache.set(key, 0);
-            URL.revokeObjectURL(url); tmp.src = '';
+            tmp.src = '';
+            URL.revokeObjectURL(url);
             if (--pending === 0 && callback) callback();
         };
+        tmp.preload = 'metadata';
         tmp.src = url;
     });
 }
@@ -440,10 +454,24 @@ audio.onended = () => {
         }
     }
 };
+audio.onloadedmetadata = () => {
+    if (playlist[currentIndex] && isFinite(audio.duration) && audio.duration > 0) {
+        durationCache.set(fileKey(playlist[currentIndex]), audio.duration);
+        updateTotalTime();
+    }
+};
+
 audio.ontimeupdate = () => { if (pointA !== null && pointB !== null && audio.currentTime >= pointB) audio.currentTime = pointA; const isRemaining = timeMode === 'remaining' && audio.duration; let t = isRemaining ? (audio.duration - audio.currentTime) : audio.currentTime; const mm = Math.floor(Math.max(0, t / 60)).toString().padStart(2, '0'); const ss = Math.floor(Math.max(0, t % 60)).toString().padStart(2, '0'); m1.innerText = mm[0]; m2.innerText = mm[1]; s1.innerText = ss[0]; s2.innerText = ss[1]; document.getElementById('time-sign').innerText = isRemaining ? '-' : '\u00a0'; updateTotalTimeRemaining(); };
 
 function getTotalPlaylistDuration() {
-    return playlist.reduce((sum, f) => sum + (durationCache.get(fileKey(f)) || 0), 0);
+    return playlist.reduce((sum, f, i) => {
+        let d = durationCache.get(fileKey(f)) || 0;
+        // fallback: use audio.duration for the currently playing track
+        if (d === 0 && i === currentIndex && audio.duration && isFinite(audio.duration)) {
+            d = audio.duration;
+        }
+        return sum + d;
+    }, 0);
 }
 
 function formatTotalTime(secs) {
@@ -1220,7 +1248,7 @@ function toggleTray() {
     }
 }
 
-let vuGain = 1;
+let vuGain = 1.8;
 function changeVUGain(d) {
     vuGain = Math.min(3, Math.max(0.1, Math.round((vuGain + d) * 10) / 10));
     showCenter(`VU GAIN: ${Math.round(vuGain * 100)}%`);
