@@ -1411,7 +1411,7 @@ button i {
     transform: translate(-50%, 50%);
     width: 30px;
     height: 15px;
-    background: #c8a84b;
+    background: #494844;
     box-shadow: 0 0 8px rgba(200, 168, 75, 0.6);
     cursor: ns-resize;
     transition: box-shadow 0.1s;
